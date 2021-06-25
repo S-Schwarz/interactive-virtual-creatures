@@ -23,6 +23,7 @@ namespace ivc {
             PxScene* m_scene = nullptr;
 
             std::vector<PxRigidDynamic*> m_rigidBodiesVector;
+            bool isInitialized = false;
         public:
             int init();
             int simulate();

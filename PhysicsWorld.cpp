@@ -44,11 +44,16 @@ int ivc::PhysicsWorld::init() {
     m_scene->addActor(*body);
     boxShape->release();
 
+    isInitialized = true;
+
     return 0;
 
 }
 
 int ivc::PhysicsWorld::simulate() {
+
+    if(!isInitialized)
+        return -1;
 
     for (int i = 0; i < 10000; ++i) {
         m_scene->simulate(0.01f);
@@ -60,6 +65,9 @@ int ivc::PhysicsWorld::simulate() {
 }
 
 int ivc::PhysicsWorld::destroy() {
+
+    if(!isInitialized)
+        return -1;
 
     for(auto body : m_rigidBodiesVector){
         body->release();
