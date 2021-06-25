@@ -12,7 +12,7 @@ set(CMAKE_CXX_FLAGS "-lglfw3 -Wl,--no-as-needed -ldl -lGL -lX11 -pthread -lXrand
 
 add_subdirectory(../glfw ./glfw)
 
-INCLUDE_DIRECTORIES(~/private/PhysX/physx/include ~/private/PhysX/pxshared/include ~/private/glfw/include ~/private/GLAD/include)
+INCLUDE_DIRECTORIES(~/private/PhysX/physx/include ~/private/PhysX/pxshared/include ~/private/glfw/include ~/private/GLAD/include ~/private/glm)
 LINK_DIRECTORIES(~/private/PhysX/physx/bin/linux.clang/debug ~/private/glfw-build/src)
 
 add_executable(interactive_virtual_creatures
