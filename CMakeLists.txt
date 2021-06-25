@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.19)
 project(interactive_virtual_creatures)
 
+add_compile_definitions(_DEBUG)
+
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -14,6 +16,6 @@ INCLUDE_DIRECTORIES(~/private/PhysX/physx/include ~/private/PhysX/pxshared/inclu
 LINK_DIRECTORIES(~/private/PhysX/physx/bin/linux.clang/debug ~/private/glfw-build/src)
 
 add_executable(interactive_virtual_creatures
-        main.cpp glad.c App.h App.cpp)
+        main.cpp glad.c App.h App.cpp PhysicsWorld.h PhysicsWorld.cpp)
 
 TARGET_LINK_LIBRARIES(interactive_virtual_creatures glfw3.a PhysXExtensions_static_64.a PhysX_static_64.a PhysXPvdSDK_static_64.a PhysXCommon_static_64.a PhysXFoundation_static_64.a  )
