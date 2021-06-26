@@ -3,9 +3,6 @@
 //
 
 #include "App.h"
-#include "Camera.h"
-
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
@@ -24,15 +21,14 @@ void ivc::App::processInput()
         m_shouldClose = true;
     }
 
-
     if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        m_camera.ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        m_camera.ProcessKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        m_camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        m_camera.ProcessKeyboard(RIGHT, deltaTime);
 
 }
 bool firstMouse = true;
@@ -51,7 +47,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     lastX = xpos;
     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    ((Camera*)glfwGetWindowUserPointer(window))->ProcessMouseMovement(xoffset, yoffset);
 
 }
 
@@ -149,6 +145,8 @@ int ivc::App::init(){
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    glfwSetWindowUserPointer(m_window, &m_camera);
+
     m_physicsWorld = new PhysicsWorld();
     m_physicsWorld->init();
 
@@ -178,7 +176,7 @@ int ivc::App::render() {
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-    glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 view = m_camera.GetViewMatrix();
     m_shader->setMat4("view", view);
 
     int viewLoc = glGetUniformLocation(m_shader->ID, "view");

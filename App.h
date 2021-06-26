@@ -17,12 +17,14 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "PhysicsWorld.h"
+#include "Camera.h"
 
 namespace ivc {
 
     class App {
         private:
             GLFWwindow* m_window;
+            Camera m_camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
             bool m_shouldClose = false;
             bool isInitialized = false;
 
