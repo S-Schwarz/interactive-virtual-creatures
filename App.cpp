@@ -222,13 +222,15 @@ int ivc::App::render() {
     m_shader->use();
     glBindVertexArray(m_VAO);
 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     // EXAMPLE CUBE -----------
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, cubePosition);
     model = glm::scale(model, glm::vec3(1,1,2));
     m_shader->setMat4("model", model);
     m_shader->setVec4("drawColor", glm::vec4(1.0f, 0.0f, 0.2f, 1.0f));
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    //glDrawArrays(GL_TRIANGLES, 0, 36);
     //-------------------------
 
     // PHYSX OBJECTS ----------
@@ -241,6 +243,13 @@ int ivc::App::render() {
 
         glm::quat rotQuat = glm::quat(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
         model = model * glm::mat4_cast(rotQuat);
+
+        PxShape* bodyShape = nullptr;
+        body->getShapes(&bodyShape, sizeof(bodyShape),0);
+        PxBoxGeometry* bodyGeom = new PxBoxGeometry();
+        bodyShape->getBoxGeometry(*bodyGeom);
+        glm::vec3 scaleVec = glm::vec3(bodyGeom->halfExtents.x * 2, bodyGeom->halfExtents.y * 2, bodyGeom->halfExtents.z * 2);
+        model = glm::scale(model, scaleVec);
 
         m_shader->setMat4("model", model);
         m_shader->setVec4("drawColor", glm::vec4(0.0f, 0.8f, 0.3f, 1.0f));
