@@ -235,8 +235,12 @@ int ivc::App::render() {
     model = glm::mat4(1.0f);
     for(auto body : m_physicsWorld->getRigidBodies()){
         auto transform = body->getGlobalPose();
+
         glm::vec3 posVec = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
         model = glm::translate(model, posVec);
+
+        glm::quat rotQuat = glm::quat(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
+        model = model * glm::mat4_cast(rotQuat);
 
         m_shader->setMat4("model", model);
         m_shader->setVec4("drawColor", glm::vec4(0.0f, 0.8f, 0.3f, 1.0f));
