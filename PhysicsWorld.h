@@ -24,6 +24,7 @@ namespace ivc {
 
             std::vector<PxRigidDynamic*> m_rigidBodiesVector;
             bool isInitialized = false;
+            float m_stepSize = 0.01f;
         public:
             int init();
             int simulate();

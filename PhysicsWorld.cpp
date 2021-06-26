@@ -55,10 +55,8 @@ int ivc::PhysicsWorld::simulate() {
     if(!isInitialized)
         return -1;
 
-    for (int i = 0; i < 10000; ++i) {
-        m_scene->simulate(0.01f);
-        m_scene->fetchResults(true);
-    }
+    m_scene->simulate(m_stepSize);
+    m_scene->fetchResults(true);
 
     return 0;
 
