@@ -31,6 +31,7 @@ namespace ivc {
             int destroy();
 
             std::vector<PxRigidDynamic*> getRigidBodies();
+            float getStepSize();
     };
 
 }

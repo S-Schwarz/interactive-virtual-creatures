@@ -85,3 +85,7 @@ std::vector<PxRigidDynamic *> ivc::PhysicsWorld::getRigidBodies() {
     return m_rigidBodiesVector;
 
 }
+
+float ivc::PhysicsWorld::getStepSize() {
+    return m_stepSize;
+}

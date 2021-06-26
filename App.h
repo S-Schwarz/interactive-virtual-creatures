@@ -24,7 +24,7 @@ namespace ivc {
     class App {
         private:
             GLFWwindow* m_window;
-            Camera m_camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+            Camera m_camera = Camera(glm::vec3(0.0f, 1.0f, 5.0f));
             bool m_shouldClose = false;
             bool isInitialized = false;
 
@@ -37,6 +37,10 @@ namespace ivc {
             const int c_WIDTH = 800, c_HEIGHT = 600;
             bool m_firstMouseMovement = true;
             double m_lastMousePosX = c_WIDTH / 2, m_lastMousePosY = c_HEIGHT / 2;
+
+            float m_deltaTime = 0.0f;
+            float m_lastTime= 0.0f;
+            float m_accumulator  = 0.0f;
         public:
             bool shouldClose();
 

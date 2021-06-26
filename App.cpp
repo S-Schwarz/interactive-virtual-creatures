@@ -4,9 +4,6 @@
 
 #include "App.h"
 
-float deltaTime = 0.0f;	// Time between current frame and last frame
-float lastFrame = 0.0f; // Time of last frame
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -20,13 +17,13 @@ void ivc::App::processInput()
     }
 
     if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
-        m_camera.ProcessKeyboard(FORWARD, deltaTime);
+        m_camera.ProcessKeyboard(FORWARD, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
-        m_camera.ProcessKeyboard(BACKWARD, deltaTime);
+        m_camera.ProcessKeyboard(BACKWARD, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
-        m_camera.ProcessKeyboard(LEFT, deltaTime);
+        m_camera.ProcessKeyboard(LEFT, m_deltaTime);
     if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
-        m_camera.ProcessKeyboard(RIGHT, deltaTime);
+        m_camera.ProcessKeyboard(RIGHT, m_deltaTime);
 
 }
 
@@ -189,11 +186,23 @@ int ivc::App::render() {
         return -1;
     }
 
-    float currentFrame = glfwGetTime();
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
+    float currentTime = glfwGetTime();
+    m_deltaTime = currentTime - m_lastTime;
+    m_lastTime = currentTime;
+
+    m_accumulator += m_deltaTime;
 
     processInput();
+
+    // Physics simulation ---------
+
+    float physicsStep = m_physicsWorld->getStepSize();
+    while (m_accumulator >= physicsStep){
+        m_physicsWorld->simulate();
+        m_accumulator -= physicsStep;
+    }
+
+    // ----------------------------
 
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
@@ -247,6 +256,7 @@ int ivc::App::close() {
     if(!isInitialized)
         return -1;
 
+    m_physicsWorld->destroy();
     glfwTerminate();
 
     return 0;
