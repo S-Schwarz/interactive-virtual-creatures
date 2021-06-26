@@ -33,12 +33,21 @@ namespace ivc {
 
             void processInput();
             PhysicsWorld* m_physicsWorld = nullptr;
+
+            const int c_WIDTH = 800, c_HEIGHT = 600;
+            bool m_firstMouseMovement = true;
+            double m_lastMousePosX = c_WIDTH / 2, m_lastMousePosY = c_HEIGHT / 2;
         public:
             bool shouldClose();
 
             int init();
             int render();
             int close();
+            Camera* getCamera();
+            bool firstMouseMovement();
+            void firstMouseMoveDone();
+            std::pair<double,double> getLastMousePos();
+            void setLastMousePos(double,double);
     };
 
 }

@@ -7,8 +7,6 @@
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
-double lastX = 400, lastY = 300;
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -31,24 +29,48 @@ void ivc::App::processInput()
         m_camera.ProcessKeyboard(RIGHT, deltaTime);
 
 }
-bool firstMouse = true;
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos){
 
-    if (firstMouse)
+    auto appPtr = (ivc::App*)glfwGetWindowUserPointer(window);
+    double lastX = appPtr->getLastMousePos().first;
+    double lastY = appPtr->getLastMousePos().second;
+
+    if (appPtr->firstMouseMovement())
     {
         lastX = xpos;
         lastY = ypos;
-        firstMouse = false;
+        appPtr->firstMouseMoveDone();
     }
 
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-    lastX = xpos;
-    lastY = ypos;
+    appPtr->setLastMousePos(xpos,ypos);
 
-    ((Camera*)glfwGetWindowUserPointer(window))->ProcessMouseMovement(xoffset, yoffset);
+    appPtr->getCamera()->ProcessMouseMovement(xoffset, yoffset);
 
+}
+
+bool ivc::App::firstMouseMovement() {
+    return m_firstMouseMovement;
+}
+
+void ivc::App::firstMouseMoveDone() {
+    m_firstMouseMovement = false;
+}
+
+std::pair<double, double> ivc::App::getLastMousePos() {
+    return {m_lastMousePosX,m_lastMousePosY};
+}
+
+void ivc::App::setLastMousePos(double x, double y) {
+    m_lastMousePosX = x;
+    m_lastMousePosY = y;
+}
+
+Camera * ivc::App::getCamera() {
+    return &m_camera;
 }
 
 bool ivc::App::shouldClose() {
@@ -128,7 +150,7 @@ int ivc::App::init(){
     }
 
     glEnable(GL_DEPTH_TEST);
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, c_WIDTH, c_HEIGHT);
 
     m_shader = new Shader("../shader.vert", "../shader.frag");
 
@@ -145,7 +167,7 @@ int ivc::App::init(){
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glfwSetWindowUserPointer(m_window, &m_camera);
+    glfwSetWindowUserPointer(m_window, this);
 
     m_physicsWorld = new PhysicsWorld();
     m_physicsWorld->init();
