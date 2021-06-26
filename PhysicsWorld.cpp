@@ -81,3 +81,9 @@ int ivc::PhysicsWorld::destroy() {
     return 0;
 
 }
+
+std::vector<PxRigidDynamic *> ivc::PhysicsWorld::getRigidBodies() {
+
+    return m_rigidBodiesVector;
+
+}

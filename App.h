@@ -16,6 +16,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "PhysicsWorld.h"
+
 namespace ivc {
 
     class App {
@@ -28,6 +30,7 @@ namespace ivc {
             unsigned int m_VAO;
 
             void processInput();
+            PhysicsWorld* m_physicsWorld = nullptr;
         public:
             bool shouldClose();
 

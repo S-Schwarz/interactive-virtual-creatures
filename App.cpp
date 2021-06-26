@@ -148,7 +148,10 @@ int ivc::App::init(){
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    
+
+    m_physicsWorld = new PhysicsWorld();
+    m_physicsWorld->init();
+
     isInitialized = true;
 
     return 0;
@@ -190,12 +193,27 @@ int ivc::App::render() {
     m_shader->use();
     glBindVertexArray(m_VAO);
 
+    // EXAMPLE CUBE -----------
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, cubePosition);
+    model = glm::scale(model, glm::vec3(1,1,2));
     m_shader->setMat4("model", model);
-
     m_shader->setVec4("drawColor", glm::vec4(1.0f, 0.0f, 0.2f, 1.0f));
     glDrawArrays(GL_TRIANGLES, 0, 36);
+    //-------------------------
+
+    // PHYSX OBJECTS ----------
+    model = glm::mat4(1.0f);
+    for(auto body : m_physicsWorld->getRigidBodies()){
+        auto transform = body->getGlobalPose();
+        glm::vec3 posVec = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
+        model = glm::translate(model, posVec);
+
+        m_shader->setMat4("model", model);
+        m_shader->setVec4("drawColor", glm::vec4(0.0f, 0.8f, 0.3f, 1.0f));
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+    //-------------------------
 
     glfwSwapBuffers(m_window);
     glfwPollEvents();

@@ -28,6 +28,8 @@ namespace ivc {
             int init();
             int simulate();
             int destroy();
+
+            std::vector<PxRigidDynamic*> getRigidBodies();
     };
 
 }
