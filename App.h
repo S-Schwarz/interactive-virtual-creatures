@@ -24,6 +24,9 @@ namespace ivc {
             bool m_shouldClose = false;
             bool isInitialized = false;
 
+            Shader* m_shader = nullptr;
+            unsigned int m_VAO;
+
             void processInput();
         public:
             bool shouldClose();
