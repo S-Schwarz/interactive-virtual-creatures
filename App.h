@@ -29,7 +29,7 @@ namespace ivc {
             bool isInitialized = false;
 
             Shader* m_shader = nullptr;
-            unsigned int m_VAO;
+            unsigned int m_VAO, m_VAO2;
 
             void processInput();
             PhysicsWorld* m_physicsWorld = nullptr;

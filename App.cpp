@@ -118,6 +118,16 @@ float vertices[] = {
         -0.5f,  0.5f, -0.5f
 };
 
+float planeVertices[] = {
+        -0.5,0,0.5,
+        -0.5,0,-0.5,
+        0.5,0,0.5,
+
+        -0.5,0,-0.5,
+        0.5,0,-0.5,
+        0.5,0,0.5
+};
+
 int ivc::App::init(){
 
     // Init GLFW
@@ -160,6 +170,19 @@ int ivc::App::init(){
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glGenVertexArrays(1, &m_VAO2);
+
+    glBindVertexArray(m_VAO2);
+
+    unsigned int VBO2;
+    glGenBuffers(1, &VBO2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -235,7 +258,7 @@ int ivc::App::render() {
 
     // PHYSX OBJECTS ----------
     model = glm::mat4(1.0f);
-    for(auto body : m_physicsWorld->getRigidBodies()){
+    for(auto body : m_physicsWorld->getRigidDynamics()){
         auto transform = body->getGlobalPose();
 
         glm::vec3 posVec = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
@@ -255,6 +278,29 @@ int ivc::App::render() {
         m_shader->setVec4("drawColor", glm::vec4(0.0f, 0.8f, 0.3f, 1.0f));
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+
+    // PLANE ------------------
+    glBindVertexArray(m_VAO2);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    model = glm::mat4(1.0f);
+    for(auto rigidStatic : m_physicsWorld->getRigidStatics()){
+        PxPlane* plane = (PxPlane*)rigidStatic;
+        auto transformA = rigidStatic->getGlobalPose();
+        auto transformB = PxTransformFromPlaneEquation(*plane);
+
+        glm::vec3 posVec = glm::vec3(transformA.p.x, transformA.p.y, transformA.p.z);
+        model = glm::translate(model, posVec);
+
+        glm::quat rotQuat = glm::quat(transformB.q.w, transformB.q.x, transformB.q.y, transformB.q.z);
+        model = model * glm::mat4_cast(rotQuat);
+
+        model = glm::scale(model, glm::vec3(1000.0f, 0.0f, 1000.0f));
+        m_shader->setMat4("model", model);
+        m_shader->setVec4("drawColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
     //-------------------------
 
     glfwSwapBuffers(m_window);

@@ -22,7 +22,8 @@ namespace ivc {
             PxPhysics* m_physics = nullptr;
             PxScene* m_scene = nullptr;
 
-            std::vector<PxRigidDynamic*> m_rigidBodiesVector;
+            std::vector<PxRigidStatic*> m_rigidStaticsVector;
+            std::vector<PxRigidDynamic*> m_rigidDynamicsVector;
             bool isInitialized = false;
             float m_stepSize = 0.01f;
         public:
@@ -30,7 +31,8 @@ namespace ivc {
             int simulate();
             int destroy();
 
-            std::vector<PxRigidDynamic*> getRigidBodies();
+            std::vector<PxRigidDynamic*> getRigidDynamics();
+            std::vector<PxRigidStatic*> getRigidStatics();
             float getStepSize();
     };
 
