@@ -191,6 +191,7 @@ int ivc::App::render() {
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         shader->setMat4("model", model);
 
+        shader->setVec4("drawColor", glm::vec4(1.0f, 0.0f, 0.2f, 1.0f));
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 
