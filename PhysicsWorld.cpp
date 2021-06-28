@@ -30,14 +30,21 @@ int ivc::PhysicsWorld::init() {
 
     PxMaterial* mMaterial = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
 
-    PxVec3 normalVec(0, 1, 0);
-    PxVec3 normal = normalVec.getNormalized();
-    PxRigidStatic* plane = PxCreatePlane(*m_physics, PxPlane(normal, 5), *mMaterial);
-    m_rigidStaticsVector.push_back(plane);
-    m_scene->addActor(*plane);
+    createPlane(PxVec3(0,1,0), 0, mMaterial);
+    createBox(PxVec3(0.5,0.5,0.5), PxVec3(0,10,0), mMaterial);
 
-    PxShape* boxShape = m_physics->createShape(PxBoxGeometry(0.5, 0.5, 0.5), *mMaterial);
-    PxTransform transform(PxVec3(0, 10, 0));
+    isInitialized = true;
+
+    return 0;
+
+}
+
+int ivc::PhysicsWorld::createBox(PxVec3 halfextents, PxVec3 position, PxMaterial* material) {
+    if(m_scene == nullptr)
+        return -1;
+
+    PxShape* boxShape = m_physics->createShape(PxBoxGeometry(halfextents), *material);
+    PxTransform transform(position);
     PxRigidDynamic* body = m_physics->createRigidDynamic(transform);
     m_rigidDynamicsVector.push_back(body);
     body->attachShape(*boxShape);
@@ -45,10 +52,19 @@ int ivc::PhysicsWorld::init() {
     m_scene->addActor(*body);
     boxShape->release();
 
-    isInitialized = true;
+    return 0;
+}
+
+int ivc::PhysicsWorld::createPlane(PxVec3 normalVec, float distance, PxMaterial* material) {
+    if(m_scene == nullptr)
+        return -1;
+
+    PxVec3 normal = normalVec.getNormalized();
+    PxRigidStatic* plane = PxCreatePlane(*m_physics, PxPlane(normal, distance), *material);
+    m_rigidStaticsVector.push_back(plane);
+    m_scene->addActor(*plane);
 
     return 0;
-
 }
 
 int ivc::PhysicsWorld::simulate() {
