@@ -7,6 +7,14 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+
+    auto appPtr = (ivc::App*) glfwGetWindowUserPointer(window);
+    appPtr->setWindowSize(width,height);
+}
+
+void ivc::App::setWindowSize(int w, int h) {
+    m_windowWidth = w;
+    m_windowHeight = h;
 }
 
 void ivc::App::processInput()
@@ -83,7 +91,7 @@ int ivc::App::init(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create Window
-    m_window = glfwCreateWindow(800, 600, "Interactive Virtual Creatures", NULL, NULL);
+    m_window = glfwCreateWindow(c_WIDTH, c_HEIGHT, "Interactive Virtual Creatures", NULL, NULL);
     if (m_window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -149,8 +157,7 @@ int ivc::App::render() {
 
     // ----------------------------
 
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    m_projectionMatrix = glm::perspective(glm::radians(45.0f), (float)m_windowWidth / (float)m_windowHeight, 0.1f, 100.0f);
 
     glm::mat4 view = m_camera.GetViewMatrix();
     m_shader->setMat4("view", view);
@@ -159,7 +166,7 @@ int ivc::App::render() {
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
     int projectionLoc = glGetUniformLocation(m_shader->ID, "projection");
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
 
     glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

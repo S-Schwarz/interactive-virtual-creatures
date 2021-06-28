@@ -35,12 +35,15 @@ namespace ivc {
             PhysicsWorld* m_physicsWorld = nullptr;
 
             const int c_WIDTH = 800, c_HEIGHT = 600;
+            int m_windowWidth = c_WIDTH, m_windowHeight = c_HEIGHT;
             bool m_firstMouseMovement = true;
             double m_lastMousePosX = c_WIDTH / 2, m_lastMousePosY = c_HEIGHT / 2;
 
             float m_deltaTime = 0.0f;
             float m_lastTime= 0.0f;
             float m_accumulator  = 0.0f;
+
+            glm::mat4 m_projectionMatrix;
 
             int drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe);
         public:
@@ -54,6 +57,7 @@ namespace ivc {
             void firstMouseMoveDone();
             std::pair<double,double> getLastMousePos();
             void setLastMousePos(double,double);
+            void setWindowSize(int w, int h);
     };
 
 }
