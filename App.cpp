@@ -74,60 +74,6 @@ bool ivc::App::shouldClose() {
     return m_shouldClose;
 }
 
-float vertices[] = {
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f, -0.5f,  0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f,  0.5f,
-        0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f, -0.5f,
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f
-};
-
-float planeVertices[] = {
-        -0.5,0,0.5,
-        -0.5,0,-0.5,
-        0.5,0,0.5,
-
-        -0.5,0,-0.5,
-        0.5,0,-0.5,
-        0.5,0,0.5
-};
-
 int ivc::App::init(){
 
     // Init GLFW
@@ -161,31 +107,7 @@ int ivc::App::init(){
 
     m_shader = new Shader("../shader.vert", "../shader.frag");
 
-    glGenVertexArrays(1, &m_VAO);
-
-    glBindVertexArray(m_VAO);
-
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glGenVertexArrays(1, &m_VAO2);
-
-    glBindVertexArray(m_VAO2);
-
-    unsigned int VBO2;
-    glGenBuffers(1, &VBO2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    ShapeHandler::initShapes();
 
     glfwSetWindowUserPointer(m_window, this);
 
@@ -243,7 +165,7 @@ int ivc::App::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_shader->use();
-    glBindVertexArray(m_VAO);
+    ShapeHandler::bindBoxVAO();
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -280,7 +202,7 @@ int ivc::App::render() {
     }
 
     // PLANE ------------------
-    glBindVertexArray(m_VAO2);
+    ShapeHandler::bindPlaneVAO();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     model = glm::mat4(1.0f);
