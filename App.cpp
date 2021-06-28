@@ -165,62 +165,39 @@ int ivc::App::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_shader->use();
-    ShapeHandler::bindBoxVAO();
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    // EXAMPLE CUBE -----------
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, cubePosition);
-    model = glm::scale(model, glm::vec3(1,1,2));
-    m_shader->setMat4("model", model);
-    m_shader->setVec4("drawColor", glm::vec4(1.0f, 0.0f, 0.2f, 1.0f));
-    //glDrawArrays(GL_TRIANGLES, 0, 36);
     //-------------------------
 
     // PHYSX OBJECTS ----------
-    model = glm::mat4(1.0f);
     for(auto body : m_physicsWorld->getRigidDynamics()){
         auto transform = body->getGlobalPose();
 
         glm::vec3 posVec = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
-        model = glm::translate(model, posVec);
 
         glm::quat rotQuat = glm::quat(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
-        model = model * glm::mat4_cast(rotQuat);
 
+        //TODO: ???
         PxShape* bodyShape = nullptr;
         body->getShapes(&bodyShape, sizeof(bodyShape),0);
         PxBoxGeometry* bodyGeom = new PxBoxGeometry();
         bodyShape->getBoxGeometry(*bodyGeom);
         glm::vec3 scaleVec = glm::vec3(bodyGeom->halfExtents.x * 2, bodyGeom->halfExtents.y * 2, bodyGeom->halfExtents.z * 2);
-        model = glm::scale(model, scaleVec);
 
-        m_shader->setMat4("model", model);
-        m_shader->setVec4("drawColor", glm::vec4(0.0f, 0.8f, 0.3f, 1.0f));
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        drawShape(BOX, posVec, rotQuat, scaleVec, glm::vec4(0.0f, 0.8f, 0.3f, 1.0f), true);
     }
 
     // PLANE ------------------
-    ShapeHandler::bindPlaneVAO();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    model = glm::mat4(1.0f);
     for(auto rigidStatic : m_physicsWorld->getRigidStatics()){
+        //TODO: ???
         PxPlane* plane = (PxPlane*)rigidStatic;
         auto transformA = rigidStatic->getGlobalPose();
         auto transformB = PxTransformFromPlaneEquation(*plane);
 
         glm::vec3 posVec = glm::vec3(transformA.p.x, transformA.p.y, transformA.p.z);
-        model = glm::translate(model, posVec);
 
         glm::quat rotQuat = glm::quat(transformB.q.w, transformB.q.x, transformB.q.y, transformB.q.z);
-        model = model * glm::mat4_cast(rotQuat);
 
-        model = glm::scale(model, glm::vec3(1000.0f, 0.0f, 1000.0f));
-        m_shader->setMat4("model", model);
-        m_shader->setVec4("drawColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        drawShape(PLANE, posVec, rotQuat, glm::vec3(1000.0f, 0.0f, 1000.0f), glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), false);
     }
 
     //-------------------------
@@ -229,6 +206,39 @@ int ivc::App::render() {
     glfwPollEvents();
 
     return 0;
+
+}
+
+int ivc::App::drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe) {
+
+        switch(shape){
+            case BOX:
+                ShapeHandler::bindBoxVAO();
+                break;
+            case PLANE:
+                ShapeHandler::bindPlaneVAO();
+                break;
+            default:
+                return -1;
+        }
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, position);
+        model = model * glm::mat4_cast(rotation);
+        model = glm::scale(model, scale);
+
+        m_shader->setMat4("model", model);
+        m_shader->setVec4("drawColor", color);
+
+        if(wireframe){
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }else{
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        return 0;
 
 }
 

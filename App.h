@@ -41,6 +41,8 @@ namespace ivc {
             float m_deltaTime = 0.0f;
             float m_lastTime= 0.0f;
             float m_accumulator  = 0.0f;
+
+            int drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe);
         public:
             bool shouldClose();
 

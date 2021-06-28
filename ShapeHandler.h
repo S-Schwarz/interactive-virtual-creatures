@@ -27,6 +27,11 @@ namespace ivc {
         static int bindPlaneVAO();
     };
 
+    enum Shape{
+        BOX,
+        PLANE
+    };
+
 }
 
 #endif //INTERACTIVE_VIRTUAL_CREATURES_SHAPEHANDLER_H
