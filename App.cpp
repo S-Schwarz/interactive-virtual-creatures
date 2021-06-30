@@ -194,18 +194,17 @@ int ivc::App::render() {
     }
 
     // PLANE ------------------
-    for(auto rigidStatic : m_physicsWorld->getRigidStatics()){
-        //TODO: ???
-        PxPlane* plane = (PxPlane*)rigidStatic;
-        auto transformA = rigidStatic->getGlobalPose();
-        auto transformB = PxTransformFromPlaneEquation(*plane);
+    //TODO: ???
+    auto rigidStatic = m_physicsWorld->getPlane();
+    PxPlane* plane = (PxPlane*)rigidStatic;
+    auto transformA = rigidStatic->getGlobalPose();
+    auto transformB = PxTransformFromPlaneEquation(*plane);
 
-        glm::vec3 posVec = glm::vec3(transformA.p.x, transformA.p.y, transformA.p.z);
+    glm::vec3 posVec = glm::vec3(transformA.p.x, transformA.p.y, transformA.p.z);
 
-        glm::quat rotQuat = glm::quat(transformB.q.w, transformB.q.x, transformB.q.y, transformB.q.z);
+    glm::quat rotQuat = glm::quat(transformB.q.w, transformB.q.x, transformB.q.y, transformB.q.z);
 
-        drawShape(PLANE, posVec, rotQuat, glm::vec3(1000.0f, 0.0f, 1000.0f), glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), false);
-    }
+    drawShape(PLANE, posVec, rotQuat, glm::vec3(1000.0f, 0.0f, 1000.0f), glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), false);
 
     //-------------------------
 

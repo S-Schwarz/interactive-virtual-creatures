@@ -22,7 +22,7 @@ namespace ivc {
             PxPhysics* m_physics = nullptr;
             PxScene* m_scene = nullptr;
 
-            std::vector<PxRigidStatic*> m_rigidStaticsVector;
+            PxRigidStatic* m_plane = nullptr;
             std::vector<PxRigidDynamic*> m_rigidDynamicsVector;
             bool isInitialized = false;
             float m_stepSize = 0.01f;
@@ -35,7 +35,7 @@ namespace ivc {
             int createPlane(PxVec3 normalVec, float distance, PxMaterial* material);
 
             std::vector<PxRigidDynamic*> getRigidDynamics();
-            std::vector<PxRigidStatic*> getRigidStatics();
+            PxRigidStatic* getPlane();
             float getStepSize();
     };
 

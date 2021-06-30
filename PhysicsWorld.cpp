@@ -31,7 +31,9 @@ int ivc::PhysicsWorld::init() {
     PxMaterial* mMaterial = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
 
     createPlane(PxVec3(0,1,0), 0, mMaterial);
-    createBox(PxVec3(0.5,0.5,0.5), PxVec3(0,10,0), mMaterial);
+    createBox(PxVec3(0.5,0.5,0.5), PxVec3(2,10,0), mMaterial);
+    createBox(PxVec3(0.5,0.5,0.5), PxVec3(0,7,0), mMaterial);
+    createBox(PxVec3(0.5,0.5,0.5), PxVec3(-1,15,0), mMaterial);
 
     isInitialized = true;
 
@@ -61,7 +63,7 @@ int ivc::PhysicsWorld::createPlane(PxVec3 normalVec, float distance, PxMaterial*
 
     PxVec3 normal = normalVec.getNormalized();
     PxRigidStatic* plane = PxCreatePlane(*m_physics, PxPlane(normal, distance), *material);
-    m_rigidStaticsVector.push_back(plane);
+    m_plane = plane;
     m_scene->addActor(*plane);
 
     return 0;
@@ -89,10 +91,8 @@ int ivc::PhysicsWorld::destroy() {
     }
     m_rigidDynamicsVector.clear();
 
-    for(auto rigidStatic : m_rigidStaticsVector){
-        rigidStatic->release();
-    }
-    m_rigidStaticsVector.clear();
+    if(m_plane)
+        m_plane->release();
 
     m_scene->release();
     m_physics->release();
@@ -108,8 +108,8 @@ std::vector<PxRigidDynamic *> ivc::PhysicsWorld::getRigidDynamics() {
 
 }
 
-std::vector<PxRigidStatic *> ivc::PhysicsWorld::getRigidStatics() {
-    return m_rigidStaticsVector;
+PxRigidStatic* ivc::PhysicsWorld::getPlane() {
+    return m_plane;
 }
 
 float ivc::PhysicsWorld::getStepSize() {
