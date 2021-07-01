@@ -50,7 +50,7 @@ namespace ivc {
             bool shouldClose();
 
             int init();
-            int render();
+            int update();
             int close();
             Camera* getCamera();
             bool firstMouseMovement();

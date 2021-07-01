@@ -15,7 +15,7 @@ int main(){
     }
 
     while(!mainApp.shouldClose()){
-        mainApp.render();
+        mainApp.update();
     }
 
     mainApp.close();

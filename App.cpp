@@ -127,9 +127,7 @@ int ivc::App::init(){
     return 0;
 }
 
-glm::vec3 cubePosition = glm::vec3( 0.0f,  0.0f,  0.0f);
-
-int ivc::App::render() {
+int ivc::App::update() {
 
     if(!isInitialized || m_shouldClose)
         return -1;
