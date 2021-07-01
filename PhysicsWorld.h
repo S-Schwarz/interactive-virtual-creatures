@@ -31,7 +31,7 @@ namespace ivc {
             int simulate();
             int destroy();
 
-            int createBox(PxVec3 halfextents, PxVec3 position, PxMaterial* material);
+            int createBox(PxVec3 halfextents, PxVec3 position, PxVec3 rotation, PxMaterial* material);
             int createPlane(PxVec3 normalVec, float distance, PxMaterial* material);
 
             std::vector<PxRigidDynamic*> getRigidDynamics();

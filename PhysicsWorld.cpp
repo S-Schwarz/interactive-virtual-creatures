@@ -3,6 +3,9 @@
 //
 
 #include "PhysicsWorld.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 int ivc::PhysicsWorld::init() {
 
@@ -31,9 +34,9 @@ int ivc::PhysicsWorld::init() {
     PxMaterial* mMaterial = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
 
     createPlane(PxVec3(0,1,0), 0, mMaterial);
-    createBox(PxVec3(0.5,0.5,0.5), PxVec3(2,10,0), mMaterial);
-    createBox(PxVec3(0.5,0.5,0.5), PxVec3(0,7,0), mMaterial);
-    createBox(PxVec3(0.5,0.5,0.5), PxVec3(-1,15,0), mMaterial);
+    createBox(PxVec3(0.5,0.5,0.5), PxVec3(2,3,0), PxVec3(45,0,0), mMaterial);
+    createBox(PxVec3(0.5,0.5,0.5), PxVec3(0,3,0), PxVec3(0,45,0), mMaterial);
+    createBox(PxVec3(0.5,0.5,0.5), PxVec3(-2,3,0), PxVec3(0,0,45), mMaterial);
 
     isInitialized = true;
 
@@ -41,12 +44,14 @@ int ivc::PhysicsWorld::init() {
 
 }
 
-int ivc::PhysicsWorld::createBox(PxVec3 halfextents, PxVec3 position, PxMaterial* material) {
+int ivc::PhysicsWorld::createBox(PxVec3 halfextents, PxVec3 position, PxVec3 rotation, PxMaterial* material) {
     if(m_scene == nullptr)
         return -1;
 
     PxShape* boxShape = m_physics->createShape(PxBoxGeometry(halfextents), *material);
-    PxTransform transform(position);
+    glm::quat glmQuat = glm::quat(glm::vec3(rotation.x,rotation.y,rotation.z));
+    PxQuat physxQuat = PxQuat(glmQuat.x,glmQuat.y,glmQuat.z,glmQuat.w);
+    PxTransform transform(position, physxQuat);
     PxRigidDynamic* body = m_physics->createRigidDynamic(transform);
     m_rigidDynamicsVector.push_back(body);
     body->attachShape(*boxShape);
