@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "BodyPart.h"
+namespace ivc {
+    class DNA {
+        private:
+            std::vector<BodyPart *> m_bodyPartVector;
+        public:
 
-class DNA {
-    private:
-        std::vector<BodyPart*> m_bodyPartVector;
-    public:
-
-};
-
+    };
+}
 
 #endif //INTERACTIVE_VIRTUAL_CREATURES_DNA_H
