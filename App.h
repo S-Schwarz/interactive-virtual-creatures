@@ -28,6 +28,7 @@ namespace ivc {
             Camera m_camera = Camera(glm::vec3(0.0f, 1.0f, 5.0f));
             bool m_shouldClose = false;
             bool isInitialized = false;
+            bool m_physicsPaused = true;
 
             Shader* m_shader = nullptr;
 

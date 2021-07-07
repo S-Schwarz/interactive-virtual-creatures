@@ -33,6 +33,9 @@ void ivc::App::processInput()
     if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
         m_camera.ProcessKeyboard(RIGHT, m_deltaTime);
 
+    if(glfwGetKey(m_window, GLFW_KEY_P) == GLFW_PRESS)
+        m_physicsPaused = !m_physicsPaused;
+
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos){
@@ -137,20 +140,22 @@ int ivc::App::update() {
         return -1;
     }
 
+    processInput();
+
     float currentTime = glfwGetTime();
     m_deltaTime = currentTime - m_lastTime;
     m_lastTime = currentTime;
 
-    m_accumulator += m_deltaTime;
-
-    processInput();
-
     // Physics simulation ---------
 
-    float physicsStep = m_physicsWorld->getStepSize();
-    while (m_accumulator >= physicsStep){
-        m_physicsWorld->simulate();
-        m_accumulator -= physicsStep;
+    if(!m_physicsPaused){
+        m_accumulator += m_deltaTime;
+
+        float physicsStep = m_physicsWorld->getStepSize();
+        while (m_accumulator >= physicsStep){
+            m_physicsWorld->simulate();
+            m_accumulator -= physicsStep;
+        }
     }
 
     // ----------------------------
