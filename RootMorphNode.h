@@ -9,6 +9,9 @@
 #include "NeuronCluster.h"
 #include "MorphNode.h"
 #include <vector>
+#include <random>
+#include "Constants.h"
+#include <iostream>
 
 using namespace physx;
 
@@ -28,6 +31,7 @@ namespace ivc {
             std::vector<MorphNode> m_childNodeVector;
 
         public:
+            RootMorphNode();
 
     };
 
