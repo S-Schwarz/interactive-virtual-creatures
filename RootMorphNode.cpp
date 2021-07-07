@@ -22,7 +22,7 @@ ivc::RootMorphNode::RootMorphNode() {
 
     for(int i = 0; i < MAX_CHILDREN; ++i){
         if(dis(gen) < CHILD_CHANCE)
-            m_childNodeVector.emplace_back(MorphNode());
+            m_childNodeVector.emplace_back(MorphNode(gen, 1));
     }
 
     std::cout << "NUMBER OF CHILDREN: " << m_childNodeVector.size() << std::endl;

@@ -8,6 +8,8 @@
 #include "PxPhysicsAPI.h"
 #include "NeuronCluster.h"
 #include <vector>
+#include <random>
+#include "Constants.h"
 
 using namespace physx;
 
@@ -21,9 +23,10 @@ namespace ivc {
             NeuronCluster m_localNeurons;
 
             //connection
-            physx::PxVec3 m_position;
-            physx::PxVec3 m_orientation;
-            physx::PxVec3 m_scale;
+            PxVec3 m_parentAnchor;
+            PxVec3 m_childAnchor;
+            PxVec3 m_orientation;
+            PxVec3 m_scale;
             //TODO: joint type and DOF
             //TODO: reflection
             bool m_terminalOnly;
@@ -32,6 +35,8 @@ namespace ivc {
             std::vector<MorphNode> m_childNodeVector;
 
         public:
+            MorphNode(std::mt19937, unsigned int);
+
     };
 
 }
