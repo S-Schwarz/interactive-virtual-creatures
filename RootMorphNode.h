@@ -32,6 +32,7 @@ namespace ivc {
 
         public:
             RootMorphNode();
+            unsigned int getNumberOfParts();
 
     };
 

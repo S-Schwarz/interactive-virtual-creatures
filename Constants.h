@@ -15,6 +15,6 @@ const int MAX_CHILDREN = 6;
 
 const float CHILD_CHANCE = 0.6;
 
-const float CHILD_CHANCE_DECREASE = 0.2;
+const float CHILD_CHANCE_DECREASE = 0.5;
 
 #endif //INTERACTIVE_VIRTUAL_CREATURES_CONSTANTS_H

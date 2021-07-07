@@ -36,6 +36,7 @@ namespace ivc {
 
         public:
             MorphNode(std::mt19937, unsigned int);
+            unsigned int getNumberOfParts();
 
     };
 

@@ -13,7 +13,7 @@ ivc::RootMorphNode::RootMorphNode() {
     float x = dimensions(gen);
     float y = dimensions(gen);
     float z = dimensions(gen);
-    std::cout << x << " | " << y << " | " << z << std::endl;
+
     m_dimension = PxVec3(x,y,z);
 
     m_recursionLimit = 0;   //TODO: randomize(?)
@@ -25,8 +25,17 @@ ivc::RootMorphNode::RootMorphNode() {
             m_childNodeVector.emplace_back(MorphNode(gen, 1));
     }
 
-    std::cout << "NUMBER OF CHILDREN: " << m_childNodeVector.size() << std::endl;
-
     //TODO: neurons and brain
+
+}
+
+unsigned int ivc::RootMorphNode::getNumberOfParts() {
+
+    unsigned int number = 1;
+    for(auto child : m_childNodeVector){
+        number += child.getNumberOfParts();
+    }
+
+    return number;
 
 }
