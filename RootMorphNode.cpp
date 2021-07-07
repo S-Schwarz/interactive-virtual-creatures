@@ -28,14 +28,3 @@ ivc::RootMorphNode::RootMorphNode() {
     //TODO: neurons and brain
 
 }
-
-unsigned int ivc::RootMorphNode::getNumberOfParts() {
-
-    unsigned int number = 1;
-    for(auto child : m_childNodeVector){
-        number += child.getNumberOfParts();
-    }
-
-    return number;
-
-}

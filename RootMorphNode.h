@@ -12,27 +12,18 @@
 #include <random>
 #include "Constants.h"
 #include <iostream>
+#include "BaseNode.h"
 
 using namespace physx;
 
 namespace ivc {
 
-    class RootMorphNode {
+    class RootMorphNode : public BaseNode{
         private:
-            //body
-            PxVec3 m_dimension;
-            unsigned int m_recursionLimit;
-            NeuronCluster m_localNeurons;
-
             //global brain
             NeuronCluster m_brain;
-
-            //children
-            std::vector<MorphNode> m_childNodeVector;
-
         public:
             RootMorphNode();
-            unsigned int getNumberOfParts();
 
     };
 

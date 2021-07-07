@@ -10,18 +10,14 @@
 #include <vector>
 #include <random>
 #include "Constants.h"
+#include "BaseNode.h"
 
 using namespace physx;
 
 namespace ivc {
 
-    class MorphNode {
+    class MorphNode : public BaseNode {
         private:
-            //body
-            PxVec3 m_dimension;
-            unsigned int m_recursionLimit;
-            NeuronCluster m_localNeurons;
-
             //connection
             PxVec3 m_parentAnchor;
             PxVec3 m_childAnchor;
@@ -30,13 +26,9 @@ namespace ivc {
             //TODO: joint type and DOF
             //TODO: reflection
             bool m_terminalOnly;
-
-            //children
-            std::vector<MorphNode> m_childNodeVector;
-
         public:
             MorphNode(std::mt19937, unsigned int);
-            unsigned int getNumberOfParts();
+
 
     };
 

@@ -68,14 +68,3 @@ ivc::MorphNode::MorphNode(std::mt19937 gen, unsigned int depth) {
     //TODO: neurons
 
 }
-
-unsigned int ivc::MorphNode::getNumberOfParts() {
-
-    unsigned int number = 1;
-    for(auto child : m_childNodeVector){
-        number += child.getNumberOfParts();
-    }
-
-    return number;
-
-}
