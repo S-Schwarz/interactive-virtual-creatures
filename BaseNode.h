@@ -21,9 +21,14 @@ namespace ivc{
             NeuronCluster m_localNeurons;
 
             //children
-            std::vector<BaseNode> m_childNodeVector;
+            std::vector<BaseNode*> m_childNodeVector;
         public:
             virtual unsigned int getNumberOfParts();
+            virtual std::vector<BaseNode*> getChildren();
+            virtual PxVec3 getDimensions();
+            virtual PxVec3 getOrientation();
+            virtual PxVec3 getParentAnchor();
+            virtual PxVec3 getChildAnchor();
     };
 
 }

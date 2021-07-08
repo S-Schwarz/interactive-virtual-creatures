@@ -62,9 +62,21 @@ ivc::MorphNode::MorphNode(std::mt19937 gen, unsigned int depth) {
 
     for(int i = 0; i < MAX_CHILDREN; ++i){
         if(dis(gen) < (CHILD_CHANCE - CHILD_CHANCE_DECREASE * depth))
-            m_childNodeVector.emplace_back(MorphNode(gen, depth+1 ));
+            m_childNodeVector.emplace_back(new MorphNode(gen, depth+1 ));
     }
 
     //TODO: neurons
 
+}
+
+PxVec3 ivc::MorphNode::getOrientation() {
+    return m_orientation;
+}
+
+PxVec3 ivc::MorphNode::getParentAnchor() {
+    return m_parentAnchor;
+}
+
+PxVec3 ivc::MorphNode::getChildAnchor() {
+    return m_childAnchor;
 }
