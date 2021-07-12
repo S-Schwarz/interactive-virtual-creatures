@@ -53,7 +53,7 @@ ivc::MorphNode::MorphNode(std::mt19937 gen, unsigned int depth) {
     float scaX = scales(gen);
     float scaY = scales(gen);
     float scaZ = scales(gen);
-    m_scale;
+    m_scale = PxVec3(scaX, scaY, scaZ);
 
     m_terminalOnly = false; //TODO: randomize(?)
 
