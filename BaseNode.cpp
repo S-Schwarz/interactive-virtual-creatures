@@ -34,3 +34,11 @@ PxVec3 ivc::BaseNode::getParentAnchor() {
 ivc::BaseNode* ivc::BaseNode::getParentNode() {
     return m_parentNode;
 }
+
+PxVec3 ivc::BaseNode::getScaledHalfExtents() {
+    return m_dimension/2;
+}
+
+PxVec3 ivc::BaseNode::getGlobalScale() {
+    return PxVec3(1,1,1);
+}

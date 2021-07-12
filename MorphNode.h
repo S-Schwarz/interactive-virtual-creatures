@@ -30,6 +30,8 @@ namespace ivc {
             MorphNode(BaseNode*, std::mt19937, unsigned int);
             PxVec3 getOrientation() override;
             PxVec3 getParentAnchor() override;
+            PxVec3 getScaledHalfExtents() override;
+            PxVec3 getGlobalScale() override;
 
 
     };

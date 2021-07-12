@@ -16,7 +16,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
     PxVec3 parentHalfExtents = rootNode.getDimensions()/2;
 
     for(auto child : rootNode.getChildren()){
-        PxVec3 childHalfExtents = child->getDimensions()/2;
+        PxVec3 childHalfExtents = child->getScaledHalfExtents();
         PxVec3 childRotation = child->getOrientation();
 
         PxVec3 parentVec = child->getParentAnchor();

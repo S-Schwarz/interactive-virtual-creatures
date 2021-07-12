@@ -77,3 +77,16 @@ PxVec3 ivc::MorphNode::getOrientation() {
 PxVec3 ivc::MorphNode::getParentAnchor() {
     return m_parentAnchor;
 }
+
+PxVec3 ivc::MorphNode::getGlobalScale() {
+    PxVec3 parentScale = m_parentNode->getGlobalScale();
+
+    return PxVec3(parentScale.x * m_scale.x, parentScale.y * m_scale.y, parentScale.z * m_scale.z);
+}
+
+PxVec3 ivc::MorphNode::getScaledHalfExtents() {
+    PxVec3 halfExtents = m_dimension/2;
+    PxVec3 globalScale = getGlobalScale();
+
+    return PxVec3(halfExtents.x * globalScale.x, halfExtents.y * globalScale.y, halfExtents.z * globalScale.z);
+}

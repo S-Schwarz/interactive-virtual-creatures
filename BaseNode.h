@@ -27,9 +27,11 @@ namespace ivc{
             virtual unsigned int getNumberOfParts();
             virtual std::vector<BaseNode*> getChildren();
             virtual PxVec3 getDimensions();
+            virtual PxVec3 getScaledHalfExtents();
             virtual PxVec3 getOrientation();
             virtual PxVec3 getParentAnchor();
             virtual BaseNode* getParentNode();
+            virtual PxVec3 getGlobalScale();
     };
 
 }
