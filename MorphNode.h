@@ -21,7 +21,6 @@ namespace ivc {
             //connection
             PxVec3 m_parentAnchor;
             PxVec3 m_orientation;
-            std::pair<float,float> m_swingLimits, m_twistLimits;
             //TODO: reflection
             bool m_terminalOnly;
         public:
@@ -30,10 +29,6 @@ namespace ivc {
             PxVec3 getAnchorPosition(std::mt19937 gen);
             PxVec3 getOrientation() override;
             PxVec3 getParentAnchor() override;
-            PxVec3 getScaledHalfExtents() override;
-            PxVec3 getGlobalScale() override;
-            std::pair<float,float> getSwingLimits() override;
-            std::pair<float,float> getTwistLimits() override;
 
 
     };

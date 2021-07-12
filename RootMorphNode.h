@@ -24,6 +24,8 @@ namespace ivc {
             NeuronCluster m_brain;
         public:
             RootMorphNode();
+            PxVec3 getParentAnchor() override;
+            void setRecursionAnchor(std::mt19937 gen);
 
     };
 

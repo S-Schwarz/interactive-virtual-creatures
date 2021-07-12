@@ -12,16 +12,27 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
 
     auto rootBody = createBox(rootNode.getDimensions()/2, m_position, PxVec3(0,0,0));
 
-    buildChildNodes(&rootNode, m_position, rootBody);
+    buildChildNodes(&rootNode, m_position, PxVec3(1,1,1), rootBody, 0);
 
 }
 
-void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxRigidDynamic* parentBody) {
+void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxVec3 parentScale, PxRigidDynamic* parentBody, unsigned int recursionDepth) {
 
     auto parentHalfExtents = parentNode->getDimensions()/2;
+    parentHalfExtents = PxVec3(parentHalfExtents.x * parentScale.x, parentHalfExtents.y * parentScale.y, parentHalfExtents.z * parentScale.z);
 
-    for(auto child : parentNode->getChildren()){
-        PxVec3 childHalfExtents = child->getScaledHalfExtents();
+    auto childNodes = parentNode->getChildren();
+    if(parentNode->getRecursionLimit() > recursionDepth)
+        childNodes.push_back(parentNode);
+
+    for(auto child : childNodes){
+
+        PxVec3 scale = child->getScale();
+        PxVec3 childScale = PxVec3(parentScale.x * scale.x, parentScale.y * scale.y, parentScale.z * scale.z);
+
+        PxVec3 childSize = child->getHalfExtents();
+        PxVec3 childHalfExtents = PxVec3(childSize.x * childScale.x, childSize.y * childScale.y, childSize.z * childScale.z);
+
         PxVec3 childRotation = child->getOrientation();
 
         PxVec3 parentVec = child->getParentAnchor();
@@ -58,7 +69,12 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         d6joint->setSwingLimit(cone);
         d6joint->setTwistLimit(limits);
 
-        buildChildNodes(child,childPos,childBody);
+        if(child == parentNode){
+            buildChildNodes(child,childPos,childScale,childBody,recursionDepth+1);
+        }else{
+            buildChildNodes(child,childPos,childScale,childBody,0);
+        }
+
 
     }
 

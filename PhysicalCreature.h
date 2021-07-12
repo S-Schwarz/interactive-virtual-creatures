@@ -25,7 +25,7 @@ namespace ivc{
             std::vector<PxRigidDynamic*> bodyParts;
 
             PxRigidDynamic* createBox(PxVec3 , PxVec3 , PxVec3);
-            void buildChildNodes(BaseNode*,PxVec3,PxRigidDynamic*);
+            void buildChildNodes(BaseNode*,PxVec3,PxVec3,PxRigidDynamic*,unsigned int);
         public:
             PhysicalCreature(RootMorphNode, PxVec3, PxPhysics*);
             std::vector<PxRigidDynamic*> getBodies();

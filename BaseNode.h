@@ -34,24 +34,24 @@ namespace ivc{
             unsigned int m_recursionLimit;
             NeuronCluster m_localNeurons;
             BaseNode* m_parentNode;
-
+            std::pair<float,float> m_swingLimits, m_twistLimits;
             //children
             std::vector<BaseNode*> m_childNodeVector;
             std::vector<NODE_SIDE> m_freeSides = {POS_X,NEG_X,POS_Y,NEG_Y,POS_Z,NEG_Z};
         public:
             virtual unsigned int getNumberOfParts();
             virtual std::vector<BaseNode*> getChildren();
+            virtual int getRecursionLimit();
             virtual PxVec3 getDimensions();
-            virtual PxVec3 getScaledHalfExtents();
+            virtual PxVec3 getHalfExtents();
             virtual PxVec3 getOrientation();
             virtual PxVec3 getParentAnchor();
             virtual BaseNode* getParentNode();
-            virtual PxVec3 getGlobalScale();
+            virtual PxVec3 getScale();
             virtual std::pair<float,float> getSwingLimits();
             virtual std::pair<float,float> getTwistLimits();
             virtual NODE_SIDE occupyRandomSide();
             virtual int setSideAsOccupied(NODE_SIDE);
-            virtual void setRecursionAnchor(std::mt19937 gen);
     };
 
 }

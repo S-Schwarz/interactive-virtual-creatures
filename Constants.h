@@ -14,7 +14,7 @@ const float MEAN_PART_SIZE = 1.0f;
 
 const float MEAN_SCALE = 1.0f;
 
-const int MAX_CHILDREN = 4;
+const int MAX_CHILDREN = 3;
 
 const float CHILD_CHANCE = 0.6;
 
