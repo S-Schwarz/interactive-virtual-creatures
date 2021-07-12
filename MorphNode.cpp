@@ -19,36 +19,48 @@ PxVec3 ivc::MorphNode::getAnchorPosition(std::mt19937 gen){
             posY = positions(gen);
             posZ = positions(gen);
             setSideAsOccupied(NEG_X);
+            if(m_recursionLimit > 0)
+                setSideAsOccupied(POS_X);
             break;
         case(POS_Y):
             posY = 1;
             posX = positions(gen);
             posZ = positions(gen);
             setSideAsOccupied(NEG_Y);
+            if(m_recursionLimit > 0)
+                setSideAsOccupied(POS_Y);
             break;
         case(POS_Z):
             posZ = 1;
             posX = positions(gen);
             posY = positions(gen);
             setSideAsOccupied(NEG_Z);
+            if(m_recursionLimit > 0)
+                setSideAsOccupied(POS_Z);
             break;
         case(NEG_X):
             posX = -1;
             posY = positions(gen);
             posZ = positions(gen);
             setSideAsOccupied(POS_X);
+            if(m_recursionLimit > 0)
+                setSideAsOccupied(NEG_X);
             break;
         case(NEG_Y):
             posY = -1;
             posX = positions(gen);
             posZ = positions(gen);
             setSideAsOccupied(POS_Y);
+            if(m_recursionLimit > 0)
+                setSideAsOccupied(NEG_Y);
             break;
         case(NEG_Z):
             posZ = -1;
             posX = positions(gen);
             posY = positions(gen);
             setSideAsOccupied(POS_Z);
+            if(m_recursionLimit > 0)
+                setSideAsOccupied(NEG_Z);
             break;
     }
 
