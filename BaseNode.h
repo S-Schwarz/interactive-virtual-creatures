@@ -19,6 +19,7 @@ namespace ivc{
             PxVec3 m_dimension;
             unsigned int m_recursionLimit;
             NeuronCluster m_localNeurons;
+            BaseNode* m_parentNode;
 
             //children
             std::vector<BaseNode*> m_childNodeVector;
@@ -28,6 +29,7 @@ namespace ivc{
             virtual PxVec3 getDimensions();
             virtual PxVec3 getOrientation();
             virtual PxVec3 getParentAnchor();
+            virtual BaseNode* getParentNode();
     };
 
 }
