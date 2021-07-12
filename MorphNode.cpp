@@ -88,7 +88,7 @@ ivc::MorphNode::MorphNode(BaseNode* parent, std::mt19937 gen, unsigned int depth
     std::uniform_real_distribution<> dis(0, 1);
 
     for(int i = 0; i < MAX_CHILDREN; ++i){
-        if(dis(gen) < (CHILD_CHANCE - CHILD_CHANCE_DECREASE * depth))
+        if(dis(gen) < (CHILD_CHANCE - CHILD_CHANCE_DECREASE * depth) && !m_freeSides.empty())
             m_childNodeVector.emplace_back(new MorphNode(this, gen, depth+1 ));
     }
 

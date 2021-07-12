@@ -13,7 +13,6 @@ ivc::RootMorphNode::RootMorphNode() {
     float x = dimensions(gen);
     float y = dimensions(gen);
     float z = dimensions(gen);
-
     m_dimension = PxVec3(x,y,z);
 
     std::normal_distribution<> scales(MEAN_SCALE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
@@ -27,7 +26,7 @@ ivc::RootMorphNode::RootMorphNode() {
     std::uniform_real_distribution<> dis(0, 1);
 
     for(int i = 0; i < MAX_CHILDREN; ++i){
-        if(dis(gen) < CHILD_CHANCE)
+        if(dis(gen) < CHILD_CHANCE && !m_freeSides.empty())
             m_childNodeVector.emplace_back(new MorphNode(this, gen, 1));
     }
 
