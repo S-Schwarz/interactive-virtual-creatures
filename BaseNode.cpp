@@ -30,7 +30,3 @@ PxVec3 ivc::BaseNode::getOrientation() {
 PxVec3 ivc::BaseNode::getParentAnchor() {
     return PxVec3(0,0,0);
 }
-
-PxVec3 ivc::BaseNode::getChildAnchor() {
-    return PxVec3(0,0,0);
-}

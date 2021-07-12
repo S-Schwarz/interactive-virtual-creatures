@@ -28,7 +28,6 @@ namespace ivc{
             virtual PxVec3 getDimensions();
             virtual PxVec3 getOrientation();
             virtual PxVec3 getParentAnchor();
-            virtual PxVec3 getChildAnchor();
     };
 
 }

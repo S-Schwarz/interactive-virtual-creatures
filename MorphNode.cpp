@@ -46,7 +46,6 @@ ivc::MorphNode::MorphNode(std::mt19937 gen, unsigned int depth) {
     m_recursionLimit = 0;   //TODO: randomize(?)
 
     m_parentAnchor = getAnchorPosition(gen);
-    m_childAnchor = getAnchorPosition(gen);
 
     m_orientation = PxVec3(0,0,0);  //TODO: randomize(?)
 
@@ -75,8 +74,4 @@ PxVec3 ivc::MorphNode::getOrientation() {
 
 PxVec3 ivc::MorphNode::getParentAnchor() {
     return m_parentAnchor;
-}
-
-PxVec3 ivc::MorphNode::getChildAnchor() {
-    return m_childAnchor;
 }

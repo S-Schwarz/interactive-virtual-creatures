@@ -20,7 +20,6 @@ namespace ivc {
         private:
             //connection
             PxVec3 m_parentAnchor;
-            PxVec3 m_childAnchor;
             PxVec3 m_orientation;
             PxVec3 m_scale;
             //TODO: joint type and DOF
@@ -31,7 +30,6 @@ namespace ivc {
             MorphNode(std::mt19937, unsigned int);
             PxVec3 getOrientation() override;
             PxVec3 getParentAnchor() override;
-            PxVec3 getChildAnchor() override;
 
 
     };
