@@ -28,6 +28,7 @@ namespace ivc{
         protected:
             //body
             PxVec3 m_dimension;
+            PxVec3 m_recursionAnchor;
             PxVec3 m_scale;
             unsigned int m_recursionLimit;
             NeuronCluster m_localNeurons;
@@ -49,6 +50,7 @@ namespace ivc{
             virtual std::pair<float,float> getTwistLimits();
             virtual NODE_SIDE occupyRandomSide();
             virtual void setSideAsOccupied(NODE_SIDE);
+            virtual void setRecursionAnchor(std::mt19937 gen);
     };
 
 }
