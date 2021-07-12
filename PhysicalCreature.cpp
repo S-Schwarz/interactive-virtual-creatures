@@ -45,7 +45,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
         d6joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eLIMITED);
         d6joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eLIMITED);
 
-        PxSpring spring(2, 10);     //TODO: changeable (?)
+        PxSpring spring(SPRING_STIFFNESS, SPRING_DAMPING);     //TODO: changeable (?)
         auto swing = child->getSwingLimits();
         auto twist = child->getTwistLimits();
         PxJointAngularLimitPair limits(twist.first, twist.second, spring);

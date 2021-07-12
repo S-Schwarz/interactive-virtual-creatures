@@ -59,7 +59,7 @@ ivc::MorphNode::MorphNode(BaseNode* parent, std::mt19937 gen, unsigned int depth
 
     m_terminalOnly = false; //TODO: randomize(?)
 
-    std::normal_distribution<> limits(M_PI/4, M_PI/4 * STANDARD_DEVIATION_FACTOR);
+    std::normal_distribution<> limits(MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT * STANDARD_DEVIATION_FACTOR);
     float twist = limits(gen);
     m_twistLimits = {-twist, twist};
     m_swingLimits = {limits(gen), limits(gen)};

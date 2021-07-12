@@ -12,9 +12,6 @@
 #include "Constants.h"
 #include "BaseNode.h"
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 using namespace physx;
 
 namespace ivc {
