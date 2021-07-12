@@ -23,7 +23,7 @@ namespace ivc{
             PxMaterial* m_material;
             std::vector<PxRigidDynamic*> bodyParts;
 
-            int createBox(PxVec3 , PxVec3 , PxVec3);
+            PxRigidDynamic* createBox(PxVec3 , PxVec3 , PxVec3);
         public:
             PhysicalCreature(RootMorphNode, PxVec3, PxPhysics*);
             std::vector<PxRigidDynamic*> getBodies();

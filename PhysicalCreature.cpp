@@ -10,7 +10,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
     m_physics = pxPhysics;
     m_material = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
 
-    createBox(rootNode.getDimensions()/2, m_position, PxVec3(0,0,0));
+    auto rootBody = createBox(rootNode.getDimensions()/2, m_position, PxVec3(0,0,0));
 
     PxVec3 parentPos = m_position;
     PxVec3 parentHalfExtents = rootNode.getDimensions()/2;
@@ -35,14 +35,18 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
 
         PxVec3 childPos = parentPos + parentVecModified + childVec;
 
-        createBox(childHalfExtents, childPos, childRotation);
+        auto childBody = createBox(childHalfExtents, childPos, childRotation);
+
+        PxTransform parentTrans(parentVecModified);
+        PxTransform childTrans(-1 * childVec);
+        PxSphericalJointCreate(*m_physics, rootBody, parentTrans, childBody, childTrans);
 
     }
 
 
 }
 
-int ivc::PhysicalCreature::createBox(PxVec3 halfextents, PxVec3 position, PxVec3 rotation) {
+PxRigidDynamic* ivc::PhysicalCreature::createBox(PxVec3 halfextents, PxVec3 position, PxVec3 rotation) {
 
     PxShape* boxShape = m_physics->createShape(PxBoxGeometry(halfextents), *m_material);
     glm::quat glmQuat = glm::quat(glm::vec3(rotation.x,rotation.y,rotation.z));
@@ -54,7 +58,7 @@ int ivc::PhysicalCreature::createBox(PxVec3 halfextents, PxVec3 position, PxVec3
     PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
     boxShape->release();
 
-    return 0;
+    return body;
 }
 
 std::vector<PxRigidDynamic *> ivc::PhysicalCreature::getBodies() {
