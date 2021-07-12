@@ -8,10 +8,21 @@
 #include <vector>
 #include "PxPhysicsAPI.h"
 #include "NeuronCluster.h"
+#include <algorithm>
+#include <random>
 
 using namespace physx;
 
 namespace ivc{
+
+    enum NODE_SIDE{
+        POS_X,
+        POS_Y,
+        POS_Z,
+        NEG_X,
+        NEG_Y,
+        NEG_Z
+    };
 
     class BaseNode {
         protected:
@@ -23,6 +34,7 @@ namespace ivc{
 
             //children
             std::vector<BaseNode*> m_childNodeVector;
+            std::vector<NODE_SIDE> m_freeSides = {POS_X,NEG_X,POS_Y,NEG_Y,POS_Z,NEG_Z};
         public:
             virtual unsigned int getNumberOfParts();
             virtual std::vector<BaseNode*> getChildren();
@@ -34,6 +46,8 @@ namespace ivc{
             virtual PxVec3 getGlobalScale();
             virtual std::pair<float,float> getSwingLimits();
             virtual std::pair<float,float> getTwistLimits();
+            virtual NODE_SIDE occupyRandomSide();
+            virtual void setSideAsOccupied(NODE_SIDE);
     };
 
 }

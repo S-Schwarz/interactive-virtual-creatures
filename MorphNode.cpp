@@ -4,31 +4,52 @@
 
 #include "MorphNode.h"
 
-PxVec3 getAnchorPosition(std::mt19937 gen){
+PxVec3 ivc::MorphNode::getAnchorPosition(std::mt19937 gen){
 
     std::uniform_real_distribution<> dis(0, 1);
     std::normal_distribution<> positions(0, 0.25);
 
+    auto parentSide = m_parentNode->occupyRandomSide();
+
     float posX, posY, posZ;
 
-    float randSign = 1;
-    if(dis(gen) < 0.5)
-        randSign = -1;
-
-    float rand = dis(gen);
-
-    if(rand < 0.33){
-        posX = randSign;
-        posY = positions(gen);
-        posZ = positions(gen);
-    }else if(rand < 0.66){
-        posY = randSign;
-        posX = positions(gen);
-        posZ = positions(gen);
-    }else{
-        posZ = randSign;
-        posX = positions(gen);
-        posY = positions(gen);
+    switch(parentSide){
+        case(POS_X):
+            posX = 1;
+            posY = positions(gen);
+            posZ = positions(gen);
+            setSideAsOccupied(NEG_X);
+            break;
+        case(POS_Y):
+            posY = 1;
+            posX = positions(gen);
+            posZ = positions(gen);
+            setSideAsOccupied(NEG_Y);
+            break;
+        case(POS_Z):
+            posZ = 1;
+            posX = positions(gen);
+            posY = positions(gen);
+            setSideAsOccupied(NEG_Z);
+            break;
+        case(NEG_X):
+            posX = -1;
+            posY = positions(gen);
+            posZ = positions(gen);
+            setSideAsOccupied(POS_X);
+            break;
+        case(NEG_Y):
+            posY = -1;
+            posX = positions(gen);
+            posZ = positions(gen);
+            setSideAsOccupied(POS_Y);
+            break;
+        case(NEG_Z):
+            posZ = -1;
+            posX = positions(gen);
+            posY = positions(gen);
+            setSideAsOccupied(POS_Z);
+            break;
     }
 
     return PxVec3(posX,posY,posZ);

@@ -28,6 +28,7 @@ namespace ivc {
         public:
             MorphNode() = default;
             MorphNode(BaseNode*, std::mt19937, unsigned int);
+            PxVec3 getAnchorPosition(std::mt19937 gen);
             PxVec3 getOrientation() override;
             PxVec3 getParentAnchor() override;
             PxVec3 getScaledHalfExtents() override;
