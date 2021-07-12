@@ -12,10 +12,15 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
 
     auto rootBody = createBox(rootNode.getDimensions()/2, m_position, PxVec3(0,0,0));
 
-    PxVec3 parentPos = m_position;
-    PxVec3 parentHalfExtents = rootNode.getDimensions()/2;
+    buildChildNodes(&rootNode, m_position, rootBody);
 
-    for(auto child : rootNode.getChildren()){
+}
+
+void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxRigidDynamic* parentBody) {
+
+    auto parentHalfExtents = parentNode->getDimensions()/2;
+
+    for(auto child : parentNode->getChildren()){
         PxVec3 childHalfExtents = child->getScaledHalfExtents();
         PxVec3 childRotation = child->getOrientation();
 
@@ -39,7 +44,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
 
         PxTransform parentTrans(parentVecModified);
         PxTransform childTrans(-1 * childVec);
-        auto d6joint = PxD6JointCreate(*m_physics, rootBody, parentTrans, childBody, childTrans);
+        auto d6joint = PxD6JointCreate(*m_physics, parentBody, parentTrans, childBody, childTrans);
 
         d6joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eLIMITED);
         d6joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eLIMITED);
@@ -53,8 +58,9 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
         d6joint->setSwingLimit(cone);
         d6joint->setTwistLimit(limits);
 
-    }
+        buildChildNodes(child,childPos,childBody);
 
+    }
 
 }
 

@@ -18,7 +18,7 @@ const int MAX_CHILDREN = 4;
 
 const float CHILD_CHANCE = 0.6;
 
-const float CHILD_CHANCE_DECREASE = 10;
+const float CHILD_CHANCE_DECREASE = 0.5;
 
 const float MEAN_JOINT_LIMIT = M_PI/8;
 
