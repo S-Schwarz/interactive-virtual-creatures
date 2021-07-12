@@ -53,6 +53,9 @@ std::pair<float, float> ivc::BaseNode::getTwistLimits() {
 
 ivc::NODE_SIDE ivc::BaseNode::occupyRandomSide() {
 
+    if(m_freeSides.empty())
+        return NONE;
+
     static auto rng = std::default_random_engine();
     std::shuffle(std::begin(m_freeSides), std::end(m_freeSides), rng);
 
@@ -62,10 +65,15 @@ ivc::NODE_SIDE ivc::BaseNode::occupyRandomSide() {
 
 }
 
-void ivc::BaseNode::setSideAsOccupied(NODE_SIDE side) {
+int ivc::BaseNode::setSideAsOccupied(NODE_SIDE side) {
+
     std::vector<NODE_SIDE>::iterator position = std::find(m_freeSides.begin(), m_freeSides.end(), side);
-    if (position != m_freeSides.end())
+    if (position != m_freeSides.end()){
         m_freeSides.erase(position);
+        return 0;
+    }
+
+    return -1;
 }
 
 void ivc::BaseNode::setRecursionAnchor(std::mt19937 gen) {
@@ -73,6 +81,9 @@ void ivc::BaseNode::setRecursionAnchor(std::mt19937 gen) {
     std::normal_distribution<> positions(0, 0.25);
 
     auto anchorSide = occupyRandomSide();
+
+    if(anchorSide == NONE)
+        return;
 
     float posX, posY, posZ;
 

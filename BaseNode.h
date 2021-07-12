@@ -21,7 +21,8 @@ namespace ivc{
         POS_Z,
         NEG_X,
         NEG_Y,
-        NEG_Z
+        NEG_Z,
+        NONE
     };
 
     class BaseNode {
@@ -49,7 +50,7 @@ namespace ivc{
             virtual std::pair<float,float> getSwingLimits();
             virtual std::pair<float,float> getTwistLimits();
             virtual NODE_SIDE occupyRandomSide();
-            virtual void setSideAsOccupied(NODE_SIDE);
+            virtual int setSideAsOccupied(NODE_SIDE);
             virtual void setRecursionAnchor(std::mt19937 gen);
     };
 
