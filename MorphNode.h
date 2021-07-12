@@ -12,6 +12,9 @@
 #include "Constants.h"
 #include "BaseNode.h"
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 using namespace physx;
 
 namespace ivc {
@@ -22,7 +25,7 @@ namespace ivc {
             PxVec3 m_parentAnchor;
             PxVec3 m_orientation;
             PxVec3 m_scale;
-            //TODO: joint type and DOF
+            std::pair<float,float> m_swingLimits, m_twistLimits;
             //TODO: reflection
             bool m_terminalOnly;
         public:
@@ -32,6 +35,8 @@ namespace ivc {
             PxVec3 getParentAnchor() override;
             PxVec3 getScaledHalfExtents() override;
             PxVec3 getGlobalScale() override;
+            std::pair<float,float> getSwingLimits() override;
+            std::pair<float,float> getTwistLimits() override;
 
 
     };

@@ -59,6 +59,11 @@ ivc::MorphNode::MorphNode(BaseNode* parent, std::mt19937 gen, unsigned int depth
 
     m_terminalOnly = false; //TODO: randomize(?)
 
+    std::normal_distribution<> limits(M_PI/4, M_PI/4 * STANDARD_DEVIATION_FACTOR);
+    float twist = limits(gen);
+    m_twistLimits = {-twist, twist};
+    m_swingLimits = {limits(gen), limits(gen)};
+
     std::uniform_real_distribution<> dis(0, 1);
 
     for(int i = 0; i < MAX_CHILDREN; ++i){
@@ -89,4 +94,12 @@ PxVec3 ivc::MorphNode::getScaledHalfExtents() {
     PxVec3 globalScale = getGlobalScale();
 
     return PxVec3(halfExtents.x * globalScale.x, halfExtents.y * globalScale.y, halfExtents.z * globalScale.z);
+}
+
+std::pair<float, float> ivc::MorphNode::getSwingLimits() {
+    return m_swingLimits;
+}
+
+std::pair<float, float> ivc::MorphNode::getTwistLimits() {
+    return m_twistLimits;
 }

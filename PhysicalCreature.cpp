@@ -39,7 +39,19 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
 
         PxTransform parentTrans(parentVecModified);
         PxTransform childTrans(-1 * childVec);
-        PxSphericalJointCreate(*m_physics, rootBody, parentTrans, childBody, childTrans);
+        auto d6joint = PxD6JointCreate(*m_physics, rootBody, parentTrans, childBody, childTrans);
+
+        d6joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eLIMITED);
+        d6joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eLIMITED);
+        d6joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eLIMITED);
+
+        PxSpring spring(2, 10);     //TODO: changeable (?)
+        auto swing = child->getSwingLimits();
+        auto twist = child->getTwistLimits();
+        PxJointAngularLimitPair limits(twist.first, twist.second, spring);
+        PxJointLimitCone cone(swing.first, swing.second, spring);
+        d6joint->setSwingLimit(cone);
+        d6joint->setTwistLimit(limits);
 
     }
 

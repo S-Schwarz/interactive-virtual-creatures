@@ -32,6 +32,8 @@ namespace ivc{
             virtual PxVec3 getParentAnchor();
             virtual BaseNode* getParentNode();
             virtual PxVec3 getGlobalScale();
+            virtual std::pair<float,float> getSwingLimits();
+            virtual std::pair<float,float> getTwistLimits();
     };
 
 }

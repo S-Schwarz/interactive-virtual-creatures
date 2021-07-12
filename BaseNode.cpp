@@ -42,3 +42,11 @@ PxVec3 ivc::BaseNode::getScaledHalfExtents() {
 PxVec3 ivc::BaseNode::getGlobalScale() {
     return PxVec3(1,1,1);
 }
+
+std::pair<float, float> ivc::BaseNode::getSwingLimits() {
+    return {0,0};
+}
+
+std::pair<float, float> ivc::BaseNode::getTwistLimits() {
+    return {0,0};
+}
