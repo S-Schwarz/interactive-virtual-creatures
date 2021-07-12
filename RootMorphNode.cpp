@@ -22,7 +22,7 @@ ivc::RootMorphNode::RootMorphNode() {
 
     for(int i = 0; i < MAX_CHILDREN; ++i){
         if(dis(gen) < CHILD_CHANCE)
-            m_childNodeVector.emplace_back(new MorphNode(gen, 1));
+            m_childNodeVector.emplace_back(new MorphNode(this, gen, 1));
     }
 
     //TODO: neurons and brain

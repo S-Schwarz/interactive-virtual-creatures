@@ -27,7 +27,7 @@ namespace ivc {
             bool m_terminalOnly;
         public:
             MorphNode() = default;
-            MorphNode(std::mt19937, unsigned int);
+            MorphNode(BaseNode*, std::mt19937, unsigned int);
             PxVec3 getOrientation() override;
             PxVec3 getParentAnchor() override;
 

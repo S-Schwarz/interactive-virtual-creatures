@@ -35,7 +35,9 @@ PxVec3 getAnchorPosition(std::mt19937 gen){
 
 }
 
-ivc::MorphNode::MorphNode(std::mt19937 gen, unsigned int depth) {
+ivc::MorphNode::MorphNode(BaseNode* parent, std::mt19937 gen, unsigned int depth) {
+
+    m_parentNode = parent;
 
     std::normal_distribution<> dimensions(MEAN_PART_SIZE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
     float x = dimensions(gen);
@@ -61,7 +63,7 @@ ivc::MorphNode::MorphNode(std::mt19937 gen, unsigned int depth) {
 
     for(int i = 0; i < MAX_CHILDREN; ++i){
         if(dis(gen) < (CHILD_CHANCE - CHILD_CHANCE_DECREASE * depth))
-            m_childNodeVector.emplace_back(new MorphNode(gen, depth+1 ));
+            m_childNodeVector.emplace_back(new MorphNode(this, gen, depth+1 ));
     }
 
     //TODO: neurons
