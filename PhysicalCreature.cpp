@@ -69,6 +69,9 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         d6joint->setSwingLimit(cone);
         d6joint->setTwistLimit(limits);
 
+        PxD6JointDrive drive(SPRING_STIFFNESS, SPRING_DAMPING, FLT_MAX);
+        d6joint->setDrive(PxD6Drive::eSLERP, drive);
+
         if(child == parentNode){
             buildChildNodes(child,childPos,childScale,childBody,recursionDepth+1);
         }else{
