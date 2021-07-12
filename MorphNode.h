@@ -21,7 +21,6 @@ namespace ivc {
             //connection
             PxVec3 m_parentAnchor;
             PxVec3 m_orientation;
-            PxVec3 m_scale;
             std::pair<float,float> m_swingLimits, m_twistLimits;
             //TODO: reflection
             bool m_terminalOnly;

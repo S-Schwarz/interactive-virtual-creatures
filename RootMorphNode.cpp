@@ -16,6 +16,12 @@ ivc::RootMorphNode::RootMorphNode() {
 
     m_dimension = PxVec3(x,y,z);
 
+    std::normal_distribution<> scales(MEAN_SCALE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
+    float scaX = scales(gen);
+    float scaY = scales(gen);
+    float scaZ = scales(gen);
+    m_scale = PxVec3(scaX, scaY, scaZ);
+
     m_recursionLimit = 0;   //TODO: randomize(?)
 
     std::uniform_real_distribution<> dis(0, 1);

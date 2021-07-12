@@ -28,6 +28,7 @@ namespace ivc{
         protected:
             //body
             PxVec3 m_dimension;
+            PxVec3 m_scale;
             unsigned int m_recursionLimit;
             NeuronCluster m_localNeurons;
             BaseNode* m_parentNode;
