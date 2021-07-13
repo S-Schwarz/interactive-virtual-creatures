@@ -13,6 +13,7 @@
 #include "Constants.h"
 #include <iostream>
 #include "BaseNode.h"
+#include "IDHandler.h"
 
 using namespace physx;
 
@@ -22,6 +23,7 @@ namespace ivc {
         private:
             //global brain
             NeuronCluster m_brain;
+            IDHandler* m_idHandler = nullptr;
         public:
             RootMorphNode();
             PxVec3 getParentAnchor() override;

@@ -20,6 +20,6 @@ add_executable(interactive_virtual_creatures
         RootMorphNode.h RootMorphNode.cpp MorphNode.h MorphNode.cpp NeuronCluster.h NeuronCluster.cpp Constants.h
         BaseNode.h BaseNode.cpp PhysicalCreature.h PhysicalCreature.cpp Neurons/Neuron.h Neurons/Neuron.cpp Neurons/Neuron_Sum.h Neurons/Neuron_Sum.cpp
         Neurons/Neuron_Min.h Neurons/Neuron_Min.cpp Neurons/Neuron_Max.h Neurons/Neuron_Max.cpp Gate.h Gate.cpp
-        JointSensor.h JointSensor.cpp JointEffector.h JointEffector.cpp)
+        JointSensor.h JointSensor.cpp JointEffector.h JointEffector.cpp IDHandler.h IDHandler.cpp)
 
 TARGET_LINK_LIBRARIES(interactive_virtual_creatures glfw3.a PhysXExtensions_static_64.a PhysX_static_64.a PhysXPvdSDK_static_64.a PhysXCommon_static_64.a PhysXFoundation_static_64.a  )
