@@ -8,9 +8,12 @@
 namespace ivc{
     class Gate {
     private:
+        unsigned long m_id;
         float m_newValue = 0.0f;
         float m_oldValue = 0.0f;
     public:
+        void setID(unsigned long);
+        unsigned long getID();
         void setValue(float);
         float getValue();
         void swap();

@@ -15,3 +15,11 @@ float ivc::Gate::getValue() {
 void ivc::Gate::swap() {
     m_oldValue = m_newValue;
 }
+
+void ivc::Gate::setID(unsigned long id) {
+    m_id = id;
+}
+
+unsigned long ivc::Gate::getID() {
+    return m_id;
+}
