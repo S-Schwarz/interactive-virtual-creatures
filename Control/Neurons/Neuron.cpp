@@ -27,3 +27,7 @@ int ivc::Neuron::bindGates(std::vector<Gate *>) {
 unsigned long ivc::Neuron::getOutputID() {
     return m_outputID;
 }
+
+void ivc::Neuron::setID(unsigned long id) {
+    m_outputID = id;
+}

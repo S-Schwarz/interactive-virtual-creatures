@@ -18,6 +18,7 @@ namespace ivc{
     public:
         void step();
         void swap();
+        void setIDs(unsigned long, unsigned long, unsigned long);
     };
 }
 

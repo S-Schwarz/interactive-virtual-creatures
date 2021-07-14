@@ -22,6 +22,7 @@ namespace ivc{
             virtual std::vector<unsigned long> getGateIDs();
             virtual int bindGates(std::vector<Gate*>);
             virtual unsigned long getOutputID();
+            virtual void setID(unsigned long);
     };
 
 }

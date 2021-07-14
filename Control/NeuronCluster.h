@@ -12,6 +12,7 @@
 #include "Neurons/NeuronFactory.h"
 #include "Joints/JointSensor.h"
 #include "Joints/JointEffector.h"
+#include "IDHandler.h"
 
 namespace ivc {
 
@@ -24,7 +25,7 @@ namespace ivc {
         std::vector<unsigned long> m_possibleInputGates;
 
     public:
-        NeuronCluster(std::mt19937,bool);
+        NeuronCluster(std::mt19937,bool,IDHandler*);
         std::vector<unsigned long> getOutputGates();
     };
 
