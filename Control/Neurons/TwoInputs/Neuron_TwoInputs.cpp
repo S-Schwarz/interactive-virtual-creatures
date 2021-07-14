@@ -24,7 +24,7 @@ void ivc::Neuron_TwoInputs::chooseRandomInputs(std::vector<unsigned long> possib
     if(possibleInputs.empty())
         return;
 
-    static auto rng = std::default_random_engine();
+    static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
     std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
     id_input_0 = possibleInputs[0];
