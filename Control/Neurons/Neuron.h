@@ -13,6 +13,7 @@ namespace ivc{
     class Neuron {
         protected:
             Gate output;
+            unsigned long m_outputID;
             float m_outputWeight = 1.0f;
         public:
             virtual void swap();
@@ -20,6 +21,7 @@ namespace ivc{
             virtual Gate* getOutputGate();
             virtual std::vector<unsigned long> getGateIDs();
             virtual int bindGates(std::vector<Gate*>);
+            virtual unsigned long getOutputID();
     };
 
 }

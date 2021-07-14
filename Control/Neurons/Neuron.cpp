@@ -23,3 +23,7 @@ std::vector<unsigned long> ivc::Neuron::getGateIDs() {
 int ivc::Neuron::bindGates(std::vector<Gate *>) {
     return -1;
 }
+
+unsigned long ivc::Neuron::getOutputID() {
+    return m_outputID;
+}
