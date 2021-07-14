@@ -16,4 +16,5 @@ int ivc::Neuron_TwoInputs::bindGates(std::vector<Gate *> gates) {
     input_0 = gates[0];
     input_1 = gates[1];
 
+    return 0;
 }
