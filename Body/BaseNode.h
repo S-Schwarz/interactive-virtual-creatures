@@ -32,8 +32,8 @@ namespace ivc{
             PxVec3 m_recursionAnchor;
             PxVec3 m_scale;
             unsigned int m_recursionLimit;
-            NeuronCluster m_localNeurons;
-            BaseNode* m_parentNode;
+            NeuronCluster* m_localNeurons = nullptr;
+            BaseNode* m_parentNode = nullptr;
             std::pair<float,float> m_swingLimits, m_twistLimits;
             //children
             std::vector<BaseNode*> m_childNodeVector;

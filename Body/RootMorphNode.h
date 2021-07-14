@@ -22,7 +22,7 @@ namespace ivc {
     class RootMorphNode : public BaseNode{
         private:
             //global brain
-            NeuronCluster m_brain;
+            NeuronCluster* m_brain = nullptr;
             IDHandler* m_idHandler = nullptr;
         public:
             RootMorphNode();

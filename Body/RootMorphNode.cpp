@@ -11,6 +11,9 @@ ivc::RootMorphNode::RootMorphNode() {
     std::random_device rd;
     std::mt19937 gen(rd());
 
+    m_localNeurons = new NeuronCluster(gen, false);
+    m_brain = new NeuronCluster(gen, true);
+
     std::normal_distribution<> dimensions(MEAN_PART_SIZE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
     float x = dimensions(gen);
     float y = dimensions(gen);
