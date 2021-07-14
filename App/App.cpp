@@ -116,7 +116,7 @@ int ivc::App::init(){
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, c_WIDTH, c_HEIGHT);
 
-    m_shader = new Shader("../shader.vert", "../shader.frag");
+    m_shader = new Shader("../Res/shader.vert", "../Res/shader.frag");
 
     ShapeHandler::initShapes();
 

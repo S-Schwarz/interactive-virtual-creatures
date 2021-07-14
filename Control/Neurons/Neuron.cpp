@@ -15,3 +15,11 @@ void ivc::Neuron::step() {
 ivc::Gate* ivc::Neuron::getOutputGate() {
     return &output;
 }
+
+std::vector<unsigned long> ivc::Neuron::getGateIDs() {
+    return {};
+}
+
+int ivc::Neuron::bindGates(std::vector<Gate *>) {
+    return -1;
+}
