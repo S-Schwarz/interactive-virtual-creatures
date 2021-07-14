@@ -16,4 +16,11 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937 gen,bool isBrain) {
         m_neuronVector.push_back(NeuronFactory::createRandomNeuron(gen));
     }
 
+    m_sensor = new JointSensor();
+    m_effector = new JointEffector();
+
+}
+
+std::vector<unsigned long> ivc::NeuronCluster::getOutputGates() {
+    return m_outputGates;
 }

@@ -10,14 +10,22 @@
 #include "Neurons/Neuron.h"
 #include "../Constants.h"
 #include "Neurons/NeuronFactory.h"
+#include "Joints/JointSensor.h"
+#include "Joints/JointEffector.h"
 
 namespace ivc {
 
     class NeuronCluster {
     private:
         std::vector<Neuron*> m_neuronVector;
+        JointSensor* m_sensor = nullptr;
+        JointEffector* m_effector = nullptr;
+        std::vector<unsigned long> m_outputGates;
+        std::vector<unsigned long> m_possibleInputGates;
+
     public:
         NeuronCluster(std::mt19937,bool);
+        std::vector<unsigned long> getOutputGates();
     };
 
 }
