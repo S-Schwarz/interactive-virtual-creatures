@@ -27,6 +27,7 @@ namespace ivc {
     public:
         NeuronCluster(std::mt19937,bool,IDHandler*);
         std::vector<unsigned long> getOutputGates();
+        void setPossibleInputs(std::vector<unsigned long>);
     };
 
 }

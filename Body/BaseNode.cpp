@@ -83,3 +83,44 @@ PxVec3 ivc::BaseNode::getScale() {
 ivc::IDHandler *ivc::BaseNode::getIDHandler() {
     return nullptr;
 }
+
+std::vector<unsigned long> ivc::BaseNode::getAllAdjacentOutputs() {
+    std::vector<unsigned long> inputVec;
+
+    std::vector<unsigned long> parentVec;
+    if(m_parentNode != nullptr)
+        parentVec = m_parentNode->getLocalNeurons()->getOutputGates();
+
+    std::vector<unsigned long> brainVec = getBrain()->getOutputGates();
+
+    std::vector<unsigned long> childVec;
+    for(auto child : m_childNodeVector){
+        auto vec = child->getLocalNeurons()->getOutputGates();
+        childVec.insert(childVec.end(), vec.begin(), vec.end());
+    }
+
+    inputVec.insert(inputVec.end(), parentVec.begin(), parentVec.end());
+    inputVec.insert(inputVec.end(), brainVec.begin(), brainVec.end());
+    inputVec.insert(inputVec.end(), childVec.begin(), childVec.end());
+
+    return inputVec;
+}
+
+ivc::NeuronCluster *ivc::BaseNode::getLocalNeurons() {
+    return m_localNeurons;
+}
+
+ivc::NeuronCluster *ivc::BaseNode::getBrain() {
+    return nullptr;
+}
+
+std::vector<unsigned long> ivc::BaseNode::getAllChildOutputs() {
+    std::vector<unsigned long> childVec;
+    for(auto child : m_childNodeVector){
+        auto vec = child->getLocalNeurons()->getOutputGates();
+        childVec.insert(childVec.end(), vec.begin(), vec.end());
+        auto vec2 = child->getAllChildOutputs();
+        childVec.insert(childVec.end(), vec2.begin(), vec2.end());
+    }
+    return childVec;
+}

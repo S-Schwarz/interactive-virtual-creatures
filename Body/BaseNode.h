@@ -55,6 +55,10 @@ namespace ivc{
             virtual NODE_SIDE occupyRandomSide();
             virtual int setSideAsOccupied(NODE_SIDE);
             virtual IDHandler* getIDHandler();
+            virtual NeuronCluster* getLocalNeurons();
+            virtual NeuronCluster* getBrain();
+            virtual std::vector<unsigned long> getAllAdjacentOutputs();
+            virtual std::vector<unsigned long> getAllChildOutputs();
     };
 
 }

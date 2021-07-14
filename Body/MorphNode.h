@@ -29,6 +29,7 @@ namespace ivc {
             PxVec3 getOrientation() override;
             PxVec3 getParentAnchor() override;
             IDHandler* getIDHandler() override;
+            NeuronCluster* getBrain() override;
 
 
     };

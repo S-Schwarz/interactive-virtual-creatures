@@ -112,5 +112,16 @@ void ivc::RootMorphNode::init() {
         }
     }
 
+    m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
+
+    std::vector<unsigned long> brainInputs = m_localNeurons->getOutputGates();
+    auto childOutputs = getAllChildOutputs();
+    brainInputs.insert(brainInputs.end(), childOutputs.begin(), childOutputs.end());
+    m_brain->setPossibleInputs(brainInputs);
+
     m_isInitialized = true;
+}
+
+ivc::NeuronCluster *ivc::RootMorphNode::getBrain() {
+    return m_brain;
 }
