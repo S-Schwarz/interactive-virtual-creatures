@@ -4,10 +4,6 @@
 
 #include "JointSensor.h"
 
-ivc::JointSensor::JointSensor(PxD6Joint *joint) {
-    input_joint = joint;
-}
-
 void ivc::JointSensor::step() {
     // TODO: get values from joint
 }

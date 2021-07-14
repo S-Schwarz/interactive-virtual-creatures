@@ -14,9 +14,7 @@ namespace ivc{
     class JointSensor {
     private:
         Gate output_0, output_1, output_2;
-        PxD6Joint* input_joint;
     public:
-        JointSensor(PxD6Joint*);
         void step();
         void swap();
     };
