@@ -18,3 +18,17 @@ int ivc::Neuron_TwoInputs::bindGates(std::vector<Gate *> gates) {
 
     return 0;
 }
+
+void ivc::Neuron_TwoInputs::chooseRandomInputs(std::vector<unsigned long> possibleInputs) {
+
+    if(possibleInputs.empty())
+        return;
+
+    static auto rng = std::default_random_engine();
+
+    std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
+    id_input_0 = possibleInputs[0];
+
+    std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
+    id_input_1 = possibleInputs[0];
+}

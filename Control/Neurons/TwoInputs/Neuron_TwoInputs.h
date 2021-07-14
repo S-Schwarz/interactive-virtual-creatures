@@ -16,6 +16,7 @@ namespace ivc{
         public:
             std::vector<unsigned long> getGateIDs() override;
             int bindGates(std::vector<Gate*>) override;
+            void chooseRandomInputs(std::vector<unsigned long>) override;
     };
 }
 

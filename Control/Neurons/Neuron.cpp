@@ -31,3 +31,6 @@ unsigned long ivc::Neuron::getOutputID() {
 void ivc::Neuron::setID(unsigned long id) {
     m_outputID = id;
 }
+
+void ivc::Neuron::chooseRandomInputs(std::vector<unsigned long>) {
+}

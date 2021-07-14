@@ -44,3 +44,9 @@ void ivc::NeuronCluster::setPossibleInputs(std::vector<unsigned long> vec) {
     allPossible.insert(allPossible.end(), vec.begin(), vec.end());
     m_possibleInputGates = allPossible;
 }
+
+void ivc::NeuronCluster::randomizeConnections() {
+    for(auto neuron : m_neuronVector){
+        neuron->chooseRandomInputs(m_possibleInputGates);
+    }
+}

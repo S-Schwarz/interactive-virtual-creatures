@@ -119,6 +119,9 @@ void ivc::RootMorphNode::init() {
     brainInputs.insert(brainInputs.end(), childOutputs.begin(), childOutputs.end());
     m_brain->setPossibleInputs(brainInputs);
 
+    m_localNeurons->randomizeConnections();
+    m_brain->randomizeConnections();
+
     m_isInitialized = true;
 }
 

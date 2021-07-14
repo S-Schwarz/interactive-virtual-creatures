@@ -7,6 +7,8 @@
 
 #include "../Gate.h"
 #include <vector>
+#include <algorithm>
+#include <random>
 
 namespace ivc{
 
@@ -23,6 +25,7 @@ namespace ivc{
             virtual int bindGates(std::vector<Gate*>);
             virtual unsigned long getOutputID();
             virtual void setID(unsigned long);
+            virtual void chooseRandomInputs(std::vector<unsigned long>);
     };
 
 }
