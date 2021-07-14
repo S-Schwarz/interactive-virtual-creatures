@@ -52,7 +52,7 @@ ivc::NODE_SIDE ivc::BaseNode::occupyRandomSide() {
     if(m_freeSides.empty())
         return NONE;
 
-    static auto rng = std::default_random_engine();
+    static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
     std::shuffle(std::begin(m_freeSides), std::end(m_freeSides), rng);
 
     auto side = m_freeSides.back();
