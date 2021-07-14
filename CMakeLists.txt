@@ -16,10 +16,10 @@ INCLUDE_DIRECTORIES(~/private/PhysX/physx/include ~/private/PhysX/pxshared/inclu
 LINK_DIRECTORIES(~/private/PhysX/physx/bin/linux.clang/debug ~/private/glfw-build/src)
 
 add_executable(interactive_virtual_creatures
-        main.cpp glad.c App.h App.cpp PhysicsWorld.h PhysicsWorld.cpp ShapeHandler.h ShapeHandler.cpp
-        RootMorphNode.h RootMorphNode.cpp MorphNode.h MorphNode.cpp NeuronCluster.h NeuronCluster.cpp Constants.h
-        BaseNode.h BaseNode.cpp PhysicalCreature.h PhysicalCreature.cpp Neurons/Neuron.h Neurons/Neuron.cpp Neurons/TwoInputs/Neuron_Sum.h Neurons/TwoInputs/Neuron_Sum.cpp
-        Neurons/TwoInputs/Neuron_Min.h Neurons/TwoInputs/Neuron_Min.cpp Neurons/TwoInputs/Neuron_Max.h Neurons/TwoInputs/Neuron_Max.cpp Gate.h Gate.cpp
-        JointSensor.h JointSensor.cpp JointEffector.h JointEffector.cpp IDHandler.h IDHandler.cpp Neurons/TwoInputs/Neuron_TwoInputs.h Neurons/TwoInputs/Neuron_TwoInputs.cpp)
+        main.cpp Res/glad.c App/App.h App/App.cpp World/PhysicsWorld.h World/PhysicsWorld.cpp Res/ShapeHandler.h Res/ShapeHandler.cpp
+        Body/RootMorphNode.h Body/RootMorphNode.cpp Body/MorphNode.h Body/MorphNode.cpp Control/NeuronCluster.h Control/NeuronCluster.cpp Constants.h
+        Body/BaseNode.h Body/BaseNode.cpp Body/PhysicalCreature.h Body/PhysicalCreature.cpp Control/Neurons/Neuron.h Control/Neurons/Neuron.cpp Control/Neurons/TwoInputs/Neuron_Sum.h Control/Neurons/TwoInputs/Neuron_Sum.cpp
+        Control/Neurons/TwoInputs/Neuron_Min.h Control/Neurons/TwoInputs/Neuron_Min.cpp Control/Neurons/TwoInputs/Neuron_Max.h Control/Neurons/TwoInputs/Neuron_Max.cpp Control/Gate.h Control/Gate.cpp
+        Control/Joints/JointSensor.h Control/Joints/JointSensor.cpp Control/Joints/JointEffector.h Control/Joints/JointEffector.cpp Control/IDHandler.h Control/IDHandler.cpp Control/Neurons/TwoInputs/Neuron_TwoInputs.h Control/Neurons/TwoInputs/Neuron_TwoInputs.cpp)
 
 TARGET_LINK_LIBRARIES(interactive_virtual_creatures glfw3.a PhysXExtensions_static_64.a PhysX_static_64.a PhysXPvdSDK_static_64.a PhysXCommon_static_64.a PhysXFoundation_static_64.a  )

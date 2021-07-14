@@ -8,6 +8,8 @@
 #include "PxPhysicsAPI.h"
 
 #include <vector>
+#include "../Body/RootMorphNode.h"
+#include "../Body/PhysicalCreature.h"
 
 using namespace physx;
 

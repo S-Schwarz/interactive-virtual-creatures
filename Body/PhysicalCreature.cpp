@@ -68,7 +68,6 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         PxJointLimitCone cone(swing.first, swing.second, spring);
         d6joint->setSwingLimit(cone);
         d6joint->setTwistLimit(limits);
-
         PxD6JointDrive drive(SPRING_STIFFNESS, SPRING_DAMPING, FLT_MAX);
         d6joint->setDrive(PxD6Drive::eSLERP, drive);
 

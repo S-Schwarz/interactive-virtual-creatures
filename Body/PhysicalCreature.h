@@ -11,7 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "Constants.h"
+#include "../Constants.h"
 
 using namespace physx;
 

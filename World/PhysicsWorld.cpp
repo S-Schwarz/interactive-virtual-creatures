@@ -38,6 +38,14 @@ int ivc::PhysicsWorld::init() {
     createBox(PxVec3(0.5,0.5,0.5), PxVec3(0,3,0), PxVec3(0,45,0), mMaterial);
     createBox(PxVec3(0.5,0.5,0.5), PxVec3(-2,3,0), PxVec3(0,0,45), mMaterial);
 
+    auto rootNode = RootMorphNode();
+    auto creature = PhysicalCreature(rootNode, PxVec3(0,3,-5), m_physics);
+
+    for(auto part : creature.getBodies()){
+        m_scene->addActor(*part);
+        m_rigidDynamicsVector.push_back(part);
+    }
+
     isInitialized = true;
 
     return 0;

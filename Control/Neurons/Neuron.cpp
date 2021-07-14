@@ -12,6 +12,6 @@ void ivc::Neuron::step() {
 
 }
 
-ivc::Gate* ivc::Neuron::getGate() {
+ivc::Gate* ivc::Neuron::getOutputGate() {
     return &output;
 }

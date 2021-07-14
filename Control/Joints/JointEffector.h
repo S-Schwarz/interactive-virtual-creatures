@@ -5,7 +5,7 @@
 #ifndef INTERACTIVE_VIRTUAL_CREATURES_JOINTEFFECTOR_H
 #define INTERACTIVE_VIRTUAL_CREATURES_JOINTEFFECTOR_H
 
-#include "Gate.h"
+#include "../Gate.h"
 #include "PxPhysicsAPI.h"
 
 using namespace physx;

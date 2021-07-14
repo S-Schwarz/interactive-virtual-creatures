@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "PxPhysicsAPI.h"
-#include "NeuronCluster.h"
+#include "../Control/NeuronCluster.h"
 #include <algorithm>
 #include <random>
 

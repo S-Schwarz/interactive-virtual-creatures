@@ -6,10 +6,10 @@
 #define INTERACTIVE_VIRTUAL_CREATURES_MORPHNODE_H
 
 #include "PxPhysicsAPI.h"
-#include "NeuronCluster.h"
+#include "../Control/NeuronCluster.h"
 #include <vector>
 #include <random>
-#include "Constants.h"
+#include "../Constants.h"
 #include "BaseNode.h"
 
 using namespace physx;

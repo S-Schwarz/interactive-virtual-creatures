@@ -178,6 +178,8 @@ int ivc::App::update() {
 
     //-------------------------
 
+    drawShape(BOX, glm::vec3(0,3,-5),glm::quat(),glm::vec3(0.2,0.2,0.2), glm::vec4(0.8f, 0.2f, 0.3f, 1.0f), false);
+
     // PHYSX OBJECTS ----------
     for(auto body : m_physicsWorld->getRigidDynamics()){
         auto transform = body->getGlobalPose();
