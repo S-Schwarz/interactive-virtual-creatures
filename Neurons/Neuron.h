@@ -6,6 +6,7 @@
 #define INTERACTIVE_VIRTUAL_CREATURES_NEURON_H
 
 #include "../Gate.h"
+#include <vector>
 
 namespace ivc{
 
@@ -16,7 +17,9 @@ namespace ivc{
         public:
             virtual void swap();
             virtual void step();
-            virtual Gate* getGate();
+            virtual Gate* getOutputGate();
+            virtual std::vector<unsigned long> getGateIDs();
+            virtual int bindGates(std::vector<Gate*>);
     };
 
 }

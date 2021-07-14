@@ -5,19 +5,17 @@
 #ifndef INTERACTIVE_VIRTUAL_CREATURES_NEURON_SUM_H
 #define INTERACTIVE_VIRTUAL_CREATURES_NEURON_SUM_H
 
-#include "Neuron.h"
-#include "../Gate.h"
+#include "../Neuron.h"
+#include "../../Gate.h"
+#include "Neuron_TwoInputs.h"
 
 namespace ivc{
-    class Neuron_Sum : public Neuron {
+    class Neuron_Sum : public Neuron_TwoInputs {
         private:
-            Gate *input_0, *input_1;
-            float weight_0 = 1.0f;
-            float weight_1 = 1.0f;
-
             void sum();
         public:
             void step() override;
+
     };
 }
 
