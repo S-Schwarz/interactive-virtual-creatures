@@ -5,5 +5,16 @@
 #include "JointEffector.h"
 
 void ivc::JointEffector::step() {
-    // TODO: appy force at joint
+    // TODO: apply force at joint
+}
+
+unsigned long ivc::JointEffector::getGateId() {
+    return id_input;
+}
+
+int ivc::JointEffector::bindGate(ivc::Gate *gate) {
+    if(gate == nullptr)
+        return -1;
+    input = gate;
+    return 0;
 }

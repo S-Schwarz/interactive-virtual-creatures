@@ -14,9 +14,12 @@ namespace ivc{
     class JointEffector {
     private:
         Gate *input;
+        unsigned long id_input;
         PxD6Joint* output_joint;
     public:
         void step();
+        unsigned long getGateId();
+        int bindGate(Gate *);
     };
 }
 
