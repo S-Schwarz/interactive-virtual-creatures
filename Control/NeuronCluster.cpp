@@ -14,12 +14,20 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937 gen, bool isBrain, IDHandler* idH
 
     for(int i = 0; i < numberNeurons; ++i){
         auto newNeuron = NeuronFactory::createRandomNeuron(gen);
-        newNeuron->setID(idHandler->getNewID());
+        auto newID = idHandler->getNewID();
+        newNeuron->setID(newID);
+        m_outputGates.push_back(newID);
         m_neuronVector.push_back(newNeuron);
     }
 
     m_sensor = new JointSensor();
-    m_sensor->setIDs(idHandler->getNewID(),idHandler->getNewID(),idHandler->getNewID());
+    auto sensorID_0 = idHandler->getNewID();
+    m_outputGates.push_back(sensorID_0);
+    auto sensorID_1 = idHandler->getNewID();
+    m_outputGates.push_back(sensorID_1);
+    auto sensorID_2 = idHandler->getNewID();
+    m_outputGates.push_back(sensorID_2);
+    m_sensor->setIDs(sensorID_0,sensorID_1,sensorID_2);
 
     m_effector = new JointEffector();
 
