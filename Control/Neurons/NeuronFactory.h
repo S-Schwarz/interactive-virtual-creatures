@@ -23,7 +23,7 @@ namespace ivc{
         private:
 
         public:
-            static Neuron* createRandomNeuron();
+            static Neuron* createRandomNeuron(std::mt19937);
     };
 }
 

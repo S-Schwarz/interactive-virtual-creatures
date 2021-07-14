@@ -4,10 +4,7 @@
 
 #include "NeuronFactory.h"
 
-ivc::Neuron *ivc::NeuronFactory::createRandomNeuron() {
-
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
+ivc::Neuron *ivc::NeuronFactory::createRandomNeuron(std::mt19937 gen) {
 
     std::uniform_int_distribution<> dis(0, COUNT-1);
 
