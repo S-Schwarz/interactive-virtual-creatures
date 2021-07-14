@@ -11,8 +11,8 @@ ivc::RootMorphNode::RootMorphNode() {
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    m_localNeurons = new NeuronCluster(gen, false);
-    m_brain = new NeuronCluster(gen, true);
+    m_localNeurons = new NeuronCluster(gen, false, m_idHandler);
+    m_brain = new NeuronCluster(gen, true, m_idHandler);
 
     std::normal_distribution<> dimensions(MEAN_PART_SIZE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
     float x = dimensions(gen);
@@ -108,4 +108,8 @@ void ivc::RootMorphNode::setRecursionAnchor(std::mt19937 gen) {
     }
 
     m_recursionAnchor = PxVec3(posX, posY, posZ);
+}
+
+ivc::IDHandler *ivc::RootMorphNode::getIDHandler() {
+    return m_idHandler;
 }

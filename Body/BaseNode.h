@@ -52,6 +52,7 @@ namespace ivc{
             virtual std::pair<float,float> getTwistLimits();
             virtual NODE_SIDE occupyRandomSide();
             virtual int setSideAsOccupied(NODE_SIDE);
+            virtual IDHandler* getIDHandler();
     };
 
 }

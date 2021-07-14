@@ -71,7 +71,7 @@ PxVec3 ivc::MorphNode::getAnchorPosition(std::mt19937 gen){
 ivc::MorphNode::MorphNode(BaseNode* parent, std::mt19937 gen, unsigned int depth) {
 
     m_parentNode = parent;
-    m_localNeurons = new NeuronCluster(gen, false);
+    m_localNeurons = new NeuronCluster(gen, false, getIDHandler());
 
     std::normal_distribution<> dimensions(MEAN_PART_SIZE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
     float x = dimensions(gen);
@@ -116,4 +116,8 @@ PxVec3 ivc::MorphNode::getOrientation() {
 
 PxVec3 ivc::MorphNode::getParentAnchor() {
     return m_parentAnchor;
+}
+
+ivc::IDHandler *ivc::MorphNode::getIDHandler() {
+    return m_parentNode->getIDHandler();
 }

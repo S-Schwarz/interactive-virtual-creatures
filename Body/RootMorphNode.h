@@ -28,6 +28,7 @@ namespace ivc {
             RootMorphNode();
             PxVec3 getParentAnchor() override;
             void setRecursionAnchor(std::mt19937 gen);
+            IDHandler* getIDHandler() override;
 
     };
 
