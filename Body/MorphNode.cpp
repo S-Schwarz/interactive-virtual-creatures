@@ -68,7 +68,19 @@ PxVec3 ivc::MorphNode::getAnchorPosition(std::mt19937 gen){
 
 }
 
-ivc::MorphNode::MorphNode(BaseNode* parent, std::mt19937 gen, unsigned int depth) {
+PxVec3 ivc::MorphNode::getOrientation() {
+    return m_orientation;
+}
+
+PxVec3 ivc::MorphNode::getParentAnchor() {
+    return m_parentAnchor;
+}
+
+ivc::IDHandler *ivc::MorphNode::getIDHandler() {
+    return m_parentNode->getIDHandler();
+}
+
+void ivc::MorphNode::init(BaseNode* parent, std::mt19937 gen, unsigned int depth) {
 
     m_parentNode = parent;
     m_localNeurons = new NeuronCluster(gen, false, getIDHandler());
@@ -102,22 +114,12 @@ ivc::MorphNode::MorphNode(BaseNode* parent, std::mt19937 gen, unsigned int depth
     std::uniform_real_distribution<> dis(0, 1);
 
     for(int i = 0; i < MAX_CHILDREN; ++i){
-        if(dis(gen) < (CHILD_CHANCE - CHILD_CHANCE_DECREASE * depth) && !m_freeSides.empty())
-            m_childNodeVector.emplace_back(new MorphNode(this, gen, depth+1 ));
+        if(dis(gen) < (CHILD_CHANCE - CHILD_CHANCE_DECREASE * depth) && !m_freeSides.empty()) {
+            MorphNode *newChild = new MorphNode();
+            newChild->init(this, gen, depth + 1);
+            m_childNodeVector.emplace_back(newChild);
+        }
     }
 
-    //TODO: neurons
-
-}
-
-PxVec3 ivc::MorphNode::getOrientation() {
-    return m_orientation;
-}
-
-PxVec3 ivc::MorphNode::getParentAnchor() {
-    return m_parentAnchor;
-}
-
-ivc::IDHandler *ivc::MorphNode::getIDHandler() {
-    return m_parentNode->getIDHandler();
+    m_isInitialized = true;
 }

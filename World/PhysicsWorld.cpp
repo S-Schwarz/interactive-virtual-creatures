@@ -39,6 +39,7 @@ int ivc::PhysicsWorld::init() {
     createBox(PxVec3(0.5,0.5,0.5), PxVec3(-2,3,0), PxVec3(0,0,45), mMaterial);
 
     auto rootNode = RootMorphNode();
+    rootNode.init();
     auto creature = PhysicalCreature(rootNode, PxVec3(0,3,-5), m_physics);
 
     for(auto part : creature.getBodies()){

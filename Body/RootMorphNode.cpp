@@ -4,50 +4,6 @@
 
 #include "RootMorphNode.h"
 
-ivc::RootMorphNode::RootMorphNode() {
-
-    m_idHandler = new IDHandler();
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
-    m_localNeurons = new NeuronCluster(gen, false, m_idHandler);
-    m_brain = new NeuronCluster(gen, true, m_idHandler);
-
-    std::normal_distribution<> dimensions(MEAN_PART_SIZE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
-    float x = dimensions(gen);
-    float y = dimensions(gen);
-    float z = dimensions(gen);
-    m_dimension = PxVec3(x,y,z);
-
-    std::normal_distribution<> scales(MEAN_SCALE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
-    float scaX = scales(gen);
-    float scaY = scales(gen);
-    float scaZ = scales(gen);
-    m_scale = PxVec3(scaX, scaY, scaZ);
-
-    m_recursionLimit = 0;   //TODO: randomize(?)
-
-    if(m_recursionLimit > 0){
-        setRecursionAnchor(gen);
-
-        std::normal_distribution<> limits(MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT * STANDARD_DEVIATION_FACTOR);
-        float twist = limits(gen);
-        m_twistLimits = {-twist, twist};
-        m_swingLimits = {limits(gen), limits(gen)};
-    }
-
-    std::uniform_real_distribution<> dis(0, 1);
-
-    for(int i = 0; i < MAX_CHILDREN; ++i){
-        if(dis(gen) < CHILD_CHANCE && !m_freeSides.empty())
-            m_childNodeVector.emplace_back(new MorphNode(this, gen, 1));
-    }
-
-    //TODO: neurons and brain
-
-}
-
 PxVec3 ivc::RootMorphNode::getParentAnchor() {
     return m_recursionAnchor;
 }
@@ -112,4 +68,49 @@ void ivc::RootMorphNode::setRecursionAnchor(std::mt19937 gen) {
 
 ivc::IDHandler *ivc::RootMorphNode::getIDHandler() {
     return m_idHandler;
+}
+
+void ivc::RootMorphNode::init() {
+    m_idHandler = new IDHandler();
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    m_localNeurons = new NeuronCluster(gen, false, m_idHandler);
+    m_brain = new NeuronCluster(gen, true, m_idHandler);
+
+    std::normal_distribution<> dimensions(MEAN_PART_SIZE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
+    float x = dimensions(gen);
+    float y = dimensions(gen);
+    float z = dimensions(gen);
+    m_dimension = PxVec3(x,y,z);
+
+    std::normal_distribution<> scales(MEAN_SCALE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
+    float scaX = scales(gen);
+    float scaY = scales(gen);
+    float scaZ = scales(gen);
+    m_scale = PxVec3(scaX, scaY, scaZ);
+
+    m_recursionLimit = 0;   //TODO: randomize(?)
+
+    if(m_recursionLimit > 0){
+        setRecursionAnchor(gen);
+
+        std::normal_distribution<> limits(MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT * STANDARD_DEVIATION_FACTOR);
+        float twist = limits(gen);
+        m_twistLimits = {-twist, twist};
+        m_swingLimits = {limits(gen), limits(gen)};
+    }
+
+    std::uniform_real_distribution<> dis(0, 1);
+
+    for(int i = 0; i < MAX_CHILDREN; ++i){
+        if(dis(gen) < CHILD_CHANCE && !m_freeSides.empty()){
+            MorphNode *newChild = new MorphNode();
+            newChild->init(this, gen, 1);
+            m_childNodeVector.emplace_back(newChild);
+        }
+    }
+
+    m_isInitialized = true;
 }

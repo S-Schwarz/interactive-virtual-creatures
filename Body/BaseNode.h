@@ -38,6 +38,8 @@ namespace ivc{
             //children
             std::vector<BaseNode*> m_childNodeVector;
             std::vector<NODE_SIDE> m_freeSides = {POS_X,NEG_X,POS_Y,NEG_Y,POS_Z,NEG_Z};
+
+            bool m_isInitialized = false;
         public:
             virtual unsigned int getNumberOfParts();
             virtual std::vector<BaseNode*> getChildren();

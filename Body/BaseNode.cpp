@@ -79,3 +79,7 @@ int ivc::BaseNode::getRecursionLimit() {
 PxVec3 ivc::BaseNode::getScale() {
     return m_scale;
 }
+
+ivc::IDHandler *ivc::BaseNode::getIDHandler() {
+    return nullptr;
+}
