@@ -5,9 +5,6 @@
 #include "JointEffector.h"
 
 void ivc::JointEffector::step() {
-    printf("X: %f\n", input_0->getValue());
-    printf("Y: %f\n", input_1->getValue());
-    printf("Z: %f\n", input_2->getValue());
     m_joint->setDriveVelocity(PxVec3(0,0,0),PxVec3(input_0->getValue() * weight_0,input_1->getValue() * weight_1,input_2->getValue() * weight_2));
 }
 
