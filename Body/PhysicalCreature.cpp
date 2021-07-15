@@ -151,8 +151,22 @@ std::vector<PxRigidDynamic *> ivc::PhysicalCreature::getBodies() {
 
 void ivc::PhysicalCreature::performBrainStep() {
 
+    //calculate new values
+    for(auto sensor : m_sensorVector){
+        sensor->step();
+    }
+
     for(auto neuron : m_neuronVector){
         neuron->step();
+    }
+
+    for(auto effector : m_effectorVector){
+        effector->step();
+    }
+
+    //swap old and new values
+    for(auto sensor : m_sensorVector){
+        sensor->swap();
     }
 
     for(auto neuron : m_neuronVector){
