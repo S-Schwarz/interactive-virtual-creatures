@@ -23,13 +23,10 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937 gen, bool isBrain,bool isRoot, ID
     if(!isBrain && !isRoot){
         m_sensor = new JointSensor();
         auto sensorID_0 = idHandler->getNewID();
-        printf("SENSOR ID: %i\n", sensorID_0);
         m_outputGates.push_back(sensorID_0);
         auto sensorID_1 = idHandler->getNewID();
-        printf("SENSOR ID: %i\n", sensorID_1);
         m_outputGates.push_back(sensorID_1);
         auto sensorID_2 = idHandler->getNewID();
-        printf("SENSOR ID: %i\n", sensorID_2);
         m_outputGates.push_back(sensorID_2);
         m_sensor->setIDs(sensorID_0,sensorID_1,sensorID_2);
 
@@ -60,4 +57,8 @@ std::vector<ivc::Neuron *> ivc::NeuronCluster::getCopyOfNeurons() {
         copyVec.push_back(neuron->copy());
     }
     return copyVec;
+}
+
+std::pair<ivc::JointSensor *, ivc::JointEffector *> ivc::NeuronCluster::getCopiesOfJointNeurons() {
+    return {new JointSensor(*m_sensor), new JointEffector(*m_effector)};
 }

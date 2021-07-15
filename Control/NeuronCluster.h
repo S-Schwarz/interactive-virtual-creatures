@@ -30,6 +30,7 @@ namespace ivc {
         void setPossibleInputs(std::vector<unsigned long>);
         void randomizeConnections();
         std::vector<Neuron*> getCopyOfNeurons();
+        std::pair<JointSensor*,JointEffector*> getCopiesOfJointNeurons();
     };
 
 }

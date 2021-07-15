@@ -12,7 +12,44 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
 
     auto rootBody = createBox(rootNode.getDimensions()/2, m_position, PxVec3(0,0,0));
 
+    //add root and brain neurons
+    auto rootVec = rootNode.getLocalNeurons()->getCopyOfNeurons();
+    auto brainVec = rootNode.getBrain()->getCopyOfNeurons();
+    m_neuronVector.insert(m_neuronVector.end(), rootVec.begin(), rootVec.end());
+    m_neuronVector.insert(m_neuronVector.end(), brainVec.begin(), brainVec.end());
+
     buildChildNodes(&rootNode, m_position, PxVec3(1,1,1), rootBody, 0);
+
+    //create output gates for neurons
+    for(auto neuron : m_neuronVector){
+        m_gateMap[neuron->getOutputID()] = new Gate();
+    }
+    //and for sensors
+    for(auto sensor : m_sensorVector){
+        auto outVec = sensor->getOutputIDs();
+        for(auto id : outVec){
+            m_gateMap[id] = new Gate();
+        }
+    }
+
+    //connect inputs for neurons
+    for(auto neuron : m_neuronVector){
+        auto inputs = neuron->getGateIDs();
+        std::vector<Gate*> gateVec;
+        for(auto id : inputs){
+            gateVec.push_back(m_gateMap[id]);
+        }
+        neuron->bindGates(gateVec);
+    }
+    //and effectors
+    for(auto effector : m_effectorVector){
+        auto inVec = effector->getGateIDs();
+        std::vector<Gate*> gateVec;
+        for(auto id : inVec){
+            gateVec.push_back(m_gateMap[id]);
+        }
+        effector->bindGates(gateVec);
+    }
 
 }
 
@@ -71,6 +108,13 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         PxD6JointDrive drive(SPRING_STIFFNESS, SPRING_DAMPING, FLT_MAX);
         d6joint->setDrive(PxD6Drive::eSLERP, drive);
 
+        //collect neurons from node
+        auto neuronVec = child->getLocalNeurons()->getCopyOfNeurons();
+        m_neuronVector.insert(m_neuronVector.end(), neuronVec.begin(), neuronVec.end());
+        auto pair = child->getLocalNeurons()->getCopiesOfJointNeurons();
+        m_sensorVector.push_back(pair.first);
+        m_effectorVector.push_back(pair.second);
+
         if(child == parentNode){
             buildChildNodes(child,childPos,childScale,childBody,recursionDepth+1);
         }else{
@@ -99,4 +143,16 @@ PxRigidDynamic* ivc::PhysicalCreature::createBox(PxVec3 halfextents, PxVec3 posi
 
 std::vector<PxRigidDynamic *> ivc::PhysicalCreature::getBodies() {
     return bodyParts;
+}
+
+void ivc::PhysicalCreature::performBrainStep() {
+
+    for(auto neuron : m_neuronVector){
+        neuron->step();
+    }
+
+    for(auto neuron : m_neuronVector){
+        neuron->swap();
+    }
+
 }

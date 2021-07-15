@@ -7,6 +7,7 @@
 
 #include "../Gate.h"
 #include "PxPhysicsAPI.h"
+#include <vector>
 
 using namespace physx;
 
@@ -19,6 +20,7 @@ namespace ivc{
         void step();
         void swap();
         void setIDs(unsigned long, unsigned long, unsigned long);
+        std::vector<unsigned long> getOutputIDs();
     };
 }
 

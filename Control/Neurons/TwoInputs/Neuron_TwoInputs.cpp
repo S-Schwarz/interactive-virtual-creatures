@@ -13,6 +13,9 @@ int ivc::Neuron_TwoInputs::bindGates(std::vector<Gate *> gates) {
     if(gates.size() != 2)
         return -1;
 
+    if(gates[0] == nullptr || gates[1] == nullptr)
+        printf("TEST\n");
+
     input_0 = gates[0];
     input_1 = gates[1];
 

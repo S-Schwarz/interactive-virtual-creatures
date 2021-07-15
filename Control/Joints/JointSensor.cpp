@@ -19,3 +19,7 @@ void ivc::JointSensor::setIDs(unsigned long id_0, unsigned long id_1, unsigned l
     id_output_1 = id_1;
     id_output_2 = id_2;
 }
+
+std::vector<unsigned long> ivc::JointSensor::getOutputIDs() {
+    return {id_output_0,id_output_1,id_output_2};
+}
