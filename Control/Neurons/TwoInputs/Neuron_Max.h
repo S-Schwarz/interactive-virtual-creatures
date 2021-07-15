@@ -15,6 +15,7 @@ namespace ivc{
         private:
             void max();
         public:
+            Neuron* copy() override;
             void step() override;
     };
 }

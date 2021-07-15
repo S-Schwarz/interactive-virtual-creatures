@@ -19,3 +19,7 @@ void ivc::Neuron_Max::max() {
         output.setValue(m_outputWeight * val_1);
 
 }
+
+ivc::Neuron *ivc::Neuron_Max::copy() {
+    return new Neuron_Max(*this);
+}

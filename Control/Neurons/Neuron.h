@@ -21,6 +21,7 @@ namespace ivc{
         public:
             virtual void swap();
             virtual void step();
+            virtual Neuron* copy();
             virtual Gate* getOutputGate();
             virtual std::vector<unsigned long> getGateIDs();
             virtual int bindGates(std::vector<Gate*>);

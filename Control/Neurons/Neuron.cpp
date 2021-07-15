@@ -34,3 +34,7 @@ void ivc::Neuron::setID(unsigned long id) {
 
 void ivc::Neuron::chooseRandomInputs(std::vector<unsigned long>) {
 }
+
+ivc::Neuron* ivc::Neuron::copy() {
+    return new Neuron(*this);
+}

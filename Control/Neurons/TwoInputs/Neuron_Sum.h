@@ -14,6 +14,7 @@ namespace ivc{
         private:
             void sum();
         public:
+            Neuron* copy() override;
             void step() override;
 
     };

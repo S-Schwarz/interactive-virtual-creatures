@@ -19,3 +19,7 @@ void ivc::Neuron_Min::min() {
         output.setValue(m_outputWeight * val_1);
 
 }
+
+ivc::Neuron *ivc::Neuron_Min::copy() {
+    return new Neuron_Min(*this);
+}

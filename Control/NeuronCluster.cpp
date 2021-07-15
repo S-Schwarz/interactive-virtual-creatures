@@ -57,7 +57,7 @@ void ivc::NeuronCluster::randomizeConnections() {
 std::vector<ivc::Neuron *> ivc::NeuronCluster::getCopyOfNeurons() {
     std::vector<Neuron*> copyVec;
     for(auto neuron : m_neuronVector){
-        copyVec.push_back(new Neuron(*neuron));
+        copyVec.push_back(neuron->copy());
     }
     return copyVec;
 }
