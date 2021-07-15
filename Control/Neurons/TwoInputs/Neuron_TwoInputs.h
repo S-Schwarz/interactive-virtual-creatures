@@ -14,6 +14,7 @@ namespace ivc{
             float weight_0 = 1.0f;
             float weight_1 = 1.0f;
         public:
+            void randomize(std::mt19937) override;
             std::vector<unsigned long> getGateIDs() override;
             int bindGates(std::vector<Gate*>) override;
             void chooseRandomInputs(std::vector<unsigned long>) override;

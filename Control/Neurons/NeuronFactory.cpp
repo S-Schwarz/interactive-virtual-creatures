@@ -10,15 +10,25 @@ ivc::Neuron *ivc::NeuronFactory::createRandomNeuron(std::mt19937 gen) {
 
     auto type = static_cast<NEURON_TYPE>(dis(gen));
 
+    Neuron* newNeuron = nullptr;
+
     switch (type) {
         case SUM:
-            return new Neuron_Sum();
+            newNeuron = new Neuron_Sum();
+            newNeuron->randomize(gen);
+            return newNeuron;
         case MAX:
-            return new Neuron_Max();
+            newNeuron = new Neuron_Max();
+            newNeuron->randomize(gen);
+            return newNeuron;
         case MIN:
-            return new Neuron_Min();
+            newNeuron = new Neuron_Min();
+            newNeuron->randomize(gen);
+            return newNeuron;
         case CONSTANT:
-            return new Neuron_Constant();
+            newNeuron = new Neuron_Constant();
+            newNeuron->randomize(gen);
+            return newNeuron;
         default:
             return nullptr;
     }

@@ -35,3 +35,12 @@ void ivc::Neuron_TwoInputs::chooseRandomInputs(std::vector<unsigned long> possib
     std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
     id_input_1 = possibleInputs[0];
 }
+
+void ivc::Neuron_TwoInputs::randomize(std::mt19937 gen) {
+    Neuron::randomize(gen);
+
+    std::normal_distribution<> inputDis(MEAN_NEURON_WEIGHT, MEAN_NEURON_WEIGHT * STANDARD_DEVIATION_FACTOR);
+    weight_0 = inputDis(gen);
+    weight_1 = inputDis(gen);
+
+}

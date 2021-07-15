@@ -13,6 +13,7 @@ namespace ivc{
     public:
         Neuron* copy() override;
         void step() override;
+        void randomize(std::mt19937) override;
     };
 }
 
