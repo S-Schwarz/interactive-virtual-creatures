@@ -41,9 +41,9 @@ int ivc::PhysicsWorld::init() {
     auto rootNode = RootMorphNode();
     rootNode.init();
     rootNode.addNeuralConnections();
-    auto creature = PhysicalCreature(rootNode, PxVec3(0,3,-5), m_physics);
+    m_creature = new PhysicalCreature(rootNode, PxVec3(0,3,-5), m_physics);
 
-    for(auto part : creature.getBodies()){
+    for(auto part : m_creature->getBodies()){
         m_scene->addActor(*part);
         m_rigidDynamicsVector.push_back(part);
     }

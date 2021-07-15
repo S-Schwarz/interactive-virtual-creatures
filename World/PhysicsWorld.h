@@ -23,6 +23,7 @@ namespace ivc {
             PxFoundation* m_foundation = nullptr;
             PxPhysics* m_physics = nullptr;
             PxScene* m_scene = nullptr;
+            PhysicalCreature* m_creature = nullptr;
 
             PxRigidStatic* m_plane = nullptr;
             std::vector<PxRigidDynamic*> m_rigidDynamicsVector;
