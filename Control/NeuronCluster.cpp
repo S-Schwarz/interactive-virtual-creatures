@@ -4,7 +4,7 @@
 
 #include "NeuronCluster.h"
 
-ivc::NeuronCluster::NeuronCluster(std::mt19937 gen, bool isBrain, IDHandler* idHandler) {
+ivc::NeuronCluster::NeuronCluster(std::mt19937 gen, bool isBrain,bool isRoot, IDHandler* idHandler) {
 
     int mean = isBrain ? MEAN_BRAIN_NEURONS : MEAN_LOCAL_NEURONS;
 
@@ -20,13 +20,16 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937 gen, bool isBrain, IDHandler* idH
         m_neuronVector.push_back(newNeuron);
     }
 
-    if(!isBrain){
+    if(!isBrain && !isRoot){
         m_sensor = new JointSensor();
         auto sensorID_0 = idHandler->getNewID();
+        printf("SENSOR ID: %i\n", sensorID_0);
         m_outputGates.push_back(sensorID_0);
         auto sensorID_1 = idHandler->getNewID();
+        printf("SENSOR ID: %i\n", sensorID_1);
         m_outputGates.push_back(sensorID_1);
         auto sensorID_2 = idHandler->getNewID();
+        printf("SENSOR ID: %i\n", sensorID_2);
         m_outputGates.push_back(sensorID_2);
         m_sensor->setIDs(sensorID_0,sensorID_1,sensorID_2);
 
@@ -49,4 +52,12 @@ void ivc::NeuronCluster::randomizeConnections() {
     for(auto neuron : m_neuronVector){
         neuron->chooseRandomInputs(m_possibleInputGates);
     }
+}
+
+std::vector<ivc::Neuron *> ivc::NeuronCluster::getCopyOfNeurons() {
+    std::vector<Neuron*> copyVec;
+    for(auto neuron : m_neuronVector){
+        copyVec.push_back(new Neuron(*neuron));
+    }
+    return copyVec;
 }
