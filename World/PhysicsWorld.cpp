@@ -34,9 +34,6 @@ int ivc::PhysicsWorld::init() {
     PxMaterial* mMaterial = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
 
     createPlane(PxVec3(0,1,0), 0, mMaterial);
-    createBox(PxVec3(0.5,0.5,0.5), PxVec3(2,3,0), PxVec3(45,0,0), mMaterial);
-    createBox(PxVec3(0.5,0.5,0.5), PxVec3(0,3,0), PxVec3(0,45,0), mMaterial);
-    createBox(PxVec3(0.5,0.5,0.5), PxVec3(-2,3,0), PxVec3(0,0,45), mMaterial);
 
     auto rootNode = RootMorphNode();
     rootNode.init();
