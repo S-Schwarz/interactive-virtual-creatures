@@ -40,6 +40,7 @@ namespace ivc {
             std::vector<PxRigidDynamic*> getRigidDynamics();
             PxRigidStatic* getPlane();
             float getStepSize();
+            PhysicalCreature* getCreature();
     };
 
 }

@@ -155,6 +155,8 @@ int ivc::App::update() {
         while (m_accumulator >= physicsStep){
             m_physicsWorld->simulate();
             m_accumulator -= physicsStep;
+            auto creature = m_physicsWorld->getCreature();
+            creature->performBrainStep();
         }
     }
 

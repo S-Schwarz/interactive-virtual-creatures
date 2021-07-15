@@ -130,3 +130,7 @@ PxRigidStatic* ivc::PhysicsWorld::getPlane() {
 float ivc::PhysicsWorld::getStepSize() {
     return m_stepSize;
 }
+
+ivc::PhysicalCreature *ivc::PhysicsWorld::getCreature() {
+    return m_creature;
+}
