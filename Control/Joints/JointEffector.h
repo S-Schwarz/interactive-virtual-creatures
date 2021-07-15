@@ -7,18 +7,19 @@
 
 #include "../Gate.h"
 #include "PxPhysicsAPI.h"
+#include <vector>
 
 using namespace physx;
 
 namespace ivc{
     class JointEffector {
     private:
-        Gate *input;
-        unsigned long id_input;
+        Gate *input_0, *input_1, *input_2;
+        unsigned long id_input_0, id_input_1, id_input_2;
     public:
         void step();
-        unsigned long getGateId();
-        int bindGate(Gate *);
+        std::vector<unsigned long> getGateIDs();
+        int bindGates(std::vector<Gate*>);
     };
 }
 
