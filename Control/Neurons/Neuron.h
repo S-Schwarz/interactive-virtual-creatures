@@ -11,6 +11,7 @@
 #include <random>
 #include <chrono>
 #include "../../Constants.h"
+#include "../../Mutator.h"
 
 namespace ivc{
 
@@ -31,6 +32,7 @@ namespace ivc{
             virtual unsigned long getOutputID();
             virtual void setID(unsigned long);
             virtual void chooseRandomInputs(std::vector<unsigned long>);
+            virtual void mutate(std::mt19937*);
     };
 
 }

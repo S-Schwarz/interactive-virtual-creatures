@@ -44,3 +44,10 @@ void ivc::Neuron_TwoInputs::randomize(std::mt19937* gen) {
     weight_1 = inputDis(*gen);
 
 }
+
+void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen) {
+    Neuron::mutate(gen);
+    //mutate input weights
+    weight_0 = Mutator::mutateFloat(gen,weight_0);
+    weight_1 = Mutator::mutateFloat(gen,weight_1);
+}

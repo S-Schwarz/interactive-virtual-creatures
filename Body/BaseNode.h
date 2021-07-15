@@ -10,6 +10,7 @@
 #include "../Control/NeuronCluster.h"
 #include <algorithm>
 #include <random>
+#include "../Mutator.h"
 
 using namespace physx;
 
@@ -40,7 +41,9 @@ namespace ivc{
             std::vector<NODE_SIDE> m_freeSides = {POS_X,NEG_X,POS_Y,NEG_Y,POS_Z,NEG_Z};
 
             bool m_isInitialized = false;
+            std::mt19937* m_generator = nullptr;
         public:
+            virtual void mutate();
             virtual unsigned int getNumberOfParts();
             virtual std::vector<BaseNode*> getChildren();
             virtual int getRecursionLimit();

@@ -25,10 +25,11 @@ namespace ivc {
             NeuronCluster* m_brain = nullptr;
             IDHandler* m_idHandler = nullptr;
         public:
+            void mutate() override;
             void init();
             void addNeuralConnections() override;
             PxVec3 getParentAnchor() override;
-            void setRecursionAnchor(std::mt19937* gen);
+            void setRecursionAnchor();
             IDHandler* getIDHandler() override;
             NeuronCluster* getBrain() override;
     };

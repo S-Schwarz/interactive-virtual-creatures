@@ -23,6 +23,7 @@ namespace ivc {
         JointEffector* m_effector = nullptr;
         std::vector<unsigned long> m_outputGates;
         std::vector<unsigned long> m_possibleInputGates;
+        std::mt19937* m_generator = nullptr;
 
     public:
         NeuronCluster(std::mt19937*,bool,bool,IDHandler*);
@@ -31,6 +32,7 @@ namespace ivc {
         void randomizeConnections();
         std::vector<Neuron*> getCopyOfNeurons();
         std::pair<JointSensor*,JointEffector*> getCopiesOfJointNeurons();
+        void mutate();
     };
 
 }

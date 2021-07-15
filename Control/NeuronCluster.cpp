@@ -6,6 +6,8 @@
 
 ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, IDHandler* idHandler) {
 
+    m_generator = gen;
+
     int mean = isBrain ? MEAN_BRAIN_NEURONS : MEAN_LOCAL_NEURONS;
 
     std::binomial_distribution<> dis(mean, STANDARD_DEVIATION_FACTOR);
@@ -67,4 +69,12 @@ std::vector<ivc::Neuron *> ivc::NeuronCluster::getCopyOfNeurons() {
 
 std::pair<ivc::JointSensor *, ivc::JointEffector *> ivc::NeuronCluster::getCopiesOfJointNeurons() {
     return {new JointSensor(*m_sensor), new JointEffector(*m_effector)};
+}
+
+void ivc::NeuronCluster::mutate() {
+    for(auto neuron : m_neuronVector){
+        neuron->mutate(m_generator);
+    }
+    m_sensor->mutate(m_generator);
+    m_effector->mutate(m_generator);
 }

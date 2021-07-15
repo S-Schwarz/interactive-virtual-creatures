@@ -12,6 +12,7 @@
 #include "../../Constants.h"
 #include <chrono>
 #include <algorithm>
+#include "../../Mutator.h"
 
 using namespace physx;
 
@@ -31,6 +32,7 @@ namespace ivc{
         std::vector<unsigned long> getGateIDs();
         int bindGates(std::vector<Gate*>);
         void chooseRandomInputs(std::vector<unsigned long>);
+        void mutate(std::mt19937*);
     };
 }
 

@@ -82,6 +82,7 @@ ivc::IDHandler *ivc::MorphNode::getIDHandler() {
 
 void ivc::MorphNode::init(BaseNode* parent, std::mt19937* gen, unsigned int depth) {
 
+    m_generator = gen;
     m_parentNode = parent;
     m_localNeurons = new NeuronCluster(gen, false,false, getIDHandler());
 
@@ -134,4 +135,10 @@ void ivc::MorphNode::addNeuralConnections() {
     for(auto child : m_childNodeVector){
         child->addNeuralConnections();
     }
+}
+
+void ivc::MorphNode::mutate() {
+    //TODO: mutate parentAnchor
+
+    BaseNode::mutate();
 }

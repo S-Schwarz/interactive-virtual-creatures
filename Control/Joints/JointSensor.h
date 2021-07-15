@@ -10,6 +10,7 @@
 #include <vector>
 #include <random>
 #include "../../Constants.h"
+#include "../../Mutator.h"
 
 using namespace physx;
 
@@ -30,6 +31,7 @@ namespace ivc{
         void setJoint(PxD6Joint*);
         void setIDs(unsigned long, unsigned long, unsigned long);
         std::vector<unsigned long> getOutputIDs();
+        void mutate(std::mt19937*);
     };
 }
 

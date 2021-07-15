@@ -18,3 +18,9 @@ void ivc::Neuron_Constant::randomize(std::mt19937* gen) {
     std::normal_distribution<> constantDis(MEAN_NEURON_CONSTANT, MEAN_NEURON_CONSTANT * STANDARD_DEVIATION_FACTOR);
     m_constant = constantDis(*gen);
 }
+
+void ivc::Neuron_Constant::mutate(std::mt19937 *gen) {
+    Neuron::mutate(gen);
+    //mutate constant
+    m_constant = Mutator::mutateFloat(gen, m_constant);
+}

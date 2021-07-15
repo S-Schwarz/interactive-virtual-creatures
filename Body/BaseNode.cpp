@@ -128,3 +128,35 @@ std::vector<unsigned long> ivc::BaseNode::getAllChildOutputs() {
 void ivc::BaseNode::addNeuralConnections() {
 
 }
+
+void ivc::BaseNode::mutate() {
+
+    //TODO: ignoring recursion for now
+    //TODO: chance to or not to mutate
+    //TODO: limit values
+
+    //mutate dimensions
+    float newX = Mutator::mutateFloat(m_generator, m_dimension.x);
+    float newY = Mutator::mutateFloat(m_generator, m_dimension.y);
+    float newZ = Mutator::mutateFloat(m_generator, m_dimension.z);
+    m_dimension = PxVec3(newX,newY,newZ);
+
+    //mutate scale
+    newX = Mutator::mutateFloat(m_generator, m_scale.x);
+    newY = Mutator::mutateFloat(m_generator, m_scale.y);
+    newZ = Mutator::mutateFloat(m_generator, m_scale.z);
+    m_scale = PxVec3(newX,newY,newZ);
+
+    //mutate joint
+    std::pair<float,float> newSwing = {Mutator::mutateFloat(m_generator,m_swingLimits.first),Mutator::mutateFloat(m_generator,m_swingLimits.second)};
+    m_swingLimits = newSwing;
+    std::pair<float,float> newTwist = {Mutator::mutateFloat(m_generator,m_twistLimits.first),Mutator::mutateFloat(m_generator,m_twistLimits.second)};
+    m_twistLimits = newTwist;
+
+    m_localNeurons->mutate();
+
+    for(auto child : m_childNodeVector){
+        child->mutate();
+    }
+
+}

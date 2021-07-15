@@ -51,3 +51,10 @@ void ivc::JointEffector::chooseRandomInputs(std::vector<unsigned long> possibleI
     std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
     id_input_2 = possibleInputs[0];
 }
+
+void ivc::JointEffector::mutate(std::mt19937 *gen) {
+    //mutate input weights
+    weight_0 = Mutator::mutateFloat(gen, weight_0);
+    weight_1 = Mutator::mutateFloat(gen, weight_1);
+    weight_2 = Mutator::mutateFloat(gen, weight_2);
+}

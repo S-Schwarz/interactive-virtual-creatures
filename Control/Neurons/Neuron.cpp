@@ -49,3 +49,10 @@ void ivc::Neuron::randomize(std::mt19937* gen) {
 void ivc::Neuron::setOutput(ivc::Gate * gate) {
     output = gate;
 }
+
+void ivc::Neuron::mutate(std::mt19937* gen) {
+
+    //mutate outputWeight
+    m_outputWeight = Mutator::mutateFloat(gen, m_outputWeight);
+
+}
