@@ -5,9 +5,9 @@
 #include "JointSensor.h"
 
 void ivc::JointSensor::step() {
-    output_0.setValue(m_joint->getTwistAngle());
-    output_1.setValue(m_joint->getSwingYAngle());
-    output_2.setValue(m_joint->getSwingZAngle());
+    output_0.setValue(m_joint->getTwistAngle() * weight_0);
+    output_1.setValue(m_joint->getSwingYAngle() * weight_1);
+    output_2.setValue(m_joint->getSwingZAngle() * weight_2);
 }
 
 void ivc::JointSensor::swap() {

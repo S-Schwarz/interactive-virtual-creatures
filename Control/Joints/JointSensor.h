@@ -17,6 +17,9 @@ namespace ivc{
         PxD6Joint* m_joint = nullptr;
         Gate output_0, output_1, output_2;
         unsigned long id_output_0, id_output_1, id_output_2;
+        float weight_0 = 1.0f;
+        float weight_1 = 1.0f;
+        float weight_2 = 1.0f;
     public:
         void step();
         void swap();
