@@ -9,6 +9,7 @@
 #include "TwoInputs/Neuron_Max.h"
 #include "TwoInputs/Neuron_Min.h"
 #include "TwoInputs/Neuron_Sum.h"
+#include "ZeroInputs/Neuron_Constant.h"
 #include <random>
 
 namespace ivc{
@@ -16,6 +17,7 @@ namespace ivc{
         SUM,
         MAX,
         MIN,
+        CONSTANT,
         COUNT
     };
 

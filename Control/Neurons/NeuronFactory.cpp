@@ -17,6 +17,8 @@ ivc::Neuron *ivc::NeuronFactory::createRandomNeuron(std::mt19937 gen) {
             return new Neuron_Max();
         case MIN:
             return new Neuron_Min();
+        case CONSTANT:
+            return new Neuron_Constant();
         default:
             return nullptr;
     }
