@@ -5,7 +5,7 @@
 #include "Neuron.h"
 
 void ivc::Neuron::swap() {
-    output.swap();
+    output->swap();
 }
 
 void ivc::Neuron::step() {
@@ -13,7 +13,7 @@ void ivc::Neuron::step() {
 }
 
 ivc::Gate* ivc::Neuron::getOutputGate() {
-    return &output;
+    return output;
 }
 
 std::vector<unsigned long> ivc::Neuron::getGateIDs() {
@@ -44,4 +44,8 @@ void ivc::Neuron::randomize(std::mt19937* gen) {
     std::normal_distribution<> outputDis(MEAN_NEURON_WEIGHT, MEAN_NEURON_WEIGHT * STANDARD_DEVIATION_FACTOR);
     m_outputWeight = outputDis(*gen);
 
+}
+
+void ivc::Neuron::setOutput(ivc::Gate * gate) {
+    output = gate;
 }

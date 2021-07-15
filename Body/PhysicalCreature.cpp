@@ -22,14 +22,20 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
 
     //create output gates for neurons
     for(auto neuron : m_neuronVector){
-        m_gateMap[neuron->getOutputID()] = new Gate();
+        auto newGate = new Gate();
+        neuron->setOutput(newGate);
+        m_gateMap[neuron->getOutputID()] = newGate;
     }
     //and for sensors
     for(auto sensor : m_sensorVector){
         auto outVec = sensor->getOutputIDs();
+        std::vector<Gate*> newGates;
         for(auto id : outVec){
-            m_gateMap[id] = new Gate();
+            auto newGate = new Gate();
+            newGates.push_back(newGate);
+            m_gateMap[id] = newGate;
         }
+        sensor->setOutputGates(newGates);
     }
 
     //connect inputs for neurons
@@ -49,6 +55,36 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
             gateVec.push_back(m_gateMap[id]);
         }
         effector->bindGates(gateVec);
+    }
+
+    printf("NEURONS: %i\n", m_neuronVector.size());
+    for(auto neuron : m_neuronVector){
+        printf("IN: \n");
+        auto inVec = neuron->getGateIDs();
+        for(auto id : inVec){
+            printf("%li\n", id);
+        }
+        printf("OUT: %li\n", neuron->getOutputID());
+    }
+    printf("SENSORS: %i\n", m_sensorVector.size());
+    for(auto sensor : m_sensorVector){
+        printf("OUT: \n");
+        auto outVec = sensor->getOutputIDs();
+        for(auto id : outVec){
+            printf("%li\n", id);
+        }
+    }
+    printf("EFFECTORS: %i\n", m_effectorVector.size());
+    for(auto effector : m_effectorVector){
+        printf("IN: \n");
+        auto inVec = effector->getGateIDs();
+        for(auto id : inVec){
+            printf("%li\n", id);
+        }
+    }
+    printf("GATES: %i\n", m_gateMap.size());
+    for(auto const& pair : m_gateMap){
+        printf("%li\n", pair.first);
     }
 
 }

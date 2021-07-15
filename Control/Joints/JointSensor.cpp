@@ -5,15 +5,15 @@
 #include "JointSensor.h"
 
 void ivc::JointSensor::step() {
-    output_0.setValue(m_joint->getTwistAngle() * weight_0);
-    output_1.setValue(m_joint->getSwingYAngle() * weight_1);
-    output_2.setValue(m_joint->getSwingZAngle() * weight_2);
+    output_0->setValue(m_joint->getTwistAngle() * weight_0);
+    output_1->setValue(m_joint->getSwingYAngle() * weight_1);
+    output_2->setValue(m_joint->getSwingZAngle() * weight_2);
 }
 
 void ivc::JointSensor::swap() {
-    output_0.swap();
-    output_1.swap();
-    output_2.swap();
+    output_0->swap();
+    output_1->swap();
+    output_2->swap();
 }
 
 void ivc::JointSensor::setIDs(unsigned long id_0, unsigned long id_1, unsigned long id_2) {
@@ -35,4 +35,15 @@ void ivc::JointSensor::randomize(std::mt19937* gen) {
     weight_0 = outputDis(*gen);
     weight_1 = outputDis(*gen);
     weight_2 = outputDis(*gen);
+}
+
+void ivc::JointSensor::setOutputGates(std::vector<Gate *> gates) {
+
+    if(gates.size() != 3)
+        return;
+
+    output_0 = gates[0];
+    output_1 = gates[1];
+    output_2 = gates[2];
+
 }

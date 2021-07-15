@@ -9,7 +9,7 @@ ivc::Neuron *ivc::Neuron_Constant::copy() {
 }
 
 void ivc::Neuron_Constant::step() {
-    output.setValue(m_constant);
+    output->setValue(m_constant);
 }
 
 void ivc::Neuron_Constant::randomize(std::mt19937* gen) {

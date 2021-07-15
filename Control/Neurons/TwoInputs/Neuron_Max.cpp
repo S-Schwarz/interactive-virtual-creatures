@@ -14,9 +14,9 @@ void ivc::Neuron_Max::max() {
     float val_1 = weight_1 * input_1->getValue();
 
     if(val_0 > val_1)
-        output.setValue(m_outputWeight * val_0);
+        output->setValue(m_outputWeight * val_0);
     else
-        output.setValue(m_outputWeight * val_1);
+        output->setValue(m_outputWeight * val_1);
 
 }
 
