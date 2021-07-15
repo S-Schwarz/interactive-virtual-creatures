@@ -10,6 +10,8 @@
 #include <vector>
 #include <random>
 #include "../../Constants.h"
+#include <chrono>
+#include <algorithm>
 
 using namespace physx;
 
@@ -28,6 +30,7 @@ namespace ivc{
         void setJoint(PxD6Joint*);
         std::vector<unsigned long> getGateIDs();
         int bindGates(std::vector<Gate*>);
+        void chooseRandomInputs(std::vector<unsigned long>);
     };
 }
 

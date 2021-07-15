@@ -51,6 +51,10 @@ void ivc::NeuronCluster::randomizeConnections() {
     for(auto neuron : m_neuronVector){
         neuron->chooseRandomInputs(m_possibleInputGates);
     }
+
+    if(m_effector != nullptr)
+        m_effector->chooseRandomInputs(m_possibleInputGates);
+
 }
 
 std::vector<ivc::Neuron *> ivc::NeuronCluster::getCopyOfNeurons() {

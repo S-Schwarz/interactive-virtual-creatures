@@ -5,6 +5,9 @@
 #include "JointEffector.h"
 
 void ivc::JointEffector::step() {
+    printf("X: %f\n", input_0->getValue());
+    printf("Y: %f\n", input_1->getValue());
+    printf("Z: %f\n", input_2->getValue());
     m_joint->setDriveVelocity(PxVec3(0,0,0),PxVec3(input_0->getValue() * weight_0,input_1->getValue() * weight_1,input_2->getValue() * weight_2));
 }
 
@@ -33,4 +36,21 @@ void ivc::JointEffector::randomize(std::mt19937* gen) {
     weight_0 = outputDis(*gen);
     weight_1 = outputDis(*gen);
     weight_2 = outputDis(*gen);
+}
+
+void ivc::JointEffector::chooseRandomInputs(std::vector<unsigned long> possibleInputs) {
+
+    if(possibleInputs.empty())
+        return;
+
+    static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
+
+    std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
+    id_input_0 = possibleInputs[0];
+
+    std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
+    id_input_1 = possibleInputs[0];
+
+    std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
+    id_input_2 = possibleInputs[0];
 }
