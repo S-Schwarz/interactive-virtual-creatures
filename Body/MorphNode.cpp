@@ -121,12 +121,17 @@ void ivc::MorphNode::init(BaseNode* parent, std::mt19937 gen, unsigned int depth
         }
     }
 
-    m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
-    m_localNeurons->randomizeConnections();
-
     m_isInitialized = true;
 }
 
 ivc::NeuronCluster *ivc::MorphNode::getBrain() {
     return m_parentNode->getBrain();
+}
+
+void ivc::MorphNode::addNeuralConnections() {
+    m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
+    m_localNeurons->randomizeConnections();
+    for(auto child : m_childNodeVector){
+        child->addNeuralConnections();
+    }
 }

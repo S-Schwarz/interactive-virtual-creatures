@@ -26,6 +26,7 @@ namespace ivc {
             IDHandler* m_idHandler = nullptr;
         public:
             void init();
+            void addNeuralConnections() override;
             PxVec3 getParentAnchor() override;
             void setRecursionAnchor(std::mt19937 gen);
             IDHandler* getIDHandler() override;

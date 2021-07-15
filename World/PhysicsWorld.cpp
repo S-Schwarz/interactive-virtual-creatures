@@ -40,6 +40,7 @@ int ivc::PhysicsWorld::init() {
 
     auto rootNode = RootMorphNode();
     rootNode.init();
+    rootNode.addNeuralConnections();
     auto creature = PhysicalCreature(rootNode, PxVec3(0,3,-5), m_physics);
 
     for(auto part : creature.getBodies()){

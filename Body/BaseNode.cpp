@@ -124,3 +124,7 @@ std::vector<unsigned long> ivc::BaseNode::getAllChildOutputs() {
     }
     return childVec;
 }
+
+void ivc::BaseNode::addNeuralConnections() {
+
+}

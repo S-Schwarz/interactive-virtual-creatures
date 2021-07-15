@@ -59,6 +59,7 @@ namespace ivc{
             virtual NeuronCluster* getBrain();
             virtual std::vector<unsigned long> getAllAdjacentOutputs();
             virtual std::vector<unsigned long> getAllChildOutputs();
+            virtual void addNeuralConnections();
     };
 
 }

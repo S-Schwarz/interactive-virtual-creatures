@@ -25,6 +25,7 @@ namespace ivc {
             bool m_terminalOnly;
         public:
             void init(BaseNode*, std::mt19937, unsigned int);
+            void addNeuralConnections() override;
             PxVec3 getAnchorPosition(std::mt19937 gen);
             PxVec3 getOrientation() override;
             PxVec3 getParentAnchor() override;
