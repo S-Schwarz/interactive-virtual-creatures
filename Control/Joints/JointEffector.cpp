@@ -28,9 +28,9 @@ void ivc::JointEffector::setJoint(PxD6Joint *joint) {
     m_joint = joint;
 }
 
-void ivc::JointEffector::randomize(std::mt19937 gen) {
+void ivc::JointEffector::randomize(std::mt19937* gen) {
     std::normal_distribution<> outputDis(MEAN_EFFECTOR_WEIGHT, MEAN_EFFECTOR_WEIGHT * STANDARD_DEVIATION_FACTOR);
-    weight_0 = outputDis(gen);
-    weight_1 = outputDis(gen);
-    weight_2 = outputDis(gen);
+    weight_0 = outputDis(*gen);
+    weight_1 = outputDis(*gen);
+    weight_2 = outputDis(*gen);
 }

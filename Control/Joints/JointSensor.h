@@ -23,7 +23,7 @@ namespace ivc{
         float weight_1 = 1.0f;
         float weight_2 = 1.0f;
     public:
-        void randomize(std::mt19937);
+        void randomize(std::mt19937*);
         void step();
         void swap();
         void setJoint(PxD6Joint*);

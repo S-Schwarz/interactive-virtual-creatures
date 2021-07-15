@@ -4,11 +4,11 @@
 
 #include "NeuronFactory.h"
 
-ivc::Neuron *ivc::NeuronFactory::createRandomNeuron(std::mt19937 gen) {
+ivc::Neuron *ivc::NeuronFactory::createRandomNeuron(std::mt19937* gen) {
 
     std::uniform_int_distribution<> dis(0, COUNT-1);
 
-    auto type = static_cast<NEURON_TYPE>(dis(gen));
+    auto type = static_cast<NEURON_TYPE>(dis(*gen));
 
     Neuron* newNeuron = nullptr;
 

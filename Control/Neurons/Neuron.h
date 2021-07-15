@@ -20,7 +20,7 @@ namespace ivc{
             unsigned long m_outputID;
             float m_outputWeight = 1.0f;
         public:
-            virtual void randomize(std::mt19937);
+            virtual void randomize(std::mt19937*);
             virtual void swap();
             virtual void step();
             virtual Neuron* copy();

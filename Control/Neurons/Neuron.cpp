@@ -39,9 +39,9 @@ ivc::Neuron* ivc::Neuron::copy() {
     return new Neuron(*this);
 }
 
-void ivc::Neuron::randomize(std::mt19937 gen) {
+void ivc::Neuron::randomize(std::mt19937* gen) {
 
     std::normal_distribution<> outputDis(MEAN_NEURON_WEIGHT, MEAN_NEURON_WEIGHT * STANDARD_DEVIATION_FACTOR);
-    m_outputWeight = outputDis(gen);
+    m_outputWeight = outputDis(*gen);
 
 }

@@ -25,7 +25,7 @@ namespace ivc {
         std::vector<unsigned long> m_possibleInputGates;
 
     public:
-        NeuronCluster(std::mt19937,bool,bool,IDHandler*);
+        NeuronCluster(std::mt19937*,bool,bool,IDHandler*);
         std::vector<unsigned long> getOutputGates();
         void setPossibleInputs(std::vector<unsigned long>);
         void randomizeConnections();

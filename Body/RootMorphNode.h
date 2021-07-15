@@ -28,7 +28,7 @@ namespace ivc {
             void init();
             void addNeuralConnections() override;
             PxVec3 getParentAnchor() override;
-            void setRecursionAnchor(std::mt19937 gen);
+            void setRecursionAnchor(std::mt19937* gen);
             IDHandler* getIDHandler() override;
             NeuronCluster* getBrain() override;
     };
