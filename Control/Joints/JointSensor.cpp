@@ -29,3 +29,10 @@ std::vector<unsigned long> ivc::JointSensor::getOutputIDs() {
 void ivc::JointSensor::setJoint(PxD6Joint *joint) {
     m_joint = joint;
 }
+
+void ivc::JointSensor::randomize(std::mt19937 gen) {
+    std::normal_distribution<> outputDis(MEAN_SENSOR_WEIGHT, MEAN_SENSOR_WEIGHT * STANDARD_DEVIATION_FACTOR);
+    weight_0 = outputDis(gen);
+    weight_1 = outputDis(gen);
+    weight_2 = outputDis(gen);
+}

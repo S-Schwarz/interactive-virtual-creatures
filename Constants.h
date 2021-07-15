@@ -22,6 +22,9 @@ const float MEAN_JOINT_LIMIT = M_PI/8;
 const float SPRING_STIFFNESS = 1000;
 const float SPRING_DAMPING = 1000;
 
+const float MEAN_SENSOR_WEIGHT = 1.0f;
+const float MEAN_EFFECTOR_WEIGHT = 1.0f;
+
 //neurons
 const int MEAN_LOCAL_NEURONS = 10;
 const int MEAN_BRAIN_NEURONS = 30;

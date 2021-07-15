@@ -8,6 +8,8 @@
 #include "../Gate.h"
 #include "PxPhysicsAPI.h"
 #include <vector>
+#include <random>
+#include "../../Constants.h"
 
 using namespace physx;
 
@@ -21,6 +23,7 @@ namespace ivc{
         float weight_1 = 1.0f;
         float weight_2 = 1.0f;
     public:
+        void randomize(std::mt19937);
         void step();
         void setJoint(PxD6Joint*);
         std::vector<unsigned long> getGateIDs();
