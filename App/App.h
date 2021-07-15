@@ -20,6 +20,8 @@
 #include "Camera.h"
 #include "../Res/ShapeHandler.h"
 
+#include "../Constants.h"
+
 namespace ivc {
 
     class App {
