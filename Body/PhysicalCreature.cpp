@@ -111,7 +111,11 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         //collect neurons from node
         auto neuronVec = child->getLocalNeurons()->getCopyOfNeurons();
         m_neuronVector.insert(m_neuronVector.end(), neuronVec.begin(), neuronVec.end());
+
+        //associate joint with sensor/effector
         auto pair = child->getLocalNeurons()->getCopiesOfJointNeurons();
+        pair.first->setJoint(d6joint);
+        pair.second->setJoint(d6joint);
         m_sensorVector.push_back(pair.first);
         m_effectorVector.push_back(pair.second);
 

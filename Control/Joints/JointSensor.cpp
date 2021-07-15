@@ -5,7 +5,9 @@
 #include "JointSensor.h"
 
 void ivc::JointSensor::step() {
-    // TODO: get values from joint
+    output_0.setValue(m_joint->getTwistAngle());
+    output_1.setValue(m_joint->getSwingYAngle());
+    output_2.setValue(m_joint->getSwingZAngle());
 }
 
 void ivc::JointSensor::swap() {
@@ -22,4 +24,8 @@ void ivc::JointSensor::setIDs(unsigned long id_0, unsigned long id_1, unsigned l
 
 std::vector<unsigned long> ivc::JointSensor::getOutputIDs() {
     return {id_output_0,id_output_1,id_output_2};
+}
+
+void ivc::JointSensor::setJoint(PxD6Joint *joint) {
+    m_joint = joint;
 }

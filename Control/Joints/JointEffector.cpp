@@ -5,7 +5,7 @@
 #include "JointEffector.h"
 
 void ivc::JointEffector::step() {
-    // TODO: apply force at joint
+    m_joint->setDriveVelocity(PxVec3(0,0,0),PxVec3(input_0->getValue(),input_1->getValue(),input_2->getValue()));
 }
 
 std::vector<unsigned long> ivc::JointEffector::getGateIDs() {
@@ -22,4 +22,8 @@ int ivc::JointEffector::bindGates(std::vector<Gate *> gates) {
     input_2 = gates[2];
 
     return 0;
+}
+
+void ivc::JointEffector::setJoint(PxD6Joint *joint) {
+    m_joint = joint;
 }
