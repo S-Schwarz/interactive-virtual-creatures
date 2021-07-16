@@ -8,6 +8,21 @@ int ivc::LiveEnvironment::init(ivc::PhysicsScene *scene) {
 
     m_scene = scene;
 
+    //settle in to stable position
+    int stableSteps = 0;
+    for(int i = 0; i < FALL_DOWN_STEPS; ++i){
+        if(stableSteps == 5)
+            break;
+        auto beforePos = scene->getCreaturePos();
+        m_scene->simulate(false);
+        auto afterPos = scene->getCreaturePos();
+        if(beforePos == afterPos){
+            ++stableSteps;
+        }else{
+            stableSteps = 0;
+        }
+    }
+
     return 0;
 }
 
