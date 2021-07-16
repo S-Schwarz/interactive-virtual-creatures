@@ -27,7 +27,6 @@ int ivc::Evolver::init(ivc::PhysicsBase *base) {
 
 void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::PhysicsScene*, std::pair<ivc::RootMorphNode*, float>> *mapPtr){
 
-    printf("TEST: %i\n", sceneVec.size());
     for(auto scene : sceneVec){
         //simulate and score
         auto startPos = scene->getCreaturePos();
@@ -83,9 +82,11 @@ void ivc::Evolver::evolveNextGeneration() {
         auto score = pair.second.second;
         if(score > bestScore){
             bestCreature = pair.second.first;
+            bestScore = score;
         }
     }
     currentBest = bestCreature;
+    printf("BEST FITNESS SCORE: %f\n", bestScore);
 
     //create new generation
     std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> nextGenMap;
