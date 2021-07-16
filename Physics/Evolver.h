@@ -10,12 +10,15 @@
 #include "PhysicsScene.h"
 #include <vector>
 #include <map>
+#include <thread>
 
 namespace ivc{
     class Evolver {
         private:
             PhysicsBase* m_base = nullptr;
             RootMorphNode* currentBest = nullptr;
+
+            unsigned int m_numThreads = 1;
 
             std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> sceneMap;
             void evolveNextGeneration();

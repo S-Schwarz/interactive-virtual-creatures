@@ -8,6 +8,10 @@ int ivc::Evolver::init(ivc::PhysicsBase *base) {
 
     m_base = base;
 
+    //find number of available threads
+    m_numThreads = std::thread::hardware_concurrency();
+    printf("AVAILABLE THREADS: %i\n", m_numThreads);
+
     // create first generation
     for(int i = 0; i < CREATURES_PER_GENERATION; ++i){
         auto newRootNode = new RootMorphNode();
@@ -21,25 +25,56 @@ int ivc::Evolver::init(ivc::PhysicsBase *base) {
     return 0;
 }
 
-void ivc::Evolver::evolveNextGeneration() {
+void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::PhysicsScene*, std::pair<ivc::RootMorphNode*, float>> *mapPtr){
 
-    //fitness test all creatures
-    for(auto const& pair : sceneMap){
-        auto scene = pair.first;
-        auto root = pair.second.first;
-
+    printf("TEST: %i\n", sceneVec.size());
+    for(auto scene : sceneVec){
+        //simulate and score
         auto startPos = scene->getCreaturePos();
-
         for(int i = 0; i < STEPS_PER_GENERATION; ++i){
             scene->simulate();
         }
-
         auto endPos = scene->getCreaturePos();
-
         float fitness = startPos.z - endPos.z;
 
-        sceneMap[scene] = {root,fitness};
+        //write result
+        (*mapPtr)[scene] = {(*mapPtr)[scene].first,fitness};
     }
+
+}
+
+void ivc::Evolver::evolveNextGeneration() {
+
+    void (*testFuncPtr)(std::vector<ivc::PhysicsScene*>, std::map<ivc::PhysicsScene*,std::pair<ivc::RootMorphNode*, float>>*) = testCreatures;
+
+    //fitness test all creatures
+    //divide scenes among threads
+    std::vector<std::unique_ptr<std::thread>> allThreads;
+    std::vector<std::vector<PhysicsScene*>> allScenes;
+    for(int i = 0; i < m_numThreads; ++i){
+        allScenes.push_back({});
+    }
+
+    unsigned int iter = 0;
+    for(auto const& pair : sceneMap){
+        auto scene = pair.first;
+        allScenes[iter].push_back(scene);
+        if(iter == m_numThreads - 1){
+            iter = 0;
+        }else{
+            ++iter;
+        }
+    }
+
+    for(auto sceneVec : allScenes){
+        allThreads.push_back(std::unique_ptr<std::thread>(new std::thread(testFuncPtr,sceneVec,&sceneMap)));
+    }
+
+    for (auto&& thread : allThreads) {
+        thread->join();
+    }
+
+    allThreads.clear();
 
     //find best creature
     RootMorphNode* bestCreature = nullptr;
@@ -67,6 +102,7 @@ void ivc::Evolver::evolveNextGeneration() {
 
     //replace and delete old generation
     for(auto const& pair : sceneMap){
+        pair.first->destroy();
         delete pair.first;
         if(pair.second.first != currentBest)
             delete pair.second.first;
