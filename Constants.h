@@ -10,6 +10,9 @@
 
 const float STANDARD_DEVIATION_FACTOR = 0.3f;
 
+//simulation
+const float SIMULATION_STEP_SIZE = 0.01f;
+
 //body nodes
 const float MEAN_PART_SIZE = 1.0f;
 const float MEAN_SCALE = 1.0f;

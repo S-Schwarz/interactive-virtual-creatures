@@ -16,7 +16,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../World/PhysicsWorld.h"
+#include "../Physics/LiveEnvironment.h"
 #include "Camera.h"
 #include "../Res/ShapeHandler.h"
 
@@ -27,7 +27,7 @@ namespace ivc {
     class App {
         private:
             GLFWwindow* m_window;
-            Camera m_camera = Camera(glm::vec3(0.0f, 1.0f, 5.0f));
+            Camera m_camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f));
             bool m_shouldClose = false;
             bool isInitialized = false;
             bool m_physicsPaused = true;
@@ -35,7 +35,7 @@ namespace ivc {
             Shader* m_shader = nullptr;
 
             void processInput();
-            PhysicsWorld* m_physicsWorld = nullptr;
+            LiveEnvironment* m_liveEnvironment = nullptr;
 
             const int c_WIDTH = 800, c_HEIGHT = 600;
             int m_windowWidth = c_WIDTH, m_windowHeight = c_HEIGHT;

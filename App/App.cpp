@@ -122,8 +122,18 @@ int ivc::App::init(){
 
     glfwSetWindowUserPointer(m_window, this);
 
-    m_physicsWorld = new PhysicsWorld();
-    m_physicsWorld->init();
+    PhysicsBase* physicsBase = new PhysicsBase();
+    physicsBase->init();
+
+    RootMorphNode rootNode = RootMorphNode();
+    rootNode.init();
+    rootNode.addNeuralConnections();
+
+    PhysicsScene* liveScene = new PhysicsScene();
+    liveScene->init(physicsBase,rootNode);
+
+    m_liveEnvironment = new LiveEnvironment();
+    m_liveEnvironment->init(liveScene);
 
     isInitialized = true;
 
@@ -151,14 +161,9 @@ int ivc::App::update() {
     if(!m_physicsPaused){
         m_accumulator += m_deltaTime;
 
-        float physicsStep = m_physicsWorld->getStepSize();
-        while (m_accumulator >= physicsStep){
-            m_physicsWorld->simulate();
-            m_accumulator -= physicsStep;
-            auto creature = m_physicsWorld->getCreature();
-            for(int i = 0; i < BRAINSTEPS_PER_SIMSTEP; ++i){
-                creature->performBrainStep();
-            }
+        while (m_accumulator >= SIMULATION_STEP_SIZE){
+            m_liveEnvironment->simulate();
+            m_accumulator -= SIMULATION_STEP_SIZE;
         }
     }
 
@@ -182,10 +187,10 @@ int ivc::App::update() {
 
     //-------------------------
 
-    drawShape(BOX, glm::vec3(0,3,-5),glm::quat(),glm::vec3(0.2,0.2,0.2), glm::vec4(0.8f, 0.2f, 0.3f, 1.0f), false);
+    drawShape(BOX, glm::vec3(0,5,0),glm::quat(),glm::vec3(0.2,0.2,0.2), glm::vec4(0.8f, 0.2f, 0.3f, 1.0f), false);
 
     // PHYSX OBJECTS ----------
-    for(auto body : m_physicsWorld->getRigidDynamics()){
+    for(auto body : m_liveEnvironment->getBodyParts()){
         auto transform = body->getGlobalPose();
 
         glm::vec3 posVec = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
@@ -204,7 +209,7 @@ int ivc::App::update() {
 
     // PLANE ------------------
     //TODO: ???
-    auto rigidStatic = m_physicsWorld->getPlane();
+    auto rigidStatic = m_liveEnvironment->getFloorPlane();
     PxPlane* plane = (PxPlane*)rigidStatic;
     auto transformA = rigidStatic->getGlobalPose();
     auto transformB = PxTransformFromPlaneEquation(*plane);
@@ -262,7 +267,7 @@ int ivc::App::close() {
     if(!isInitialized)
         return -1;
 
-    m_physicsWorld->destroy();
+    m_liveEnvironment->destroy();
     glfwTerminate();
 
     return 0;
