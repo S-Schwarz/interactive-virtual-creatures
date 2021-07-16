@@ -148,6 +148,8 @@ void ivc::RootMorphNode::mutate() {
 ivc::BaseNode *ivc::RootMorphNode::copy() {
     auto copiedNode = new RootMorphNode(*this);
 
+    copiedNode->m_idHandler = new IDHandler(*m_idHandler);
+
     std::vector<BaseNode*> copiedChildren;
     for(auto child : m_childNodeVector){
         auto newChild = child->copy();
