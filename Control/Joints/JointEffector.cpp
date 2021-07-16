@@ -9,31 +9,26 @@ void ivc::JointEffector::step() {
     float yVel = input_1->getValue() * weight_1;
     float zVel = input_2->getValue() * weight_2;
 
-    float maxStrength = 10000.0f;
-
-    if(xVel > maxStrength){
-        xVel = maxStrength;
-    }else if(xVel < -maxStrength){
-        xVel = -maxStrength;
+    if(xVel > m_maxStrength){
+        xVel = m_maxStrength;
+    }else if(xVel < -m_maxStrength){
+        xVel = -m_maxStrength;
     }
 
-    if(yVel > maxStrength){
-        yVel = maxStrength;
-    }else if(yVel < -maxStrength){
-        yVel = -maxStrength;
-    }
-    
-    if(zVel > maxStrength){
-        zVel = maxStrength;
-    }else if(zVel < -maxStrength){
-        zVel = -maxStrength;
+    if(yVel > m_maxStrength){
+        yVel = m_maxStrength;
+    }else if(yVel < -m_maxStrength){
+        yVel = -m_maxStrength;
     }
 
-    printf("X: %f\n", xVel);
-    printf("Y: %f\n", yVel);
-    printf("Z: %f\n", zVel);
+    if(zVel > m_maxStrength){
+        zVel = m_maxStrength;
+    }else if(zVel < -m_maxStrength){
+        zVel = -m_maxStrength;
+    }
 
     m_joint->setDriveVelocity(PxVec3(0,0,0),PxVec3(xVel,yVel,zVel));
+
 }
 
 std::vector<unsigned long> ivc::JointEffector::getGateIDs() {
@@ -85,4 +80,13 @@ void ivc::JointEffector::mutate(std::mt19937 *gen) {
     weight_0 = Mutator::mutateFloat(gen, weight_0, INFINITY, -INFINITY);
     weight_1 = Mutator::mutateFloat(gen, weight_1, INFINITY, -INFINITY);
     weight_2 = Mutator::mutateFloat(gen, weight_2, INFINITY, -INFINITY);
+}
+
+void ivc::JointEffector::calculateMaxStrength(PxVec3 dimA, PxVec3 dimB) {
+
+    float volumeA = dimA.x * dimA.y * dimA.z;
+    float volumeB = dimB.x * dimB.y * dimB.z;
+
+    m_maxStrength = (volumeA * volumeB) * 10;
+
 }

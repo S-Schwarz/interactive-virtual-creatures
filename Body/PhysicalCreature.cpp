@@ -56,7 +56,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
         }
         effector->bindGates(gateVec);
     }
-
+/*
     printf("NEURONS: %i\n", m_neuronVector.size());
     for(auto neuron : m_neuronVector){
         printf("IN: \n");
@@ -86,7 +86,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
     for(auto const& pair : m_gateMap){
         printf("%li\n", pair.first);
     }
-
+*/
 }
 
 void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxVec3 parentScale, PxRigidDynamic* parentBody, unsigned int recursionDepth) {
@@ -152,6 +152,7 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         auto pair = child->getLocalNeurons()->getCopiesOfJointNeurons();
         pair.first->setJoint(d6joint);
         pair.second->setJoint(d6joint);
+        pair.second->calculateMaxStrength(parentHalfExtents*2,childHalfExtents*2);
         m_sensorVector.push_back(pair.first);
         m_effectorVector.push_back(pair.second);
 
