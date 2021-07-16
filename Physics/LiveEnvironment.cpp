@@ -12,7 +12,7 @@ int ivc::LiveEnvironment::init(ivc::PhysicsScene *scene) {
 }
 
 int ivc::LiveEnvironment::simulate() {
-    m_scene->simulate();
+    m_scene->simulate(true);
     return 0;
 }
 

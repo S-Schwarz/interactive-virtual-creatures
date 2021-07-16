@@ -30,8 +30,32 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
     for(auto scene : sceneVec){
         //simulate and score
         auto startPos = scene->getCreaturePos();
+
+        //settle in to stable position
+        int stableSteps = 0;
+        bool resting = false;
+        for(int i = 0; i < FALL_DOWN_STEPS; ++i){
+            if(stableSteps == 5){
+                resting = true;
+                break;
+            }
+            auto beforePos = scene->getCreaturePos();
+            scene->simulate(false);
+            auto afterPos = scene->getCreaturePos();
+            if(beforePos == afterPos){
+                ++stableSteps;
+            }else{
+                stableSteps = 0;
+            }
+
+        }
+
+        if(!resting)
+            continue;
+
+        //start moving
         for(int i = 0; i < STEPS_PER_GENERATION; ++i){
-            scene->simulate();
+            scene->simulate(true);
         }
         auto endPos = scene->getCreaturePos();
         float fitness = startPos.z - endPos.z;

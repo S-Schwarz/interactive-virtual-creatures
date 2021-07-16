@@ -26,7 +26,7 @@ namespace ivc{
         public:
             int init(PhysicsBase*,RootMorphNode);
             void destroy();
-            int simulate();
+            int simulate(bool);
 
             int createPlane(PxVec3 normalVec, float distance, PxMaterial* material);
             std::vector<PxRigidDynamic*> getRigidDynamics();

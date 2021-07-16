@@ -87,6 +87,6 @@ void ivc::JointEffector::calculateMaxStrength(PxVec3 dimA, PxVec3 dimB) {
     float volumeA = dimA.x * dimA.y * dimA.z;
     float volumeB = dimB.x * dimB.y * dimB.z;
 
-    m_maxStrength = (volumeA * volumeB) * 10;
+    m_maxStrength = (volumeA * volumeB);
 
 }

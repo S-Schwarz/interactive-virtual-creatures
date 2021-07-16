@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(interactive_virtual_creatures)
 
-add_compile_definitions(_DEBUG)
+add_compile_definitions(NDEBUG)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS "-lglfw3 -Wl,--no-as-needed -ldl -lGL -lX11 -pthread -lXrand
 add_subdirectory(../glfw ./glfw)
 
 INCLUDE_DIRECTORIES(~/private/PhysX/physx/include ~/private/PhysX/pxshared/include ~/private/glfw/include ~/private/GLAD/include ~/private/glm)
-LINK_DIRECTORIES(~/private/PhysX/physx/bin/linux.clang/debug ~/private/glfw-build/src)
+LINK_DIRECTORIES(~/private/PhysX/physx/bin/linux.clang/release ~/private/glfw-build/src)
 
 add_executable(interactive_virtual_creatures
         main.cpp Res/glad.c App/App.h App/App.cpp Res/ShapeHandler.h Res/ShapeHandler.cpp

@@ -13,8 +13,10 @@ const float STANDARD_DEVIATION_FACTOR = 0.3f;
 //simulation
 const float SIMULATION_STEP_SIZE = 0.01f;
 const int CREATURES_PER_GENERATION = 100;
-const int NUMBER_OF_GENERATIONS = 50;
+const int NUMBER_OF_GENERATIONS = 100;
 const int STEPS_PER_GENERATION = 1500;
+
+const int FALL_DOWN_STEPS = 500;
 
 //body nodes
 const float MEAN_PART_SIZE = 1.0f;
@@ -35,11 +37,11 @@ const float MEAN_SENSOR_WEIGHT = 1.0f;
 const float MEAN_EFFECTOR_WEIGHT = 10.0f;
 
 //neurons
-const int MEAN_LOCAL_NEURONS = 5;
-const int MEAN_BRAIN_NEURONS = 10;
+const int MEAN_LOCAL_NEURONS = 10;
+const int MEAN_BRAIN_NEURONS = 50;
 const float MEAN_NEURON_WEIGHT = 1.0f;
 const float MEAN_NEURON_CONSTANT = 10.0f;
 
-const int BRAINSTEPS_PER_SIMSTEP = 3;
+const int BRAINSTEPS_PER_SIMSTEP = 1;
 
 #endif //INTERACTIVE_VIRTUAL_CREATURES_CONSTANTS_H

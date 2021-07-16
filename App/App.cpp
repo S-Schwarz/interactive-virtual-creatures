@@ -130,6 +130,10 @@ int ivc::App::init(){
 
     RootMorphNode* rootNode = evolver->evolveNewCreature();
 
+    //RootMorphNode* rootNode = new RootMorphNode();
+    //rootNode->init();
+    //rootNode->addNeuralConnections();
+
     PhysicsScene* liveScene = new PhysicsScene();
     liveScene->init(physicsBase,*rootNode);
 

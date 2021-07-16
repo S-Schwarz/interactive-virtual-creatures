@@ -56,16 +56,19 @@ void ivc::PhysicsScene::destroy() {
     m_scene->release();
 }
 
-int ivc::PhysicsScene::simulate() {
+int ivc::PhysicsScene::simulate(bool brainSteps) {
     if(!isInitialized)
         return -1;
 
     m_scene->simulate(SIMULATION_STEP_SIZE);
     m_scene->fetchResults(true);
 
-    for(int i = 0; i < BRAINSTEPS_PER_SIMSTEP; ++i){
-        m_creature->performBrainStep();
+    if(brainSteps){
+        for(int i = 0; i < BRAINSTEPS_PER_SIMSTEP; ++i){
+            m_creature->performBrainStep();
+        }
     }
+
 
     return 0;
 }
