@@ -80,18 +80,6 @@ void ivc::RootMorphNode::init() {
     m_localNeurons = new NeuronCluster(m_generator, false, true, m_idHandler);
     m_brain = new NeuronCluster(m_generator, true, true, m_idHandler);
 
-    std::normal_distribution<> dimensions(MEAN_PART_SIZE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
-    float x = dimensions(*m_generator);
-    float y = dimensions(*m_generator);
-    float z = dimensions(*m_generator);
-    m_dimension = PxVec3(x,y,z);
-
-    std::normal_distribution<> scales(MEAN_SCALE, MEAN_PART_SIZE * STANDARD_DEVIATION_FACTOR);
-    float scaX = scales(*m_generator);
-    float scaY = scales(*m_generator);
-    float scaZ = scales(*m_generator);
-    m_scale = PxVec3(scaX, scaY, scaZ);
-
     m_recursionLimit = 0;   //TODO: randomize(?)
 
     if(m_recursionLimit > 0){
@@ -112,6 +100,8 @@ void ivc::RootMorphNode::init() {
             m_childNodeVector.emplace_back(newChild);
         }
     }
+
+    mutate();
 
     m_isInitialized = true;
 }

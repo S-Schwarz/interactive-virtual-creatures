@@ -29,13 +29,14 @@ namespace ivc{
     class BaseNode {
         protected:
             //body
-            PxVec3 m_dimension;
+            PxVec3 m_dimension = PxVec3(MEAN_PART_SIZE,MEAN_PART_SIZE,MEAN_PART_SIZE);
             PxVec3 m_recursionAnchor;
-            PxVec3 m_scale;
+            PxVec3 m_scale = PxVec3(1,1,1);
             unsigned int m_recursionLimit;
             NeuronCluster* m_localNeurons = nullptr;
             BaseNode* m_parentNode = nullptr;
-            std::pair<float,float> m_swingLimits, m_twistLimits;
+            std::pair<float,float> m_swingLimits = {MEAN_JOINT_LIMIT,MEAN_JOINT_LIMIT};
+            std::pair<float,float> m_twistLimits = {-MEAN_JOINT_LIMIT,MEAN_JOINT_LIMIT};
             //children
             std::vector<BaseNode*> m_childNodeVector;
             std::vector<NODE_SIDE> m_freeSides = {POS_X,NEG_X,POS_Y,NEG_Y,POS_Z,NEG_Z};

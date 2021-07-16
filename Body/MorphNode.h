@@ -20,7 +20,7 @@ namespace ivc {
         private:
             //connection
             PxVec3 m_parentAnchor;
-            PxVec3 m_orientation;
+            PxVec3 m_orientation = PxVec3(0,0,0);
             //TODO: reflection
             bool m_terminalOnly;
         public:
