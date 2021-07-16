@@ -50,7 +50,7 @@ void ivc::JointSensor::setOutputGates(std::vector<Gate *> gates) {
 
 void ivc::JointSensor::mutate(std::mt19937 *gen) {
     //mutate output weights
-    weight_0 = Mutator::mutateFloat(gen, weight_0);
-    weight_1 = Mutator::mutateFloat(gen, weight_1);
-    weight_2 = Mutator::mutateFloat(gen, weight_2);
+    weight_0 = Mutator::mutateFloat(gen, weight_0, INFINITY, -INFINITY);
+    weight_1 = Mutator::mutateFloat(gen, weight_1, INFINITY, -INFINITY);
+    weight_2 = Mutator::mutateFloat(gen, weight_2, INFINITY, -INFINITY);
 }

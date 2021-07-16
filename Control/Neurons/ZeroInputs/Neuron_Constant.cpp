@@ -22,5 +22,5 @@ void ivc::Neuron_Constant::randomize(std::mt19937* gen) {
 void ivc::Neuron_Constant::mutate(std::mt19937 *gen) {
     Neuron::mutate(gen);
     //mutate constant
-    m_constant = Mutator::mutateFloat(gen, m_constant);
+    m_constant = Mutator::mutateFloat(gen, m_constant, INFINITY, -INFINITY);
 }

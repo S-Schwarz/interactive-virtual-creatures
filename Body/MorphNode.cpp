@@ -143,9 +143,9 @@ void ivc::MorphNode::mutate() {
     BaseNode::mutate();
 
     //mutate joint
-    std::pair<float,float> newSwing = {Mutator::mutateFloat(m_generator,m_swingLimits.first),Mutator::mutateFloat(m_generator,m_swingLimits.second)};
+    std::pair<float,float> newSwing = {Mutator::mutateFloat(m_generator,m_swingLimits.first,JOINT_SWING_LIMIT,-JOINT_SWING_LIMIT),Mutator::mutateFloat(m_generator,m_swingLimits.second,JOINT_SWING_LIMIT,-JOINT_SWING_LIMIT)};
     m_swingLimits = newSwing;
-    std::pair<float,float> newTwist = {Mutator::mutateFloat(m_generator,m_twistLimits.first),Mutator::mutateFloat(m_generator,m_twistLimits.second)};
+    std::pair<float,float> newTwist = {Mutator::mutateFloat(m_generator,m_twistLimits.first,JOINT_TWIST_LIMIT,-JOINT_TWIST_LIMIT),Mutator::mutateFloat(m_generator,m_twistLimits.second,JOINT_TWIST_LIMIT,-JOINT_TWIST_LIMIT)};
     m_twistLimits = newTwist;
 }
 

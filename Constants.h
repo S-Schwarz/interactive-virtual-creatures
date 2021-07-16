@@ -28,6 +28,9 @@ const float MEAN_JOINT_LIMIT = M_PI/8;
 const float SPRING_STIFFNESS = 1000;
 const float SPRING_DAMPING = 1000;
 
+const float JOINT_SWING_LIMIT = M_PI/4;
+const float JOINT_TWIST_LIMIT = M_PI/4;
+
 const float MEAN_SENSOR_WEIGHT = 1.0f;
 const float MEAN_EFFECTOR_WEIGHT = 10.0f;
 

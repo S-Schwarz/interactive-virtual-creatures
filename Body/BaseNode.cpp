@@ -136,15 +136,15 @@ void ivc::BaseNode::mutate() {
     //TODO: limit values
 
     //mutate dimensions
-    float newX = Mutator::mutateFloat(m_generator, m_dimension.x);
-    float newY = Mutator::mutateFloat(m_generator, m_dimension.y);
-    float newZ = Mutator::mutateFloat(m_generator, m_dimension.z);
+    float newX = Mutator::mutateFloat(m_generator, m_dimension.x, INFINITY, 0.01);
+    float newY = Mutator::mutateFloat(m_generator, m_dimension.y, INFINITY, 0.01);
+    float newZ = Mutator::mutateFloat(m_generator, m_dimension.z, INFINITY, 0.01);
     m_dimension = PxVec3(newX,newY,newZ);
 
     //mutate scale
-    newX = Mutator::mutateFloat(m_generator, m_scale.x);
-    newY = Mutator::mutateFloat(m_generator, m_scale.y);
-    newZ = Mutator::mutateFloat(m_generator, m_scale.z);
+    newX = Mutator::mutateFloat(m_generator, m_scale.x, INFINITY, 0.01);
+    newY = Mutator::mutateFloat(m_generator, m_scale.y, INFINITY, 0.01);
+    newZ = Mutator::mutateFloat(m_generator, m_scale.z, INFINITY, 0.01);
     m_scale = PxVec3(newX,newY,newZ);
 
     m_localNeurons->mutate();

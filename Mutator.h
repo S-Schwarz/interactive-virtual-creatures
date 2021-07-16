@@ -13,9 +13,19 @@ namespace ivc{
         private:
 
         public:
-            static float mutateFloat(std::mt19937* gen, float old){
+            static float mutateFloat(std::mt19937* gen, float old, float upperLimit, float lowerLimit){
+                if(upperLimit <= lowerLimit)
+                    return old;
+
                 std::normal_distribution<> dis(old, old * STANDARD_DEVIATION_FACTOR);
-                return dis(*gen);
+                auto newValue = dis(*gen);
+
+                if(newValue > upperLimit)
+                    newValue = upperLimit;
+                else if(newValue < lowerLimit)
+                    newValue = lowerLimit;
+
+                return newValue;
             }
     };
 }

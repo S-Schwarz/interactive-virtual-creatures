@@ -11,6 +11,8 @@ int ivc::Evolver::init(ivc::PhysicsBase *base) {
     // create first generation
     for(int i = 0; i < CREATURES_PER_GENERATION; ++i){
         auto newRootNode = new RootMorphNode();
+        newRootNode->init();
+        newRootNode->addNeuralConnections();
         auto newScene = new PhysicsScene();
         newScene->init(m_base,*newRootNode);
         sceneMap[newScene] = {newRootNode, -INFINITY};
