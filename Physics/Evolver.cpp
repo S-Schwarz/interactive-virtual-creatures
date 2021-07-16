@@ -29,8 +29,6 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 
     for(auto scene : sceneVec){
         //simulate and score
-        auto startPos = scene->getCreaturePos();
-
         //settle in to stable position
         int stableSteps = 0;
         bool resting = false;
@@ -52,6 +50,8 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 
         if(!resting)
             continue;
+
+        auto startPos = scene->getCreaturePos();
 
         //start moving
         for(int i = 0; i < STEPS_PER_GENERATION; ++i){
