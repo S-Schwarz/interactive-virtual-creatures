@@ -5,7 +5,35 @@
 #include "JointEffector.h"
 
 void ivc::JointEffector::step() {
-    m_joint->setDriveVelocity(PxVec3(0,0,0),PxVec3(input_0->getValue() * weight_0,input_1->getValue() * weight_1,input_2->getValue() * weight_2));
+    float xVel = input_0->getValue() * weight_0;
+    float yVel = input_1->getValue() * weight_1;
+    float zVel = input_2->getValue() * weight_2;
+
+    float maxStrength = 10000.0f;
+
+    if(xVel > maxStrength){
+        xVel = maxStrength;
+    }else if(xVel < -maxStrength){
+        xVel = -maxStrength;
+    }
+
+    if(yVel > maxStrength){
+        yVel = maxStrength;
+    }else if(yVel < -maxStrength){
+        yVel = -maxStrength;
+    }
+    
+    if(zVel > maxStrength){
+        zVel = maxStrength;
+    }else if(zVel < -maxStrength){
+        zVel = -maxStrength;
+    }
+
+    printf("X: %f\n", xVel);
+    printf("Y: %f\n", yVel);
+    printf("Z: %f\n", zVel);
+
+    m_joint->setDriveVelocity(PxVec3(0,0,0),PxVec3(xVel,yVel,zVel));
 }
 
 std::vector<unsigned long> ivc::JointEffector::getGateIDs() {
