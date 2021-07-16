@@ -17,7 +17,7 @@ int ivc::PhysicsScene::init(PhysicsBase* base, RootMorphNode rootNode) {
 
     createPlane(PxVec3(0,1,0), 0, m_base->getMaterial());
 
-    m_creature = new PhysicalCreature(rootNode,PxVec3(0,5,0), m_base->getPhysics());
+    m_creature = new PhysicalCreature(rootNode,PxVec3(0,MEAN_PART_SIZE * 2,0), m_base->getPhysics());
 
     for(auto part : m_creature->getBodies()){
         m_scene->addActor(*part);

@@ -19,11 +19,14 @@ const int STEPS_PER_GENERATION = 1500;
 const int FALL_DOWN_STEPS = 500;
 
 //body nodes
-const float MEAN_PART_SIZE = 1.0f;
+const float MEAN_PART_SIZE = 5.0f;
 const float MEAN_SCALE = 1.0f;
 const int MAX_CHILDREN = 3;
 const float CHILD_CHANCE = 0.6;
 const float CHILD_CHANCE_DECREASE = 0.4;
+
+const float MIN_PART_SIZE = 1.0f;
+const float MIN_SCALE = 0.1f;
 
 //joints
 const float MEAN_JOINT_LIMIT = M_PI/8;
