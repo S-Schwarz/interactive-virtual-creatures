@@ -147,16 +147,34 @@ void ivc::BaseNode::mutate() {
     newZ = Mutator::mutateFloat(m_generator, m_scale.z);
     m_scale = PxVec3(newX,newY,newZ);
 
-    //mutate joint
-    std::pair<float,float> newSwing = {Mutator::mutateFloat(m_generator,m_swingLimits.first),Mutator::mutateFloat(m_generator,m_swingLimits.second)};
-    m_swingLimits = newSwing;
-    std::pair<float,float> newTwist = {Mutator::mutateFloat(m_generator,m_twistLimits.first),Mutator::mutateFloat(m_generator,m_twistLimits.second)};
-    m_twistLimits = newTwist;
-
     m_localNeurons->mutate();
 
     for(auto child : m_childNodeVector){
         child->mutate();
     }
 
+}
+
+void ivc::BaseNode::setChildren(std::vector<BaseNode *> children) {
+    m_childNodeVector = children;
+}
+
+void ivc::BaseNode::setParent(ivc::BaseNode *parent) {
+    m_parentNode = parent;
+}
+
+void ivc::BaseNode::setLocalNeurons(ivc::NeuronCluster * cluster) {
+    m_localNeurons = cluster;
+}
+
+std::mt19937 *ivc::BaseNode::getGenerator() {
+    return m_generator;
+}
+
+void ivc::BaseNode::setGenerator(std::mt19937 *gen) {
+    m_generator = gen;
+    m_localNeurons->setGenerator(gen);
+    for(auto child : m_childNodeVector){
+        child->setGenerator(gen);
+    }
 }

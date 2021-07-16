@@ -33,6 +33,10 @@ namespace ivc {
         std::vector<Neuron*> getCopyOfNeurons();
         std::pair<JointSensor*,JointEffector*> getCopiesOfJointNeurons();
         void mutate();
+        NeuronCluster* copy();
+        void setNeurons(std::vector<Neuron*>);
+        void setJointNeurons(JointSensor*,JointEffector*);
+        void setGenerator(std::mt19937*);
     };
 
 }

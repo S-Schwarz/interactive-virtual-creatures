@@ -25,6 +25,8 @@ namespace ivc {
             NeuronCluster* m_brain = nullptr;
             IDHandler* m_idHandler = nullptr;
         public:
+            void setBrain(NeuronCluster*);
+            BaseNode* copy() override;
             void mutate() override;
             void init();
             void addNeuralConnections() override;
@@ -32,6 +34,7 @@ namespace ivc {
             void setRecursionAnchor();
             IDHandler* getIDHandler() override;
             NeuronCluster* getBrain() override;
+            void setGenerator(std::mt19937*) override;
     };
 
 }

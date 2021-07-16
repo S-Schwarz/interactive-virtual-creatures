@@ -141,4 +141,26 @@ void ivc::MorphNode::mutate() {
     //TODO: mutate parentAnchor
 
     BaseNode::mutate();
+
+    //mutate joint
+    std::pair<float,float> newSwing = {Mutator::mutateFloat(m_generator,m_swingLimits.first),Mutator::mutateFloat(m_generator,m_swingLimits.second)};
+    m_swingLimits = newSwing;
+    std::pair<float,float> newTwist = {Mutator::mutateFloat(m_generator,m_twistLimits.first),Mutator::mutateFloat(m_generator,m_twistLimits.second)};
+    m_twistLimits = newTwist;
+}
+
+ivc::BaseNode *ivc::MorphNode::copy() {
+    auto copiedNode = new MorphNode(*this);
+
+    std::vector<BaseNode*> copiedChildren;
+    for(auto child : m_childNodeVector){
+        auto newChild = child->copy();
+        newChild->setParent(copiedNode);
+        copiedChildren.push_back(newChild);
+    }
+    copiedNode->setChildren(copiedChildren);
+
+    copiedNode->setLocalNeurons(m_localNeurons->copy());
+
+    return copiedNode;
 }

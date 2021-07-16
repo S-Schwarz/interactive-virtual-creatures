@@ -75,6 +75,32 @@ void ivc::NeuronCluster::mutate() {
     for(auto neuron : m_neuronVector){
         neuron->mutate(m_generator);
     }
-    m_sensor->mutate(m_generator);
-    m_effector->mutate(m_generator);
+    if(m_sensor != nullptr){
+        m_sensor->mutate(m_generator);
+        m_effector->mutate(m_generator);
+    }
+
+}
+
+ivc::NeuronCluster *ivc::NeuronCluster::copy() {
+    auto copiedCluster = new NeuronCluster(*this);
+
+    copiedCluster->setNeurons(getCopyOfNeurons());
+    if(m_sensor != nullptr)
+        copiedCluster->setJointNeurons(new JointSensor(*m_sensor), new JointEffector(*m_effector));
+
+    return copiedCluster;
+}
+
+void ivc::NeuronCluster::setNeurons(std::vector<Neuron *> neurons) {
+    m_neuronVector = neurons;
+}
+
+void ivc::NeuronCluster::setJointNeurons(ivc::JointSensor * sensor, ivc::JointEffector* effector) {
+    m_sensor = sensor;
+    m_effector = effector;
+}
+
+void ivc::NeuronCluster::setGenerator(std::mt19937 *gen) {
+    m_generator = gen;
 }

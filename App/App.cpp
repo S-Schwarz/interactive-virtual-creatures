@@ -129,8 +129,15 @@ int ivc::App::init(){
     rootNode.init();
     rootNode.addNeuralConnections();
 
+    RootMorphNode* rootCopy = dynamic_cast<RootMorphNode*>(rootNode.copy());
+
+    std::random_device rd;
+    std::mt19937 generator(rd());
+
+    rootCopy->setGenerator(&generator);
+
     PhysicsScene* liveScene = new PhysicsScene();
-    liveScene->init(physicsBase,rootNode);
+    liveScene->init(physicsBase,*rootCopy);
 
     m_liveEnvironment = new LiveEnvironment();
     m_liveEnvironment->init(liveScene);

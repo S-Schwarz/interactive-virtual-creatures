@@ -144,3 +144,29 @@ void ivc::RootMorphNode::mutate() {
     m_brain->mutate();
 
 }
+
+ivc::BaseNode *ivc::RootMorphNode::copy() {
+    auto copiedNode = new RootMorphNode(*this);
+
+    std::vector<BaseNode*> copiedChildren;
+    for(auto child : m_childNodeVector){
+        auto newChild = child->copy();
+        newChild->setParent(copiedNode);
+        copiedChildren.push_back(newChild);
+    }
+    copiedNode->setChildren(copiedChildren);
+
+    copiedNode->setLocalNeurons(m_localNeurons->copy());
+    copiedNode->setBrain(m_brain->copy());
+
+    return copiedNode;
+}
+
+void ivc::RootMorphNode::setBrain(ivc::NeuronCluster * brain) {
+    m_brain = brain;
+}
+
+void ivc::RootMorphNode::setGenerator(std::mt19937 *gen) {
+    BaseNode::setGenerator(gen);
+    m_brain->setGenerator(gen);
+}

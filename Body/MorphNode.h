@@ -24,6 +24,7 @@ namespace ivc {
             //TODO: reflection
             bool m_terminalOnly;
         public:
+            BaseNode* copy() override;
             void mutate() override;
             void init(BaseNode*, std::mt19937*, unsigned int);
             void addNeuralConnections() override;

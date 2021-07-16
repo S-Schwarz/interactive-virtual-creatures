@@ -16,7 +16,7 @@ INCLUDE_DIRECTORIES(~/private/PhysX/physx/include ~/private/PhysX/pxshared/inclu
 LINK_DIRECTORIES(~/private/PhysX/physx/bin/linux.clang/debug ~/private/glfw-build/src)
 
 add_executable(interactive_virtual_creatures
-        main.cpp Res/glad.c App/App.h App/App.cpp World/PhysicsWorld.h World/PhysicsWorld.cpp Res/ShapeHandler.h Res/ShapeHandler.cpp
+        main.cpp Res/glad.c App/App.h App/App.cpp Res/ShapeHandler.h Res/ShapeHandler.cpp
         Body/RootMorphNode.h Body/RootMorphNode.cpp Body/MorphNode.h Body/MorphNode.cpp Control/NeuronCluster.h Control/NeuronCluster.cpp Constants.h
         Body/BaseNode.h Body/BaseNode.cpp Body/PhysicalCreature.h Body/PhysicalCreature.cpp Control/Neurons/Neuron.h Control/Neurons/Neuron.cpp Control/Neurons/TwoInputs/Neuron_Sum.h Control/Neurons/TwoInputs/Neuron_Sum.cpp
         Control/Neurons/TwoInputs/Neuron_Min.h Control/Neurons/TwoInputs/Neuron_Min.cpp Control/Neurons/TwoInputs/Neuron_Max.h Control/Neurons/TwoInputs/Neuron_Max.cpp Control/Gate.h Control/Gate.cpp

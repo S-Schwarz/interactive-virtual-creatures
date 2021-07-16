@@ -43,9 +43,13 @@ namespace ivc{
             bool m_isInitialized = false;
             std::mt19937* m_generator = nullptr;
         public:
+            virtual void setParent(BaseNode*);
+            virtual void setLocalNeurons(NeuronCluster*);
+            virtual BaseNode* copy() = 0;
             virtual void mutate();
             virtual unsigned int getNumberOfParts();
             virtual std::vector<BaseNode*> getChildren();
+            virtual void setChildren(std::vector<BaseNode*>);
             virtual int getRecursionLimit();
             virtual PxVec3 getDimensions();
             virtual PxVec3 getHalfExtents();
@@ -63,6 +67,8 @@ namespace ivc{
             virtual std::vector<unsigned long> getAllAdjacentOutputs();
             virtual std::vector<unsigned long> getAllChildOutputs();
             virtual void addNeuralConnections();
+            virtual std::mt19937* getGenerator();
+            virtual void setGenerator(std::mt19937*);
     };
 
 }
