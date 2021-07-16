@@ -21,6 +21,7 @@
 #include "../Res/ShapeHandler.h"
 
 #include "../Constants.h"
+#include "../Physics/Evolver.h"
 
 namespace ivc {
 

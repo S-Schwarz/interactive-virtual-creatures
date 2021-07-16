@@ -36,6 +36,7 @@ namespace ivc{
             PhysicalCreature(RootMorphNode, PxVec3, PxPhysics*);
             std::vector<PxRigidDynamic*> getBodies();
             void performBrainStep();
+            PxVec3 getPosition();
     };
 
 }

@@ -210,3 +210,7 @@ void ivc::PhysicalCreature::performBrainStep() {
     }
 
 }
+
+PxVec3 ivc::PhysicalCreature::getPosition() {
+    return bodyParts.front()->getGlobalPose().p;
+}

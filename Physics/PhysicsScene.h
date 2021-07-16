@@ -31,6 +31,7 @@ namespace ivc{
             int createPlane(PxVec3 normalVec, float distance, PxMaterial* material);
             std::vector<PxRigidDynamic*> getRigidDynamics();
             PxRigidStatic* getPlane();
+            PxVec3 getCreaturePos();
 
     };
 }

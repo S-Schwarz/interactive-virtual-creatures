@@ -12,6 +12,9 @@ const float STANDARD_DEVIATION_FACTOR = 0.3f;
 
 //simulation
 const float SIMULATION_STEP_SIZE = 0.01f;
+const int CREATURES_PER_GENERATION = 100;
+const int NUMBER_OF_GENERATIONS = 50;
+const int STEPS_PER_GENERATION = 1500;
 
 //body nodes
 const float MEAN_PART_SIZE = 1.0f;

@@ -1,0 +1,32 @@
+//
+// Created by st on 7/16/21.
+//
+
+#ifndef INTERACTIVE_VIRTUAL_CREATURES_EVOLVER_H
+#define INTERACTIVE_VIRTUAL_CREATURES_EVOLVER_H
+
+#include "PhysicsBase.h"
+#include "../Body/RootMorphNode.h"
+#include "PhysicsScene.h"
+#include <vector>
+#include <map>
+
+namespace ivc{
+    class Evolver {
+        private:
+            PhysicsBase* m_base = nullptr;
+            RootMorphNode* currentBest = nullptr;
+
+            std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> sceneMap;
+            void evolveNextGeneration();
+        public:
+            int init(PhysicsBase*);
+            RootMorphNode* evolveNewCreature();
+
+
+    };
+}
+
+
+
+#endif //INTERACTIVE_VIRTUAL_CREATURES_EVOLVER_H

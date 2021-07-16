@@ -125,19 +125,13 @@ int ivc::App::init(){
     PhysicsBase* physicsBase = new PhysicsBase();
     physicsBase->init();
 
-    RootMorphNode rootNode = RootMorphNode();
-    rootNode.init();
-    rootNode.addNeuralConnections();
+    Evolver* evolver = new Evolver();
+    evolver->init(physicsBase);
 
-    RootMorphNode* rootCopy = dynamic_cast<RootMorphNode*>(rootNode.copy());
-
-    std::random_device rd;
-    std::mt19937 generator(rd());
-
-    rootCopy->setGenerator(&generator);
+    RootMorphNode* rootNode = evolver->evolveNewCreature();
 
     PhysicsScene* liveScene = new PhysicsScene();
-    liveScene->init(physicsBase,*rootCopy);
+    liveScene->init(physicsBase,*rootNode);
 
     m_liveEnvironment = new LiveEnvironment();
     m_liveEnvironment->init(liveScene);

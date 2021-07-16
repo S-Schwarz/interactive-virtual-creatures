@@ -77,3 +77,7 @@ std::vector<PxRigidDynamic *> ivc::PhysicsScene::getRigidDynamics() {
 PxRigidStatic *ivc::PhysicsScene::getPlane() {
     return m_plane;
 }
+
+PxVec3 ivc::PhysicsScene::getCreaturePos() {
+    return m_creature->getPosition();
+}
