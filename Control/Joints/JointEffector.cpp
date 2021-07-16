@@ -84,9 +84,15 @@ void ivc::JointEffector::mutate(std::mt19937 *gen) {
 
 void ivc::JointEffector::calculateMaxStrength(PxVec3 dimA, PxVec3 dimB) {
 
-    float volumeA = dimA.x * dimA.y * dimA.z;
-    float volumeB = dimB.x * dimB.y * dimB.z;
+    float surfaceA = 2 * (dimA.x * dimA.y + dimA.x * dimA.z + dimA.y * dimA.z);
+    float surfaceB = 2 * (dimB.x * dimB.y + dimB.x * dimB.z + dimB.y * dimB.z);
 
-    m_maxStrength = (volumeA * volumeB);
+    if(surfaceA > surfaceB){
+        m_maxStrength = surfaceB;
+    }else{
+        m_maxStrength = surfaceA;
+    }
+
+
 
 }
