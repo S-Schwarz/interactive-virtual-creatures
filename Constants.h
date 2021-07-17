@@ -32,15 +32,17 @@ const float MUTATE_DIMENSION_CHANCE = 0.2;
 const float MUTATE_SCALE_CHANCE = 0.2;
 
 //joints
-const float MEAN_JOINT_LIMIT = M_PI/10;
+const float MEAN_JOINT_LIMIT = M_PI/4;
 const float SPRING_STIFFNESS = 1000;
 const float SPRING_DAMPING = 1000;
 
-const float JOINT_SWING_LIMIT = M_PI/8;
-const float JOINT_TWIST_LIMIT = M_PI/8;
+const float JOINT_SWING_LIMIT = M_PI/2;
+const float JOINT_TWIST_LIMIT = M_PI/2;
 
 const float MEAN_SENSOR_WEIGHT = 1.0f;
 const float MEAN_EFFECTOR_WEIGHT = 10.0f;
+
+const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.5;
 
 const float MUTATE_JOINT_CHANCE = 0.2;
 

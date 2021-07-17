@@ -94,9 +94,9 @@ void ivc::JointEffector::calculateMaxStrength(PxVec3 dimA, PxVec3 dimB) {
     float surfaceB = 2 * (dimB.x * dimB.y + dimB.x * dimB.z + dimB.y * dimB.z);
 
     if(surfaceA > surfaceB){
-        m_maxStrength = surfaceB;
+        m_maxStrength = surfaceB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
     }else{
-        m_maxStrength = surfaceA;
+        m_maxStrength = surfaceA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
     }
 
 
