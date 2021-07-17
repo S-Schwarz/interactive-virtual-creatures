@@ -73,7 +73,7 @@ std::pair<ivc::JointSensor *, ivc::JointEffector *> ivc::NeuronCluster::getCopie
 
 void ivc::NeuronCluster::mutate() {
     for(auto neuron : m_neuronVector){
-        neuron->mutate(m_generator);
+        neuron->mutate(m_generator,m_possibleInputGates);
     }
     if(m_sensor != nullptr){
         m_sensor->mutate(m_generator);

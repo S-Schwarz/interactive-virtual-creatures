@@ -131,6 +131,7 @@ void ivc::RootMorphNode::addNeuralConnections() {
 void ivc::RootMorphNode::mutate() {
 
     BaseNode::mutate();
+    // TODO: mutate new neurons THEN set possible inputs for cluster
     m_brain->mutate();
 
 }

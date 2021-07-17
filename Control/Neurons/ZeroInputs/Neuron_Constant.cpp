@@ -19,8 +19,8 @@ void ivc::Neuron_Constant::randomize(std::mt19937* gen) {
     m_constant = constantDis(*gen);
 }
 
-void ivc::Neuron_Constant::mutate(std::mt19937 *gen) {
-    Neuron::mutate(gen);
+void ivc::Neuron_Constant::mutate(std::mt19937 *gen,std::vector<unsigned long> possibleInputs) {
+    Neuron::mutate(gen,possibleInputs);
 
     std::uniform_real_distribution<> dis(0, 1);
 

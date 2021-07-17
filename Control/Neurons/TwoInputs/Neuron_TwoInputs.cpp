@@ -45,8 +45,8 @@ void ivc::Neuron_TwoInputs::randomize(std::mt19937* gen) {
 
 }
 
-void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen) {
-    Neuron::mutate(gen);
+void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen,std::vector<unsigned long> possibleInputs) {
+    Neuron::mutate(gen,possibleInputs);
 
     std::uniform_real_distribution<> dis(0, 1);
 
@@ -55,4 +55,23 @@ void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen) {
         weight_0 = Mutator::mutateFloat(gen,weight_0, INFINITY, -INFINITY);
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
         weight_1 = Mutator::mutateFloat(gen,weight_1, INFINITY, -INFINITY);
+
+
+    //mutate input connections
+    if(possibleInputs.empty())
+        return;
+
+    static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
+
+    if(dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+        std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
+        id_input_0 = possibleInputs[0];
+    }
+
+    if(dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+        std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
+        id_input_1 = possibleInputs[0];
+    }
+
+
 }

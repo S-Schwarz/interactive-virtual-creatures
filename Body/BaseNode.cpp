@@ -165,6 +165,7 @@ void ivc::BaseNode::mutate() {
 
     m_scale = PxVec3(newX,newY,newZ);
 
+    // TODO: mutate new neurons THEN set possible inputs for cluster
     m_localNeurons->mutate();
 
     for(auto child : m_childNodeVector){

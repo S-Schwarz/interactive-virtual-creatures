@@ -50,7 +50,7 @@ void ivc::Neuron::setOutput(ivc::Gate * gate) {
     output = gate;
 }
 
-void ivc::Neuron::mutate(std::mt19937* gen) {
+void ivc::Neuron::mutate(std::mt19937* gen,std::vector<unsigned long> possibleInputs) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
