@@ -76,10 +76,16 @@ void ivc::JointEffector::chooseRandomInputs(std::vector<unsigned long> possibleI
 }
 
 void ivc::JointEffector::mutate(std::mt19937 *gen) {
+
+    std::uniform_real_distribution<> dis(0, 1);
+
     //mutate input weights
-    weight_0 = Mutator::mutateFloat(gen, weight_0, INFINITY, -INFINITY);
-    weight_1 = Mutator::mutateFloat(gen, weight_1, INFINITY, -INFINITY);
-    weight_2 = Mutator::mutateFloat(gen, weight_2, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+        weight_0 = Mutator::mutateFloat(gen, weight_0, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+        weight_1 = Mutator::mutateFloat(gen, weight_1, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+        weight_2 = Mutator::mutateFloat(gen, weight_2, INFINITY, -INFINITY);
 }
 
 void ivc::JointEffector::calculateMaxStrength(PxVec3 dimA, PxVec3 dimB) {

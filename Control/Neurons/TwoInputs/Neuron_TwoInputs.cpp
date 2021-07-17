@@ -47,7 +47,12 @@ void ivc::Neuron_TwoInputs::randomize(std::mt19937* gen) {
 
 void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen) {
     Neuron::mutate(gen);
+
+    std::uniform_real_distribution<> dis(0, 1);
+
     //mutate input weights
-    weight_0 = Mutator::mutateFloat(gen,weight_0, INFINITY, -INFINITY);
-    weight_1 = Mutator::mutateFloat(gen,weight_1, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+        weight_0 = Mutator::mutateFloat(gen,weight_0, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+        weight_1 = Mutator::mutateFloat(gen,weight_1, INFINITY, -INFINITY);
 }

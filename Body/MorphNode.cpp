@@ -127,11 +127,19 @@ void ivc::MorphNode::mutate() {
 
     BaseNode::mutate();
 
+    std::uniform_real_distribution<> dis(0, 1);
+
     //mutate joint
-    std::pair<float,float> newSwing = {Mutator::mutateFloat(m_generator,m_swingLimits.first,JOINT_SWING_LIMIT,-JOINT_SWING_LIMIT),Mutator::mutateFloat(m_generator,m_swingLimits.second,JOINT_SWING_LIMIT,-JOINT_SWING_LIMIT)};
-    m_swingLimits = newSwing;
-    std::pair<float,float> newTwist = {Mutator::mutateFloat(m_generator,m_twistLimits.first,JOINT_TWIST_LIMIT,-JOINT_TWIST_LIMIT),Mutator::mutateFloat(m_generator,m_twistLimits.second,JOINT_TWIST_LIMIT,-JOINT_TWIST_LIMIT)};
-    m_twistLimits = newTwist;
+    if(dis(m_generator) <= MUTATE_JOINT_CHANCE){
+        std::pair<float,float> newSwing = {Mutator::mutateFloat(m_generator,m_swingLimits.first,JOINT_SWING_LIMIT,-JOINT_SWING_LIMIT),Mutator::mutateFloat(m_generator,m_swingLimits.second,JOINT_SWING_LIMIT,-JOINT_SWING_LIMIT)};
+        m_swingLimits = newSwing;
+    }
+
+    if(dis(m_generator) <= MUTATE_JOINT_CHANCE){
+        std::pair<float,float> newTwist = {Mutator::mutateFloat(m_generator,m_twistLimits.first,JOINT_TWIST_LIMIT,-JOINT_TWIST_LIMIT),Mutator::mutateFloat(m_generator,m_twistLimits.second,JOINT_TWIST_LIMIT,-JOINT_TWIST_LIMIT)};
+        m_twistLimits = newTwist;
+    }
+
 }
 
 ivc::BaseNode *ivc::MorphNode::copy() {

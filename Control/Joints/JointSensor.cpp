@@ -49,8 +49,14 @@ void ivc::JointSensor::setOutputGates(std::vector<Gate *> gates) {
 }
 
 void ivc::JointSensor::mutate(std::mt19937 *gen) {
+
+    std::uniform_real_distribution<> dis(0, 1);
+
     //mutate output weights
-    weight_0 = Mutator::mutateFloat(gen, weight_0, INFINITY, -INFINITY);
-    weight_1 = Mutator::mutateFloat(gen, weight_1, INFINITY, -INFINITY);
-    weight_2 = Mutator::mutateFloat(gen, weight_2, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_OUTPUT_WEIGHT_CHANCE)
+        weight_0 = Mutator::mutateFloat(gen, weight_0, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_OUTPUT_WEIGHT_CHANCE)
+        weight_1 = Mutator::mutateFloat(gen, weight_1, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_OUTPUT_WEIGHT_CHANCE)
+        weight_2 = Mutator::mutateFloat(gen, weight_2, INFINITY, -INFINITY);
 }

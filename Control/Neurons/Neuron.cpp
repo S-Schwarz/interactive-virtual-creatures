@@ -52,7 +52,10 @@ void ivc::Neuron::setOutput(ivc::Gate * gate) {
 
 void ivc::Neuron::mutate(std::mt19937* gen) {
 
+    std::uniform_real_distribution<> dis(0, 1);
+
     //mutate outputWeight
-    m_outputWeight = Mutator::mutateFloat(gen, m_outputWeight, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_OUTPUT_WEIGHT_CHANCE)
+        m_outputWeight = Mutator::mutateFloat(gen, m_outputWeight, INFINITY, -INFINITY);
 
 }

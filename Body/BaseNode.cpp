@@ -135,16 +135,34 @@ void ivc::BaseNode::mutate() {
     //TODO: chance to or not to mutate
     //TODO: limit values
 
+    std::uniform_real_distribution<> dis(0, 1);
+
     //mutate dimensions
-    float newX = Mutator::mutateFloat(m_generator, m_dimension.x, INFINITY, MIN_PART_SIZE);
-    float newY = Mutator::mutateFloat(m_generator, m_dimension.y, INFINITY, MIN_PART_SIZE);
-    float newZ = Mutator::mutateFloat(m_generator, m_dimension.z, INFINITY, MIN_PART_SIZE);
+    float newX = m_dimension.x;
+    float newY = m_dimension.y;
+    float newZ = m_dimension.z;
+
+    if(dis(m_generator) <= MUTATE_DIMENSION_CHANCE)
+        newX = Mutator::mutateFloat(m_generator, m_dimension.x, INFINITY, MIN_PART_SIZE);
+    if(dis(m_generator) <= MUTATE_DIMENSION_CHANCE)
+        newY = Mutator::mutateFloat(m_generator, m_dimension.y, INFINITY, MIN_PART_SIZE);
+    if(dis(m_generator) <= MUTATE_DIMENSION_CHANCE)
+        newZ = Mutator::mutateFloat(m_generator, m_dimension.z, INFINITY, MIN_PART_SIZE);
+
     m_dimension = PxVec3(newX,newY,newZ);
 
     //mutate scale
-    newX = Mutator::mutateFloat(m_generator, m_scale.x, INFINITY, MIN_SCALE);
-    newY = Mutator::mutateFloat(m_generator, m_scale.y, INFINITY, MIN_SCALE);
-    newZ = Mutator::mutateFloat(m_generator, m_scale.z, INFINITY, MIN_SCALE);
+    newX = m_scale.x;
+    newY = m_scale.y;
+    newZ = m_scale.z;
+
+    if(dis(m_generator) <= MUTATE_SCALE_CHANCE)
+        newX = Mutator::mutateFloat(m_generator, m_scale.x, INFINITY, MIN_SCALE);
+    if(dis(m_generator) <= MUTATE_SCALE_CHANCE)
+        newY = Mutator::mutateFloat(m_generator, m_scale.y, INFINITY, MIN_SCALE);
+    if(dis(m_generator) <= MUTATE_SCALE_CHANCE)
+        newZ = Mutator::mutateFloat(m_generator, m_scale.z, INFINITY, MIN_SCALE);
+
     m_scale = PxVec3(newX,newY,newZ);
 
     m_localNeurons->mutate();
