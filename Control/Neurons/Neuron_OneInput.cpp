@@ -8,11 +8,6 @@ ivc::Neuron_OneInput::Neuron_OneInput(ivc::NEURON_TYPE type) {
     m_type = type;
 }
 
-void ivc::Neuron_OneInput::randomize(std::mt19937 *gen) {
-    Neuron::randomize(gen);
-    mutate(gen);
-}
-
 std::vector<unsigned long> ivc::Neuron_OneInput::getGateIDs() {
     return {id_input_0};
 }
@@ -38,23 +33,23 @@ void ivc::Neuron_OneInput::chooseRandomInputs(std::vector<unsigned long> possibl
 
 }
 
-void ivc::Neuron_OneInput::mutate(std::mt19937 *gen) {
-    Neuron::mutate(gen);
+void ivc::Neuron_OneInput::mutate(std::mt19937 *gen, bool forceMutation) {
+    Neuron::mutate(gen,forceMutation);
 
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutateBodyAndNeurons input weights
-    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+    if(forceMutation || dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
         weight_0 = Mutator::mutateFloat(gen,weight_0, INFINITY, -INFINITY);
 
     //mutate sine params
-    if(dis(*gen) <= MUTATE_SINE_CHANCE)
+    if(forceMutation || dis(*gen) <= MUTATE_SINE_CHANCE)
         m_sin_amplitude = Mutator::mutateFloat(gen,m_sin_amplitude, INFINITY, -INFINITY);
-    if(dis(*gen) <= MUTATE_SINE_CHANCE)
+    if(forceMutation || dis(*gen) <= MUTATE_SINE_CHANCE)
         m_sin_period = Mutator::mutateFloat(gen,m_sin_period, INFINITY, -INFINITY);
-    if(dis(*gen) <= MUTATE_SINE_CHANCE)
+    if(forceMutation || dis(*gen) <= MUTATE_SINE_CHANCE)
         m_sin_phase = Mutator::mutateFloat(gen,m_sin_phase, INFINITY, -INFINITY);
-    if(dis(*gen) <= MUTATE_SINE_CHANCE)
+    if(forceMutation || dis(*gen) <= MUTATE_SINE_CHANCE)
         m_sin_vertical = Mutator::mutateFloat(gen,m_sin_vertical, INFINITY, -INFINITY);
 
 }

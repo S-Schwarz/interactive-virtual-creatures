@@ -16,8 +16,7 @@ namespace ivc{
         Neuron_ZeroInputs(NEURON_TYPE);
         Neuron* copy() override;
         void step() override;
-        void randomize(std::mt19937*) override;
-        void mutate(std::mt19937*) override;
+        void mutate(std::mt19937*,bool) override;
         void mutateConnections(std::mt19937*,std::vector<unsigned long>) override;
     };
 }

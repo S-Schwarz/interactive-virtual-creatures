@@ -21,11 +21,10 @@ namespace ivc{
         float m_sin_vertical = 0.0f;
     public:
         Neuron_OneInput(NEURON_TYPE);
-        void randomize(std::mt19937*) override;
         std::vector<unsigned long> getGateIDs() override;
         int bindGates(std::vector<Gate*>) override;
         void chooseRandomInputs(std::vector<unsigned long>) override;
-        void mutate(std::mt19937*) override;
+        void mutate(std::mt19937*,bool) override;
         void mutateConnections(std::mt19937*,std::vector<unsigned long>) override;
 
         Neuron* copy() override;

@@ -40,18 +40,6 @@ void ivc::Neuron_TwoInputs::chooseRandomInputs(std::vector<unsigned long> possib
     id_input_1 = possibleInputs[0];
 }
 
-void ivc::Neuron_TwoInputs::randomize(std::mt19937* gen) {
-    Neuron::randomize(gen);
-
-    std::normal_distribution<> inputDis(MEAN_NEURON_WEIGHT, MEAN_NEURON_WEIGHT * STANDARD_DEVIATION_FACTOR);
-    weight_0 = inputDis(*gen);
-    weight_1 = inputDis(*gen);
-
-    std::normal_distribution<> thresholdDis(MEAN_NEURON_THRESHOLD, MEAN_NEURON_THRESHOLD * STANDARD_DEVIATION_FACTOR);
-    m_threshold =thresholdDis(*gen);
-
-}
-
 void ivc::Neuron_TwoInputs::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs) {
 
     std::uniform_real_distribution<> dis(0, 1);
@@ -74,19 +62,19 @@ void ivc::Neuron_TwoInputs::mutateConnections(std::mt19937 *gen, std::vector<uns
     }
 }
 
-void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen) {
-    Neuron::mutate(gen);
+void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen, bool forceMutation) {
+    Neuron::mutate(gen,forceMutation);
 
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutateBodyAndNeurons input weights
-    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+    if(forceMutation || dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
         weight_0 = Mutator::mutateFloat(gen,weight_0, INFINITY, -INFINITY);
-    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+    if(forceMutation || dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
         weight_1 = Mutator::mutateFloat(gen,weight_1, INFINITY, -INFINITY);
 
     //mutate sum_threshold threshold
-    if(dis(*gen) <= MUTATE_THRESHOLD_CHANCE)
+    if(forceMutation || dis(*gen) <= MUTATE_THRESHOLD_CHANCE)
         m_threshold = Mutator::mutateFloat(gen,m_threshold, INFINITY, -INFINITY);
 
 }

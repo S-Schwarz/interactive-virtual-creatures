@@ -22,20 +22,13 @@ void ivc::Neuron_ZeroInputs::step() {
     }
 }
 
-void ivc::Neuron_ZeroInputs::randomize(std::mt19937 *gen) {
-    Neuron::randomize(gen);
-
-    std::normal_distribution<> constantDis(MEAN_NEURON_CONSTANT, MEAN_NEURON_CONSTANT * STANDARD_DEVIATION_FACTOR);
-    m_constant = constantDis(*gen);
-}
-
-void ivc::Neuron_ZeroInputs::mutate(std::mt19937 *gen) {
-    Neuron::mutate(gen);
+void ivc::Neuron_ZeroInputs::mutate(std::mt19937 *gen, bool forceMutation) {
+    Neuron::mutate(gen,forceMutation);
 
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutateBodyAndNeurons constant
-    if(dis(*gen) <= MUTATE_CONSTANT_CHANCE)
+    if(forceMutation || dis(*gen) <= MUTATE_CONSTANT_CHANCE)
         m_constant = Mutator::mutateFloat(gen, m_constant, INFINITY, -INFINITY);
 }
 

@@ -39,23 +39,16 @@ ivc::Neuron* ivc::Neuron::copy() {
     return nullptr;
 }
 
-void ivc::Neuron::randomize(std::mt19937* gen) {
-
-    std::normal_distribution<> outputDis(MEAN_NEURON_WEIGHT, MEAN_NEURON_WEIGHT * STANDARD_DEVIATION_FACTOR);
-    m_outputWeight = outputDis(*gen);
-
-}
-
 void ivc::Neuron::setOutput(ivc::Gate * gate) {
     output = gate;
 }
 
-void ivc::Neuron::mutate(std::mt19937* gen) {
+void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutateBodyAndNeurons outputWeight
-    if(dis(*gen) <= MUTATE_OUTPUT_WEIGHT_CHANCE)
+    if(forceMutation || dis(*gen) <= MUTATE_OUTPUT_WEIGHT_CHANCE)
         m_outputWeight = Mutator::mutateFloat(gen, m_outputWeight, INFINITY, -INFINITY);
 
 }

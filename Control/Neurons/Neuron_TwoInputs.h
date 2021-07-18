@@ -11,17 +11,16 @@ namespace ivc{
         protected:
             Gate *input_0, *input_1;
             unsigned long id_input_0, id_input_1;
-            float weight_0 = 1.0f;
-            float weight_1 = 1.0f;
+            float weight_0 = MEAN_NEURON_WEIGHT;
+            float weight_1 = MEAN_NEURON_WEIGHT;
 
             float m_threshold = 0.0f;
         public:
             Neuron_TwoInputs(NEURON_TYPE);
-            void randomize(std::mt19937*) override;
             std::vector<unsigned long> getGateIDs() override;
             int bindGates(std::vector<Gate*>) override;
             void chooseRandomInputs(std::vector<unsigned long>) override;
-            void mutate(std::mt19937*) override;
+            void mutate(std::mt19937*,bool) override;
             void mutateConnections(std::mt19937*,std::vector<unsigned long>) override;
 
             Neuron* copy() override;

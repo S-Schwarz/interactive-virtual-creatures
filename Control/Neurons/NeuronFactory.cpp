@@ -34,7 +34,7 @@ ivc::Neuron *ivc::NeuronFactory::createRandomNeuron(std::mt19937* gen) {
             throw std::invalid_argument("INVALID NEURON TYPE");
     }
 
-    newNeuron->randomize(gen);
+    newNeuron->mutate(gen,true);
     return newNeuron;
 
 }
