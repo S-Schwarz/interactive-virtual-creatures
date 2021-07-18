@@ -120,6 +120,7 @@ void ivc::Evolver::evolveNextGeneration() {
         std::mt19937 generator(rd());
         newRoot->setGenerator(&generator);
         newRoot->mutateBodyAndNeurons();
+        newRoot->mutateNewBodyAndNewNeurons();
         newRoot->mutateNeuralConnections();
         auto newScene = new PhysicsScene();
         newScene->init(m_base,*newRoot);

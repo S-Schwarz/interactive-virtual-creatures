@@ -19,12 +19,16 @@ void ivc::Neuron_Constant::randomize(std::mt19937* gen) {
     m_constant = constantDis(*gen);
 }
 
-void ivc::Neuron_Constant::mutate(std::mt19937 *gen,std::vector<unsigned long> possibleInputs) {
-    Neuron::mutate(gen,possibleInputs);
+void ivc::Neuron_Constant::mutate(std::mt19937 *gen) {
+    Neuron::mutate(gen);
 
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutateBodyAndNeurons constant
     if(dis(*gen) <= MUTATE_CONSTANT_CHANCE)
         m_constant = Mutator::mutateFloat(gen, m_constant, INFINITY, -INFINITY);
+}
+
+void ivc::Neuron_Constant::mutateConnections(std::mt19937 *, std::vector<unsigned long>) {
+
 }

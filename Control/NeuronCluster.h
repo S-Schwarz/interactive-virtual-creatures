@@ -32,7 +32,8 @@ namespace ivc {
         void randomizeConnections();
         std::vector<Neuron*> getCopyOfNeurons();
         std::pair<JointSensor*,JointEffector*> getCopiesOfJointNeurons();
-        void mutateNeurons(IDHandler*);
+        void mutateNeurons();
+        void mutateNewNeurons(IDHandler*);
         void mutateConnections();
         NeuronCluster* copy();
         void setNeurons(std::vector<Neuron*>);

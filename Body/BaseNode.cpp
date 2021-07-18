@@ -141,7 +141,7 @@ void ivc::BaseNode::mutateBodyAndNeurons() {
 
     std::uniform_real_distribution<> dis(0, 1);
 
-    m_localNeurons->mutateNeurons(getIDHandler());
+    m_localNeurons->mutateNeurons();
 
     //mutateBodyAndNeurons dimensions
     float newX = m_dimension.x;

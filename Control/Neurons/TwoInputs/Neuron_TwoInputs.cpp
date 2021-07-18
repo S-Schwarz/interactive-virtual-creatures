@@ -45,17 +45,9 @@ void ivc::Neuron_TwoInputs::randomize(std::mt19937* gen) {
 
 }
 
-void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen,std::vector<unsigned long> possibleInputs) {
-    Neuron::mutate(gen,possibleInputs);
+void ivc::Neuron_TwoInputs::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs) {
 
     std::uniform_real_distribution<> dis(0, 1);
-
-    //mutateBodyAndNeurons input weights
-    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
-        weight_0 = Mutator::mutateFloat(gen,weight_0, INFINITY, -INFINITY);
-    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
-        weight_1 = Mutator::mutateFloat(gen,weight_1, INFINITY, -INFINITY);
-
 
     //mutateBodyAndNeurons input connections
     if(possibleInputs.empty())
@@ -72,6 +64,17 @@ void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen,std::vector<unsigned long> 
         std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
         id_input_1 = possibleInputs[0];
     }
+}
 
+void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen) {
+    Neuron::mutate(gen);
+
+    std::uniform_real_distribution<> dis(0, 1);
+
+    //mutateBodyAndNeurons input weights
+    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+        weight_0 = Mutator::mutateFloat(gen,weight_0, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+        weight_1 = Mutator::mutateFloat(gen,weight_1, INFINITY, -INFINITY);
 
 }

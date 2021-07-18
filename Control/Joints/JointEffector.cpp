@@ -102,3 +102,28 @@ void ivc::JointEffector::calculateMaxStrength(PxVec3 dimA, PxVec3 dimB) {
 
 
 }
+
+void ivc::JointEffector::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs) {
+    std::uniform_real_distribution<> dis(0, 1);
+
+    //mutateBodyAndNeurons input connections
+    if(possibleInputs.empty())
+        return;
+
+    static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
+
+    if(dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+        std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
+        id_input_0 = possibleInputs[0];
+    }
+
+    if(dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+        std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
+        id_input_1 = possibleInputs[0];
+    }
+
+    if(dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+        std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
+        id_input_2 = possibleInputs[0];
+    }
+}

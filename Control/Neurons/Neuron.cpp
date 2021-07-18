@@ -36,7 +36,7 @@ void ivc::Neuron::chooseRandomInputs(std::vector<unsigned long>) {
 }
 
 ivc::Neuron* ivc::Neuron::copy() {
-    return new Neuron(*this);
+    return nullptr;
 }
 
 void ivc::Neuron::randomize(std::mt19937* gen) {
@@ -50,7 +50,7 @@ void ivc::Neuron::setOutput(ivc::Gate * gate) {
     output = gate;
 }
 
-void ivc::Neuron::mutate(std::mt19937* gen,std::vector<unsigned long> possibleInputs) {
+void ivc::Neuron::mutate(std::mt19937* gen) {
 
     std::uniform_real_distribution<> dis(0, 1);
 

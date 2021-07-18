@@ -32,7 +32,8 @@ namespace ivc{
             virtual unsigned long getOutputID();
             virtual void setID(unsigned long);
             virtual void chooseRandomInputs(std::vector<unsigned long>);
-            virtual void mutate(std::mt19937*,std::vector<unsigned long>);
+            virtual void mutate(std::mt19937*);
+            virtual void mutateConnections(std::mt19937*,std::vector<unsigned long>) = 0;
     };
 
 }

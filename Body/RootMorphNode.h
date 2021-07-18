@@ -28,6 +28,7 @@ namespace ivc {
             void setBrain(NeuronCluster*);
             BaseNode* copy() override;
             void mutateBodyAndNeurons() override;
+            void mutateNewBodyAndNewNeurons() override;
             void mutateNeuralConnections() override;
             void init();
             void addNeuralConnections() override;

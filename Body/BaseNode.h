@@ -49,6 +49,7 @@ namespace ivc{
             virtual void setLocalNeurons(NeuronCluster*);
             virtual BaseNode* copy() = 0;
             virtual void mutateBodyAndNeurons();
+            virtual void mutateNewBodyAndNewNeurons() = 0;
             virtual void mutateNeuralConnections();
             virtual unsigned int getNumberOfParts();
             virtual std::vector<BaseNode*> getChildren();

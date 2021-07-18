@@ -97,7 +97,7 @@ void ivc::MorphNode::init(BaseNode* parent, std::mt19937* gen, unsigned int dept
     m_terminalOnly = false; //TODO: randomize(?)
 
     std::uniform_real_distribution<> dis(0, 1);
-/*
+
     for(int i = 0; i < MAX_CHILDREN; ++i){
         if(dis(*gen) < (CHILD_CHANCE - CHILD_CHANCE_DECREASE * depth) && !m_freeSides.empty()) {
             MorphNode *newChild = new MorphNode();
@@ -105,7 +105,7 @@ void ivc::MorphNode::init(BaseNode* parent, std::mt19937* gen, unsigned int dept
             m_childNodeVector.emplace_back(newChild);
         }
     }
-*/
+
     mutateBodyAndNeurons();
 
     m_isInitialized = true;
@@ -163,12 +163,20 @@ void ivc::MorphNode::mutateBodyAndNeurons() {
             m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
     }
 
+}
+
+void ivc::MorphNode::mutateNewBodyAndNewNeurons() {
+
+    std::uniform_real_distribution<> dis(0, 1);
+
     // TODO: change mean values relative to parent (?)
     if(dis(*m_generator) <= MUTATE_BODY_CONNECTION_CHANCE && !m_freeSides.empty()){
         MorphNode *newChild = new MorphNode();
         newChild->init(this, m_generator, INFINITY);
         m_childNodeVector.emplace_back(newChild);
     }
+
+    m_localNeurons->mutateNewNeurons(getIDHandler());
 
 }
 

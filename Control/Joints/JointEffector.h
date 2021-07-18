@@ -34,6 +34,7 @@ namespace ivc{
         int bindGates(std::vector<Gate*>);
         void chooseRandomInputs(std::vector<unsigned long>);
         void mutate(std::mt19937*);
+        void mutateConnections(std::mt19937*,std::vector<unsigned long>);
         void calculateMaxStrength(PxVec3,PxVec3);
     };
 }
