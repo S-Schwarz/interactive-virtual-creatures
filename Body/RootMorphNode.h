@@ -27,7 +27,8 @@ namespace ivc {
         public:
             void setBrain(NeuronCluster*);
             BaseNode* copy() override;
-            void mutate() override;
+            void mutateBodyAndNeurons() override;
+            void mutateNeuralConnections() override;
             void init();
             void addNeuralConnections() override;
             PxVec3 getParentAnchor() override;

@@ -119,7 +119,8 @@ void ivc::Evolver::evolveNextGeneration() {
         std::random_device rd;
         std::mt19937 generator(rd());
         newRoot->setGenerator(&generator);
-        newRoot->mutate();
+        newRoot->mutateBodyAndNeurons();
+        newRoot->mutateNeuralConnections();
         auto newScene = new PhysicsScene();
         newScene->init(m_base,*newRoot);
         nextGenMap[newScene] = {newRoot, -INFINITY};

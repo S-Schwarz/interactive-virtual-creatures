@@ -24,7 +24,7 @@ void ivc::Neuron_Constant::mutate(std::mt19937 *gen,std::vector<unsigned long> p
 
     std::uniform_real_distribution<> dis(0, 1);
 
-    //mutate constant
+    //mutateBodyAndNeurons constant
     if(dis(*gen) <= MUTATE_CONSTANT_CHANCE)
         m_constant = Mutator::mutateFloat(gen, m_constant, INFINITY, -INFINITY);
 }

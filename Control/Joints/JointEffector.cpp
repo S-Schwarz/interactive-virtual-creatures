@@ -79,7 +79,7 @@ void ivc::JointEffector::mutate(std::mt19937 *gen) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
-    //mutate input weights
+    //mutateBodyAndNeurons input weights
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
         weight_0 = Mutator::mutateFloat(gen, weight_0, INFINITY, -INFINITY);
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)

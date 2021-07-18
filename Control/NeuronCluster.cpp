@@ -71,7 +71,19 @@ std::pair<ivc::JointSensor *, ivc::JointEffector *> ivc::NeuronCluster::getCopie
     return {new JointSensor(*m_sensor), new JointEffector(*m_effector)};
 }
 
-void ivc::NeuronCluster::mutate() {
+void ivc::NeuronCluster::mutateNeurons(IDHandler* idHandler) {
+    std::uniform_real_distribution<> dis(0, 1);
+
+    if(dis(*m_generator) <= MUTATE_NEW_NEURON_CHANCE){
+        auto newNeuron = NeuronFactory::createRandomNeuron(m_generator);
+        auto newID = idHandler->getNewID();
+        newNeuron->setID(newID);
+        m_outputGates.push_back(newID);
+        m_neuronVector.push_back(newNeuron);
+    }
+}
+
+void ivc::NeuronCluster::mutateConnections() {
     for(auto neuron : m_neuronVector){
         neuron->mutate(m_generator,m_possibleInputGates);
     }

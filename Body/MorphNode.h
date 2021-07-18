@@ -26,7 +26,7 @@ namespace ivc {
             bool m_terminalOnly;
         public:
             BaseNode* copy() override;
-            void mutate() override;
+            void mutateBodyAndNeurons() override;
             void init(BaseNode*, std::mt19937*, unsigned int);
             void addNeuralConnections() override;
             PxVec3 getAnchorPosition(std::mt19937* gen);

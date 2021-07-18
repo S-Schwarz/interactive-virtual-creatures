@@ -129,15 +129,17 @@ void ivc::BaseNode::addNeuralConnections() {
 
 }
 
-void ivc::BaseNode::mutate() {
+void ivc::BaseNode::mutateBodyAndNeurons() {
 
     //TODO: ignoring recursion for now
-    //TODO: chance to or not to mutate
+    //TODO: chance to or not to mutateBodyAndNeurons
     //TODO: limit values
 
     std::uniform_real_distribution<> dis(0, 1);
 
-    //mutate dimensions
+    m_localNeurons->mutateNeurons(getIDHandler());
+
+    //mutateBodyAndNeurons dimensions
     float newX = m_dimension.x;
     float newY = m_dimension.y;
     float newZ = m_dimension.z;
@@ -151,7 +153,7 @@ void ivc::BaseNode::mutate() {
 
     m_dimension = PxVec3(newX,newY,newZ);
 
-    //mutate scale
+    //mutateBodyAndNeurons scale
     newX = m_scale.x;
     newY = m_scale.y;
     newZ = m_scale.z;
@@ -165,12 +167,16 @@ void ivc::BaseNode::mutate() {
 
     m_scale = PxVec3(newX,newY,newZ);
 
-    // TODO: mutate new neurons THEN set possible inputs for cluster
-    m_localNeurons->mutate();
-
     for(auto child : m_childNodeVector){
-        child->mutate();
+        child->mutateBodyAndNeurons();
     }
+
+}
+
+void ivc::BaseNode::mutateNeuralConnections() {
+
+    m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
+    m_localNeurons->mutateConnections();
 
 }
 

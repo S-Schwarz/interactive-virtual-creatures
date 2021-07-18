@@ -52,7 +52,7 @@ void ivc::JointSensor::mutate(std::mt19937 *gen) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
-    //mutate output weights
+    //mutateBodyAndNeurons output weights
     if(dis(*gen) <= MUTATE_OUTPUT_WEIGHT_CHANCE)
         weight_0 = Mutator::mutateFloat(gen, weight_0, INFINITY, -INFINITY);
     if(dis(*gen) <= MUTATE_OUTPUT_WEIGHT_CHANCE)

@@ -92,7 +92,7 @@ void ivc::RootMorphNode::init() {
     }
 
     std::uniform_real_distribution<> dis(0, 1);
-
+/*
     for(int i = 0; i < MAX_CHILDREN; ++i){
         if(dis(*m_generator) < CHILD_CHANCE && !m_freeSides.empty()){
             MorphNode *newChild = new MorphNode();
@@ -100,8 +100,8 @@ void ivc::RootMorphNode::init() {
             m_childNodeVector.emplace_back(newChild);
         }
     }
-
-    mutate();
+*/
+    mutateBodyAndNeurons();
 
     m_isInitialized = true;
 }
@@ -128,12 +128,32 @@ void ivc::RootMorphNode::addNeuralConnections() {
 
 }
 
-void ivc::RootMorphNode::mutate() {
+void ivc::RootMorphNode::mutateBodyAndNeurons() {
 
-    BaseNode::mutate();
-    // TODO: mutate new neurons THEN set possible inputs for cluster
-    m_brain->mutate();
+    std::uniform_real_distribution<> dis(0, 1);
 
+    BaseNode::mutateBodyAndNeurons();
+
+    m_brain->mutateNeurons(m_idHandler);
+
+    // TODO: change mean values relative to parent (?)
+    if(dis(*m_generator) <= MUTATE_BODY_CONNECTION_CHANCE && !m_freeSides.empty()){
+        MorphNode *newChild = new MorphNode();
+        newChild->init(this, m_generator, INFINITY);
+        m_childNodeVector.emplace_back(newChild);
+    }
+
+}
+
+void ivc::RootMorphNode::mutateNeuralConnections() {
+    BaseNode::mutateNeuralConnections();
+
+    std::vector<unsigned long> brainInputs = m_localNeurons->getOutputGates();
+    auto childOutputs = getAllChildOutputs();
+    brainInputs.insert(brainInputs.end(), childOutputs.begin(), childOutputs.end());
+    m_brain->setPossibleInputs(brainInputs);
+
+    m_brain->mutateConnections();
 }
 
 ivc::BaseNode *ivc::RootMorphNode::copy() {

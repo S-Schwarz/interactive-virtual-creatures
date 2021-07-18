@@ -97,7 +97,7 @@ void ivc::MorphNode::init(BaseNode* parent, std::mt19937* gen, unsigned int dept
     m_terminalOnly = false; //TODO: randomize(?)
 
     std::uniform_real_distribution<> dis(0, 1);
-
+/*
     for(int i = 0; i < MAX_CHILDREN; ++i){
         if(dis(*gen) < (CHILD_CHANCE - CHILD_CHANCE_DECREASE * depth) && !m_freeSides.empty()) {
             MorphNode *newChild = new MorphNode();
@@ -105,8 +105,8 @@ void ivc::MorphNode::init(BaseNode* parent, std::mt19937* gen, unsigned int dept
             m_childNodeVector.emplace_back(newChild);
         }
     }
-
-    mutate();
+*/
+    mutateBodyAndNeurons();
 
     m_isInitialized = true;
 }
@@ -123,13 +123,13 @@ void ivc::MorphNode::addNeuralConnections() {
     }
 }
 
-void ivc::MorphNode::mutate() {
-
-    BaseNode::mutate();
+void ivc::MorphNode::mutateBodyAndNeurons() {
 
     std::uniform_real_distribution<> dis(0, 1);
 
-    //mutate joint
+    BaseNode::mutateBodyAndNeurons();
+
+    //mutateBodyAndNeurons joint
     if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
         std::pair<float,float> newSwing = {Mutator::mutateFloat(m_generator,m_swingLimits.first,JOINT_SWING_LIMIT,-JOINT_SWING_LIMIT),Mutator::mutateFloat(m_generator,m_swingLimits.second,JOINT_SWING_LIMIT,-JOINT_SWING_LIMIT)};
         m_swingLimits = newSwing;
@@ -140,7 +140,7 @@ void ivc::MorphNode::mutate() {
         m_twistLimits = newTwist;
     }
 
-    //mutate parent anchor
+    //mutateBodyAndNeurons parent anchor
     if(m_parentSide == POS_X || m_parentSide == NEG_X){
         if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
             m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
@@ -156,6 +156,13 @@ void ivc::MorphNode::mutate() {
             m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
         if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
             m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
+    }
+
+    // TODO: change mean values relative to parent (?)
+    if(dis(*m_generator) <= MUTATE_BODY_CONNECTION_CHANCE && !m_freeSides.empty()){
+        MorphNode *newChild = new MorphNode();
+        newChild->init(this, m_generator, INFINITY);
+        m_childNodeVector.emplace_back(newChild);
     }
 
 }
