@@ -12,11 +12,20 @@
 #include <chrono>
 #include "../../Constants.h"
 #include "../../Mutator.h"
+#include <stdexcept>
 
 namespace ivc{
+    enum NEURON_TYPE{
+        SUM,
+        MAX,
+        MIN,
+        CONSTANT,
+        COUNT
+    };
 
     class Neuron {
         protected:
+            NEURON_TYPE m_type;
             Gate* output;
             unsigned long m_outputID;
             float m_outputWeight = 1.0f;

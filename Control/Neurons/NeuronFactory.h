@@ -6,20 +6,11 @@
 #define INTERACTIVE_VIRTUAL_CREATURES_NEURONFACTORY_H
 
 #include "Neuron.h"
-#include "TwoInputs/Neuron_Max.h"
-#include "TwoInputs/Neuron_Min.h"
-#include "TwoInputs/Neuron_Sum.h"
-#include "ZeroInputs/Neuron_Constant.h"
+#include "Neuron_TwoInputs.h"
+#include "Neuron_ZeroInputs.h"
 #include <random>
 
 namespace ivc{
-    enum NEURON_TYPE{
-        SUM,
-        MAX,
-        MIN,
-        CONSTANT,
-        COUNT
-    };
 
     class NeuronFactory {
         private:

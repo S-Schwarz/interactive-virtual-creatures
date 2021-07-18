@@ -4,6 +4,10 @@
 
 #include "Neuron_TwoInputs.h"
 
+ivc::Neuron_TwoInputs::Neuron_TwoInputs(ivc::NEURON_TYPE type) {
+    m_type = type;
+}
+
 std::vector<unsigned long> ivc::Neuron_TwoInputs::getGateIDs() {
     return {id_input_0,id_input_1};
 }
@@ -78,4 +82,48 @@ void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen) {
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
         weight_1 = Mutator::mutateFloat(gen,weight_1, INFINITY, -INFINITY);
 
+}
+
+ivc::Neuron *ivc::Neuron_TwoInputs::copy() {
+    return new Neuron_TwoInputs(*this);
+}
+
+void ivc::Neuron_TwoInputs::step() {
+    switch (m_type) {
+        case SUM:
+            sum();
+            break;
+        case MIN:
+            min();
+            break;
+        case MAX:
+            max();
+            break;
+        default:
+            throw std::invalid_argument("INVALID NEURON TYPE");
+    }
+}
+
+void ivc::Neuron_TwoInputs::sum() {
+    output->setValue(m_outputWeight * (weight_0 * input_0->getValue() + weight_1 * input_1->getValue()));
+}
+
+void ivc::Neuron_TwoInputs::min() {
+    float val_0 = weight_0 * input_0->getValue();
+    float val_1 = weight_1 * input_1->getValue();
+
+    if(val_0 < val_1)
+        output->setValue(m_outputWeight * val_0);
+    else
+        output->setValue(m_outputWeight * val_1);
+}
+
+void ivc::Neuron_TwoInputs::max() {
+    float val_0 = weight_0 * input_0->getValue();
+    float val_1 = weight_1 * input_1->getValue();
+
+    if(val_0 > val_1)
+        output->setValue(m_outputWeight * val_0);
+    else
+        output->setValue(m_outputWeight * val_1);
 }
