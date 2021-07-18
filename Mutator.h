@@ -17,7 +17,12 @@ namespace ivc{
                 if(upperLimit <= lowerLimit)
                     return old;
 
-                std::normal_distribution<> dis(old, old * STANDARD_DEVIATION_FACTOR);
+                float stddev = old * STANDARD_DEVIATION_FACTOR;
+
+                if(stddev < STANDARD_DEVIATION_FACTOR)
+                    stddev = STANDARD_DEVIATION_FACTOR;
+
+                std::normal_distribution<> dis(old, stddev);
                 auto newValue = dis(*gen);
 
                 if(newValue > upperLimit)
