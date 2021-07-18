@@ -13,6 +13,7 @@
 #include "../../Constants.h"
 #include "../../Mutator.h"
 #include <stdexcept>
+#include <cmath>
 
 namespace ivc{
     enum NEURON_TYPE{
@@ -25,6 +26,7 @@ namespace ivc{
         GREATER_THAN,
         SIGN,
         ABS,
+        SIN,
         CONSTANT,
         COUNT
     };

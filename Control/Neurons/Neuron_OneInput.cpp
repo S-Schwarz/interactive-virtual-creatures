@@ -10,10 +10,7 @@ ivc::Neuron_OneInput::Neuron_OneInput(ivc::NEURON_TYPE type) {
 
 void ivc::Neuron_OneInput::randomize(std::mt19937 *gen) {
     Neuron::randomize(gen);
-
-    std::normal_distribution<> inputDis(MEAN_NEURON_WEIGHT, MEAN_NEURON_WEIGHT * STANDARD_DEVIATION_FACTOR);
-    weight_0 = inputDis(*gen);
-
+    mutate(gen);
 }
 
 std::vector<unsigned long> ivc::Neuron_OneInput::getGateIDs() {
@@ -21,11 +18,8 @@ std::vector<unsigned long> ivc::Neuron_OneInput::getGateIDs() {
 }
 
 int ivc::Neuron_OneInput::bindGates(std::vector<Gate *> gates) {
-    if(gates.size() != 2)
+    if(gates.size() != 1)
         return -1;
-
-    if(gates[0] == nullptr || gates[1] == nullptr)
-        printf("TEST\n");
 
     input_0 = gates[0];
 
@@ -52,6 +46,17 @@ void ivc::Neuron_OneInput::mutate(std::mt19937 *gen) {
     //mutateBodyAndNeurons input weights
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
         weight_0 = Mutator::mutateFloat(gen,weight_0, INFINITY, -INFINITY);
+
+    //mutate sine params
+    if(dis(*gen) <= MUTATE_SINE_CHANCE)
+        m_sin_amplitude = Mutator::mutateFloat(gen,m_sin_amplitude, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_SINE_CHANCE)
+        m_sin_period = Mutator::mutateFloat(gen,m_sin_period, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_SINE_CHANCE)
+        m_sin_phase = Mutator::mutateFloat(gen,m_sin_phase, INFINITY, -INFINITY);
+    if(dis(*gen) <= MUTATE_SINE_CHANCE)
+        m_sin_vertical = Mutator::mutateFloat(gen,m_sin_vertical, INFINITY, -INFINITY);
+
 }
 
 void ivc::Neuron_OneInput::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs) {
@@ -82,6 +87,9 @@ void ivc::Neuron_OneInput::step() {
         case ABS:
             abs();
             break;
+        case SIN:
+            sin();
+            break;
         default:
             throw std::invalid_argument("INVALID NEURON TYPE");
     }
@@ -105,4 +113,10 @@ void ivc::Neuron_OneInput::abs() {
         output->setValue(-1.0f * val);
     else
         output->setValue(val);
+}
+
+void ivc::Neuron_OneInput::sin() {
+    float val = weight_0 * input_0->getValue();
+    float result = m_sin_amplitude * std::sin(m_sin_period * (val + m_sin_phase)) + m_sin_vertical;
+    output->setValue(result);
 }

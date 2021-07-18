@@ -12,7 +12,13 @@ namespace ivc{
     private:
         Gate *input_0;
         unsigned long id_input_0;
-        float weight_0 = 1.0f;
+        float weight_0 = MEAN_NEURON_WEIGHT;
+
+        //sin params
+        float m_sin_amplitude = 1.0f;
+        float m_sin_period = 1.0f;
+        float m_sin_phase = 0.0f;
+        float m_sin_vertical = 0.0f;
     public:
         Neuron_OneInput(NEURON_TYPE);
         void randomize(std::mt19937*) override;
@@ -27,6 +33,7 @@ namespace ivc{
 
         void sign();
         void abs();
+        void sin();
     };
 }
 
