@@ -19,6 +19,10 @@ namespace ivc{
         SUM,
         MAX,
         MIN,
+        PRODUCT,
+        DIVIDE,
+        SUM_THRESHOLD,
+        GREATER_THAN,
         CONSTANT,
         COUNT
     };

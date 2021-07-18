@@ -16,6 +16,10 @@ ivc::Neuron *ivc::NeuronFactory::createRandomNeuron(std::mt19937* gen) {
         case SUM:
         case MAX:
         case MIN:
+        case PRODUCT:
+        case DIVIDE:
+        case SUM_THRESHOLD:
+        case GREATER_THAN:
             newNeuron = new Neuron_TwoInputs(type);
             break;
         case CONSTANT:

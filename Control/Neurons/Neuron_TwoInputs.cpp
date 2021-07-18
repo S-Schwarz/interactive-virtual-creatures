@@ -47,6 +47,9 @@ void ivc::Neuron_TwoInputs::randomize(std::mt19937* gen) {
     weight_0 = inputDis(*gen);
     weight_1 = inputDis(*gen);
 
+    std::normal_distribution<> thresholdDis(MEAN_NEURON_THRESHOLD, MEAN_NEURON_THRESHOLD * STANDARD_DEVIATION_FACTOR);
+    m_threshold =thresholdDis(*gen);
+
 }
 
 void ivc::Neuron_TwoInputs::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs) {
@@ -82,6 +85,10 @@ void ivc::Neuron_TwoInputs::mutate(std::mt19937 *gen) {
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
         weight_1 = Mutator::mutateFloat(gen,weight_1, INFINITY, -INFINITY);
 
+    //mutate sum_threshold threshold
+    if(dis(*gen) <= MUTATE_THRESHOLD_CHANCE)
+        m_threshold = Mutator::mutateFloat(gen,m_threshold, INFINITY, -INFINITY);
+
 }
 
 ivc::Neuron *ivc::Neuron_TwoInputs::copy() {
@@ -98,6 +105,18 @@ void ivc::Neuron_TwoInputs::step() {
             break;
         case MAX:
             max();
+            break;
+        case PRODUCT:
+            product();
+            break;
+        case DIVIDE:
+            divide();
+            break;
+        case SUM_THRESHOLD:
+            sum_threshold();
+            break;
+        case GREATER_THAN:
+            greater_than();
             break;
         default:
             throw std::invalid_argument("INVALID NEURON TYPE");
@@ -126,4 +145,45 @@ void ivc::Neuron_TwoInputs::max() {
         output->setValue(m_outputWeight * val_0);
     else
         output->setValue(m_outputWeight * val_1);
+}
+
+void ivc::Neuron_TwoInputs::product() {
+    float val_0 = weight_0 * input_0->getValue();
+    float val_1 = weight_1 * input_1->getValue();
+
+    output->setValue(m_outputWeight * val_0 * val_1);
+}
+
+void ivc::Neuron_TwoInputs::divide() {
+    float val_0 = weight_0 * input_0->getValue();
+    float val_1 = weight_1 * input_1->getValue();
+
+    if(val_1 == 0)
+        val_1 = 0.00001;
+
+    output->setValue(m_outputWeight * (val_0 / val_1));
+}
+
+void ivc::Neuron_TwoInputs::sum_threshold() {
+    float val_0 = weight_0 * input_0->getValue();
+    float val_1 = weight_1 * input_1->getValue();
+
+    float sum = val_0 + val_1;
+
+    if(sum >= m_threshold)
+        output->setValue(1.0f);
+    else
+        output->setValue(0.0f);
+
+}
+
+void ivc::Neuron_TwoInputs::greater_than() {
+    float val_0 = weight_0 * input_0->getValue();
+    float val_1 = weight_1 * input_1->getValue();
+
+    if(val_0 > val_1)
+        output->setValue(1.0f);
+    else
+        output->setValue(0.0f);
+
 }
