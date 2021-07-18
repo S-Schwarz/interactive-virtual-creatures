@@ -139,6 +139,32 @@ void ivc::RootMorphNode::mutateNewBodyAndNewNeurons() {
 
     std::uniform_real_distribution<> dis(0, 1);
 
+    // remove child node
+    if(!m_childNodeVector.empty() && dis(*m_generator) <= MUTATE_REMOVE_BODY_CHILD_CHANCE){
+        std::uniform_int_distribution<> remDis(0, m_childNodeVector.size()-1);
+        auto index = remDis(*m_generator);
+        auto childNode = m_childNodeVector[index];
+        auto anchor = childNode->getParentAnchor();
+        // TODO: delete node ptr
+
+        m_childNodeVector.erase(m_childNodeVector.begin() + index);
+
+        if(anchor.x == 1)
+            m_freeSides.push_back(POS_X);
+        else if(anchor.x == -1)
+            m_freeSides.push_back(NEG_X);
+        else if(anchor.y == 1)
+            m_freeSides.push_back(POS_Y);
+        else if(anchor.y == -1)
+            m_freeSides.push_back(NEG_Y);
+        else if(anchor.z == 1)
+            m_freeSides.push_back(POS_Z);
+        else if(anchor.z == -1)
+            m_freeSides.push_back(NEG_Z);
+
+    }
+
+    //add child node
     // TODO: change mean values relative to parent (?)
     if(dis(*m_generator) <= MUTATE_BODY_CONNECTION_CHANCE && !m_freeSides.empty()){
         MorphNode *newChild = new MorphNode();
@@ -146,6 +172,7 @@ void ivc::RootMorphNode::mutateNewBodyAndNewNeurons() {
         m_childNodeVector.emplace_back(newChild);
     }
 
+    //add and remove neurons
     m_localNeurons->mutateNewNeurons(m_idHandler);
     m_brain->mutateNewNeurons(m_idHandler);
 
