@@ -138,8 +138,8 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         auto swingY = child->getSwingLimitsY();
         auto swingZ = child->getSwingLimitsZ();
         auto twist = child->getTwistLimits();
-        PxJointAngularLimitPair limits(twist.first, twist.second, spring);
-        PxJointLimitPyramid pyramid(swingY.first, swingY.second, swingZ.first, swingZ.second, spring);
+        PxJointAngularLimitPair limits(twist.first, twist.second);
+        PxJointLimitPyramid pyramid(swingY.first, swingY.second, swingZ.first, swingZ.second);
         d6joint->setPyramidSwingLimit(pyramid);
         d6joint->setTwistLimit(limits);
         PxD6JointDrive drive(SPRING_STIFFNESS, SPRING_DAMPING, FLT_MAX);
