@@ -149,6 +149,10 @@ void ivc::RootMorphNode::mutateNewBodyAndNewNeurons() {
     m_localNeurons->mutateNewNeurons(m_idHandler);
     m_brain->mutateNewNeurons(m_idHandler);
 
+    for(auto child : m_childNodeVector){
+        child->mutateNewBodyAndNewNeurons();
+    }
+
 }
 
 void ivc::RootMorphNode::mutateNeuralConnections() {

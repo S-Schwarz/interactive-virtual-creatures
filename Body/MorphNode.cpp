@@ -178,6 +178,10 @@ void ivc::MorphNode::mutateNewBodyAndNewNeurons() {
 
     m_localNeurons->mutateNewNeurons(getIDHandler());
 
+    for(auto child : m_childNodeVector){
+        child->mutateNewBodyAndNewNeurons();
+    }
+
 }
 
 ivc::BaseNode *ivc::MorphNode::copy() {

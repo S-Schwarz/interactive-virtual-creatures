@@ -182,6 +182,10 @@ void ivc::BaseNode::mutateNeuralConnections() {
     m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
     m_localNeurons->mutateConnections();
 
+    for(auto child : m_childNodeVector){
+        child->mutateNeuralConnections();
+    }
+
 }
 
 void ivc::BaseNode::setChildren(std::vector<BaseNode *> children) {
