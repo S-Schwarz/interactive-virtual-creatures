@@ -10,6 +10,7 @@ PxVec3 ivc::MorphNode::getAnchorPosition(std::mt19937* gen){
     std::normal_distribution<> positions(0, 0.25);
 
     auto parentSide = m_parentNode->occupyRandomSide();
+    m_parentSide = parentSide;
 
     float posX, posY, posZ;
 
@@ -123,7 +124,6 @@ void ivc::MorphNode::addNeuralConnections() {
 }
 
 void ivc::MorphNode::mutate() {
-    //TODO: mutate parentAnchor
 
     BaseNode::mutate();
 
@@ -138,6 +138,24 @@ void ivc::MorphNode::mutate() {
     if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
         std::pair<float,float> newTwist = {Mutator::mutateFloat(m_generator,m_twistLimits.first,JOINT_TWIST_LIMIT,-JOINT_TWIST_LIMIT),Mutator::mutateFloat(m_generator,m_twistLimits.second,JOINT_TWIST_LIMIT,-JOINT_TWIST_LIMIT)};
         m_twistLimits = newTwist;
+    }
+
+    //mutate parent anchor
+    if(m_parentSide == POS_X || m_parentSide == NEG_X){
+        if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+            m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
+        if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+            m_parentAnchor.z = Mutator::mutateFloat(m_generator,m_parentAnchor.z,0.99,0.01);
+    }else if(m_parentSide == POS_Y || m_parentSide == NEG_Y){
+        if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+            m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
+        if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+            m_parentAnchor.z = Mutator::mutateFloat(m_generator,m_parentAnchor.z,0.99,0.01);
+    }else{
+        if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+            m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
+        if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+            m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
     }
 
 }

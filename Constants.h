@@ -30,6 +30,7 @@ const float MIN_SCALE = 0.1f;
 
 const float MUTATE_DIMENSION_CHANCE = 0.2;
 const float MUTATE_SCALE_CHANCE = 0.2;
+const float MUTATE_ANCHOR_CHANCE = 0.2;
 
 //joints
 const float MEAN_JOINT_LIMIT = M_PI/4;
