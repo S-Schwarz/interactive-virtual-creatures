@@ -22,6 +22,10 @@ ivc::Neuron *ivc::NeuronFactory::createRandomNeuron(std::mt19937* gen) {
         case GREATER_THAN:
             newNeuron = new Neuron_TwoInputs(type);
             break;
+        case SIGN:
+        case ABS:
+            newNeuron = new Neuron_OneInput(type);
+            break;
         case CONSTANT:
             newNeuron = new Neuron_ZeroInputs(type);
             break;

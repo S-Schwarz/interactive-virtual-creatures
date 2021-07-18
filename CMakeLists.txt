@@ -23,6 +23,6 @@ add_executable(interactive_virtual_creatures
         Control/Joints/JointSensor.h Control/Joints/JointSensor.cpp Control/Joints/JointEffector.h Control/Joints/JointEffector.cpp Control/IDHandler.h Control/IDHandler.cpp
         Control/Neurons/Neuron_TwoInputs.h Control/Neurons/Neuron_TwoInputs.cpp Control/Neurons/NeuronFactory.cpp Control/Neurons/NeuronFactory.h
         Mutator.h Physics/PhysicsBase.cpp Physics/PhysicsBase.h Physics/PhysicsScene.cpp Physics/PhysicsScene.h Physics/LiveEnvironment.cpp Physics/LiveEnvironment.h
-        Physics/Evolver.cpp Physics/Evolver.h Control/Neurons/Neuron_ZeroInputs.cpp Control/Neurons/Neuron_ZeroInputs.h)
+        Physics/Evolver.cpp Physics/Evolver.h Control/Neurons/Neuron_ZeroInputs.cpp Control/Neurons/Neuron_ZeroInputs.h Control/Neurons/Neuron_OneInput.cpp Control/Neurons/Neuron_OneInput.h)
 
 TARGET_LINK_LIBRARIES(interactive_virtual_creatures glfw3.a PhysXExtensions_static_64.a PhysX_static_64.a PhysXPvdSDK_static_64.a PhysXCommon_static_64.a PhysXFoundation_static_64.a  )

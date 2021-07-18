@@ -8,6 +8,7 @@
 #include "Neuron.h"
 #include "Neuron_TwoInputs.h"
 #include "Neuron_ZeroInputs.h"
+#include "Neuron_OneInput.h"
 #include <random>
 
 namespace ivc{

@@ -23,6 +23,8 @@ namespace ivc{
         DIVIDE,
         SUM_THRESHOLD,
         GREATER_THAN,
+        SIGN,
+        ABS,
         CONSTANT,
         COUNT
     };
