@@ -39,12 +39,16 @@ PxVec3 ivc::BaseNode::getHalfExtents() {
     return m_dimension/2;
 }
 
-std::pair<float, float> ivc::BaseNode::getSwingLimits() {
-    return m_swingLimits;
+std::pair<float, float> ivc::BaseNode::getSwingLimitsY() {
+    return m_jointLimitY;
+}
+
+std::pair<float, float> ivc::BaseNode::getSwingLimitsZ() {
+    return m_jointLimitZ;
 }
 
 std::pair<float, float> ivc::BaseNode::getTwistLimits() {
-    return m_twistLimits;
+    return m_jointLimitX;
 }
 
 ivc::NODE_SIDE ivc::BaseNode::occupyRandomSide() {

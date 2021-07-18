@@ -35,8 +35,9 @@ namespace ivc{
             unsigned int m_recursionLimit;
             NeuronCluster* m_localNeurons = nullptr;
             BaseNode* m_parentNode = nullptr;
-            std::pair<float,float> m_swingLimits = {MEAN_JOINT_LIMIT,MEAN_JOINT_LIMIT};
-            std::pair<float,float> m_twistLimits = {-MEAN_JOINT_LIMIT,MEAN_JOINT_LIMIT};
+            std::pair<float,float> m_jointLimitX = {-MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT};
+            std::pair<float,float> m_jointLimitY = {-MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT};
+            std::pair<float,float> m_jointLimitZ = {-MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT};
             //children
             std::vector<BaseNode*> m_childNodeVector;
             std::vector<NODE_SIDE> m_freeSides = {POS_X,NEG_X,POS_Y,NEG_Y,POS_Z,NEG_Z};
@@ -59,7 +60,8 @@ namespace ivc{
             virtual PxVec3 getParentAnchor();
             virtual BaseNode* getParentNode();
             virtual PxVec3 getScale();
-            virtual std::pair<float,float> getSwingLimits();
+            virtual std::pair<float,float> getSwingLimitsY();
+            virtual std::pair<float,float> getSwingLimitsZ();
             virtual std::pair<float,float> getTwistLimits();
             virtual NODE_SIDE occupyRandomSide();
             virtual int setSideAsOccupied(NODE_SIDE);

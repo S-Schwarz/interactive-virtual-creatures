@@ -131,13 +131,18 @@ void ivc::MorphNode::mutateBodyAndNeurons() {
 
     //mutateBodyAndNeurons joint
     if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
-        std::pair<float,float> newSwing = {Mutator::mutateFloat(m_generator,m_swingLimits.first,JOINT_SWING_LIMIT,-JOINT_SWING_LIMIT),Mutator::mutateFloat(m_generator,m_swingLimits.second,JOINT_SWING_LIMIT,-JOINT_SWING_LIMIT)};
-        m_swingLimits = newSwing;
+        std::pair<float,float> newLimitX = {Mutator::mutateFloat(m_generator, m_jointLimitX.first, JOINT_TWIST_LIMIT, -JOINT_TWIST_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitX.second, JOINT_TWIST_LIMIT, -JOINT_TWIST_LIMIT)};
+        m_jointLimitX = newLimitX;
     }
 
     if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
-        std::pair<float,float> newTwist = {Mutator::mutateFloat(m_generator,m_twistLimits.first,JOINT_TWIST_LIMIT,-JOINT_TWIST_LIMIT),Mutator::mutateFloat(m_generator,m_twistLimits.second,JOINT_TWIST_LIMIT,-JOINT_TWIST_LIMIT)};
-        m_twistLimits = newTwist;
+        std::pair<float,float> newLimitY = {Mutator::mutateFloat(m_generator, m_jointLimitY.first, JOINT_SWING_LIMIT, -JOINT_SWING_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitY.second, JOINT_SWING_LIMIT, -JOINT_SWING_LIMIT)};
+        m_jointLimitY = newLimitY;
+    }
+
+    if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
+        std::pair<float,float> newLimitZ = {Mutator::mutateFloat(m_generator, m_jointLimitZ.first, JOINT_SWING_LIMIT, -JOINT_SWING_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitZ.second, JOINT_SWING_LIMIT, -JOINT_SWING_LIMIT)};
+        m_jointLimitZ = newLimitZ;
     }
 
     //mutateBodyAndNeurons parent anchor

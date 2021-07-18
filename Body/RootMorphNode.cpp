@@ -87,8 +87,8 @@ void ivc::RootMorphNode::init() {
 
         std::normal_distribution<> limits(MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT * STANDARD_DEVIATION_FACTOR);
         float twist = limits(*m_generator);
-        m_twistLimits = {-twist, twist};
-        m_swingLimits = {limits(*m_generator), limits(*m_generator)};
+        m_jointLimitX = {-twist, twist};
+        m_jointLimitY = {limits(*m_generator), limits(*m_generator)};
     }
 
     std::uniform_real_distribution<> dis(0, 1);
