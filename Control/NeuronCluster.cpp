@@ -15,7 +15,7 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, I
     auto numberNeurons = dis(*gen);
 
     for(int i = 0; i < numberNeurons; ++i){
-        auto newNeuron = NeuronFactory::createRandomNeuron(gen);
+        auto newNeuron = new Neuron(m_generator);
         auto newID = idHandler->getNewID();
         newNeuron->setID(newID);
         m_outputGates.push_back(newID);
@@ -100,7 +100,7 @@ void ivc::NeuronCluster::mutateNewNeurons(ivc::IDHandler *idHandler) {
 
     //add new neuron
     if(dis(*m_generator) <= MUTATE_NEW_NEURON_CHANCE){
-        auto newNeuron = NeuronFactory::createRandomNeuron(m_generator);
+        auto newNeuron = new Neuron(m_generator);
         auto newID = idHandler->getNewID();
         newNeuron->setID(newID);
         m_outputGates.push_back(newID);

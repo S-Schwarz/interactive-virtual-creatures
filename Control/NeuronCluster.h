@@ -7,9 +7,8 @@
 
 #include <vector>
 #include <random>
-#include "Neurons/Neuron.h"
+#include "Neuron.h"
 #include "../Constants.h"
-#include "Neurons/NeuronFactory.h"
 #include "Joints/JointSensor.h"
 #include "Joints/JointEffector.h"
 #include "IDHandler.h"

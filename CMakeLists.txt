@@ -18,11 +18,10 @@ LINK_DIRECTORIES(~/private/PhysX/physx/bin/linux.clang/release ~/private/glfw-bu
 add_executable(interactive_virtual_creatures
         main.cpp Res/glad.c App/App.h App/App.cpp Res/ShapeHandler.h Res/ShapeHandler.cpp
         Body/RootMorphNode.h Body/RootMorphNode.cpp Body/MorphNode.h Body/MorphNode.cpp Control/NeuronCluster.h Control/NeuronCluster.cpp Constants.h
-        Body/BaseNode.h Body/BaseNode.cpp Body/PhysicalCreature.h Body/PhysicalCreature.cpp Control/Neurons/Neuron.h Control/Neurons/Neuron.cpp
+        Body/BaseNode.h Body/BaseNode.cpp Body/PhysicalCreature.h Body/PhysicalCreature.cpp Control/Neuron.h Control/Neuron.cpp
         Control/Gate.h Control/Gate.cpp
         Control/Joints/JointSensor.h Control/Joints/JointSensor.cpp Control/Joints/JointEffector.h Control/Joints/JointEffector.cpp Control/IDHandler.h Control/IDHandler.cpp
-        Control/Neurons/Neuron_TwoInputs.h Control/Neurons/Neuron_TwoInputs.cpp Control/Neurons/NeuronFactory.cpp Control/Neurons/NeuronFactory.h
         Mutator.h Physics/PhysicsBase.cpp Physics/PhysicsBase.h Physics/PhysicsScene.cpp Physics/PhysicsScene.h Physics/LiveEnvironment.cpp Physics/LiveEnvironment.h
-        Physics/Evolver.cpp Physics/Evolver.h Control/Neurons/Neuron_ZeroInputs.cpp Control/Neurons/Neuron_ZeroInputs.h Control/Neurons/Neuron_OneInput.cpp Control/Neurons/Neuron_OneInput.h)
+        Physics/Evolver.cpp Physics/Evolver.h)
 
 TARGET_LINK_LIBRARIES(interactive_virtual_creatures glfw3.a PhysXExtensions_static_64.a PhysX_static_64.a PhysXPvdSDK_static_64.a PhysXCommon_static_64.a PhysXFoundation_static_64.a  )
