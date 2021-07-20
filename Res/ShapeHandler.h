@@ -19,17 +19,19 @@ namespace ivc {
     private:
         ShapeHandler();
 
-        static unsigned int s_boxVAO, s_planeVAO;
+        static unsigned int s_boxVAO, s_planeVAO, s_texturedBoxVAO;
 
     public:
         static int initShapes();
         static int bindBoxVAO();
         static int bindPlaneVAO();
+        static int bindTexturedBoxVAO();
     };
 
     enum Shape{
         BOX,
-        PLANE
+        PLANE,
+        TEXTURED_BOX
     };
 
 }

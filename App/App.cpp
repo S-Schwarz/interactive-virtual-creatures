@@ -3,9 +3,15 @@
 //
 
 #include "App.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "../Res/stb_image.h"
 
 glm::vec4 COLOR_GREEN(0.0f, 0.8f, 0.3f, 1.0f);
 glm::vec4 COLOR_RED(0.8f, 0.2f, 0.3f, 1.0f);
+
+glm::vec4 COLOR_PLANE(0.0f, 0.5f, 0.2f, 1.0f);
+glm::vec4 COLOR_CLEAR(0.0f, 0.7f, 0.9f, 1.0f);
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -133,6 +139,29 @@ int ivc::App::init(){
 
     m_shader = new Shader("../Res/shader.vert", "../Res/shader.frag");
 
+    //load textures
+    glGenTextures(1,&m_blockTexture);
+    glBindTexture(GL_TEXTURE_2D, m_blockTexture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("../Res/boxTexture.png", &width, &height, &nrChannels, 0);
+    if(data){
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,width,height,0,GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }else{
+        printf("Failed to load texture\n");
+    }
+
+    stbi_image_free(data);
+
+    //--------------
+
     ShapeHandler::initShapes();
 
     glfwSetWindowUserPointer(m_window, this);
@@ -200,7 +229,7 @@ int ivc::App::update() {
     int projectionLoc = glGetUniformLocation(m_shader->ID, "projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
 
-    glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+    glClearColor(COLOR_CLEAR.r, COLOR_CLEAR.g, COLOR_CLEAR.b, COLOR_CLEAR.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_shader->use();
@@ -225,9 +254,9 @@ int ivc::App::update() {
         glm::vec3 scaleVec = glm::vec3(bodyGeom->halfExtents.x * 2, bodyGeom->halfExtents.y * 2, bodyGeom->halfExtents.z * 2);
 
         if(m_physicsPaused)
-            drawShape(BOX, posVec, rotQuat, scaleVec, COLOR_RED, true);
+            drawShape(TEXTURED_BOX, posVec, rotQuat, scaleVec, COLOR_RED, false);
         else
-            drawShape(BOX, posVec, rotQuat, scaleVec, COLOR_GREEN, true);
+            drawShape(TEXTURED_BOX, posVec, rotQuat, scaleVec, COLOR_GREEN, false);
     }
 
     // PLANE ------------------
@@ -241,7 +270,7 @@ int ivc::App::update() {
 
     glm::quat rotQuat = glm::quat(transformB.q.w, transformB.q.x, transformB.q.y, transformB.q.z);
 
-    drawShape(PLANE, posVec, rotQuat, glm::vec3(1000.0f, 0.0f, 1000.0f), glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), false);
+    drawShape(PLANE, posVec, rotQuat, glm::vec3(1000.0f, 0.0f, 1000.0f), COLOR_PLANE, false);
 
     //-------------------------
 
@@ -253,17 +282,6 @@ int ivc::App::update() {
 }
 
 int ivc::App::drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe) {
-
-        switch(shape){
-            case BOX:
-                ShapeHandler::bindBoxVAO();
-                break;
-            case PLANE:
-                ShapeHandler::bindPlaneVAO();
-                break;
-            default:
-                return -1;
-        }
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, position);
@@ -279,7 +297,25 @@ int ivc::App::drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
 
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        switch(shape){
+            case BOX:
+                ShapeHandler::bindBoxVAO();
+                m_shader->setBool("drawTexture", false);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+                break;
+            case PLANE:
+                ShapeHandler::bindPlaneVAO();
+                m_shader->setBool("drawTexture", false);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+                break;
+            case TEXTURED_BOX:
+                ShapeHandler::bindTexturedBoxVAO();
+                m_shader->setBool("drawTexture", true);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+                break;
+            default:
+                return -1;
+        }
 
         return 0;
 

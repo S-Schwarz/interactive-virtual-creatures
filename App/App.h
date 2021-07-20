@@ -50,6 +50,8 @@ namespace ivc {
 
             glm::mat4 m_projectionMatrix;
 
+            unsigned int m_blockTexture;
+
             int drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe);
         public:
             bool shouldClose();
