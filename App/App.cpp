@@ -4,6 +4,9 @@
 
 #include "App.h"
 
+glm::vec4 COLOR_GREEN(0.0f, 0.8f, 0.3f, 1.0f);
+glm::vec4 COLOR_RED(0.8f, 0.2f, 0.3f, 1.0f);
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -192,7 +195,7 @@ int ivc::App::update() {
 
     //-------------------------
 
-    drawShape(BOX, glm::vec3(0,5,0),glm::quat(),glm::vec3(0.2,0.2,0.2), glm::vec4(0.8f, 0.2f, 0.3f, 1.0f), false);
+    drawShape(BOX, glm::vec3(0,5,0),glm::quat(),glm::vec3(0.2,0.2,0.2), COLOR_RED, false);
 
     // PHYSX OBJECTS ----------
     for(auto body : m_liveEnvironment->getBodyParts()){
@@ -209,7 +212,10 @@ int ivc::App::update() {
         bodyShape->getBoxGeometry(*bodyGeom);
         glm::vec3 scaleVec = glm::vec3(bodyGeom->halfExtents.x * 2, bodyGeom->halfExtents.y * 2, bodyGeom->halfExtents.z * 2);
 
-        drawShape(BOX, posVec, rotQuat, scaleVec, glm::vec4(0.0f, 0.8f, 0.3f, 1.0f), true);
+        if(m_physicsPaused)
+            drawShape(BOX, posVec, rotQuat, scaleVec, COLOR_RED, true);
+        else
+            drawShape(BOX, posVec, rotQuat, scaleVec, COLOR_GREEN, true);
     }
 
     // PLANE ------------------
