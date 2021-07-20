@@ -1,3 +1,6 @@
 [submodule "Res/PhysX"]
 	path = Res/PhysX
 	url = https://github.com/NVIDIAGameWorks/PhysX.git
+[submodule "Res/glfw"]
+	path = Res/glfw
+	url = https://github.com/glfw/glfw.git

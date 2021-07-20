@@ -10,6 +10,8 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "-lglfw3 -Wl,--no-as-needed -ldl -lGL -lX11 -pthread -lXrandr -lXi ")
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Res/glfw)
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/Res/PhysX/physx/include ${CMAKE_CURRENT_SOURCE_DIR}/Res/PhysX/pxshared/include
         ${CMAKE_CURRENT_SOURCE_DIR}/Res/glfw/include ${CMAKE_CURRENT_SOURCE_DIR}/Res/GLAD/include ${CMAKE_CURRENT_SOURCE_DIR}/Res/glm)
 LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/Res/PhysX/physx/bin/linux.clang/release ${CMAKE_CURRENT_SOURCE_DIR}/Res/glfw-build/src)
