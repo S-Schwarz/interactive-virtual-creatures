@@ -110,7 +110,6 @@ int ivc::App::init(){
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
     glfwSetCursorPosCallback(m_window, mouse_callback);
 
-
     // Init GLAD
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -130,14 +129,14 @@ int ivc::App::init(){
     PhysicsBase* physicsBase = new PhysicsBase();
     physicsBase->init();
 
-    Evolver* evolver = new Evolver();
-    evolver->init(physicsBase);
+    //Evolver* evolver = new Evolver();
+    //evolver->init(physicsBase);
 
-    RootMorphNode* rootNode = evolver->evolveNewCreature();
+    //RootMorphNode* rootNode = evolver->evolveNewCreature();
 
-    //RootMorphNode* rootNode = new RootMorphNode();
-    //rootNode->init();
-    //rootNode->addNeuralConnections();
+    RootMorphNode* rootNode = new RootMorphNode();
+    rootNode->init();
+    rootNode->addNeuralConnections();
 
     PhysicsScene* liveScene = new PhysicsScene();
     liveScene->init(physicsBase,*rootNode);

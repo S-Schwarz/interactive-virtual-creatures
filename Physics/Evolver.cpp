@@ -110,7 +110,7 @@ void ivc::Evolver::evolveNextGeneration() {
         }
     }
     currentBest = bestCreature;
-    printf("BEST FITNESS SCORE: %f\n", bestScore);
+    printf("%f\n", bestScore);
 
     //create new generation
     std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> nextGenMap;
@@ -141,6 +141,7 @@ void ivc::Evolver::evolveNextGeneration() {
 ivc::RootMorphNode* ivc::Evolver::evolveNewCreature() {
 
     for(int i = 0; i < NUMBER_OF_GENERATIONS; ++i){
+        printf("GENERATION #%i: ", i);
         evolveNextGeneration();
     }
 

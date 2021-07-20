@@ -21,9 +21,9 @@ const int FALL_DOWN_STEPS = 500;
 //body nodes
 const float MEAN_PART_SIZE = 3.0f;
 const float MEAN_SCALE = 1.0f;
-const int MAX_CHILDREN = 3;
-const float CHILD_CHANCE = 0.2;
-const float CHILD_CHANCE_DECREASE = 0.4;
+const int MAX_CHILDREN = 2;
+const float CHILD_CHANCE = 0.8;
+const float CHILD_CHANCE_DECREASE = 0.7;
 
 const float MIN_PART_SIZE = 0.5f;
 const float MIN_SCALE = 0.1f;
@@ -44,13 +44,13 @@ const float JOINT_LIMIT = M_PI/2;
 const float MEAN_SENSOR_WEIGHT = 1.0f;
 const float MEAN_EFFECTOR_WEIGHT = 10.0f;
 
-const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.25;
+const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.5;
 
 const float MUTATE_JOINT_CHANCE = 0.2;
 
 //neurons
-const int MEAN_LOCAL_NEURONS = 3;
-const int MEAN_BRAIN_NEURONS = 3;
+const int MEAN_LOCAL_NEURONS = 4;
+const int MEAN_BRAIN_NEURONS = 8;
 const float MEAN_NEURON_WEIGHT = 1.0f;
 const float MEAN_NEURON_CONSTANT = 0.0f;
 const float MEAN_NEURON_THRESHOLD = 0.0f;
