@@ -32,6 +32,7 @@ namespace ivc {
             bool m_shouldClose = false;
             bool isInitialized = false;
             bool m_physicsPaused = true;
+            bool m_cursorDisabled = false;
 
             Shader* m_shader = nullptr;
 

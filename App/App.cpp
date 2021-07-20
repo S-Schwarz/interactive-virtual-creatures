@@ -36,11 +36,22 @@ void ivc::App::processInput()
     if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
         m_camera.ProcessKeyboard(RIGHT, m_deltaTime);
 
-    static int oldState = GLFW_RELEASE;
-    int newState = glfwGetKey(m_window, GLFW_KEY_P);
-    if(newState == GLFW_RELEASE && oldState == GLFW_PRESS)
+    static int oldPauseState = GLFW_RELEASE;
+    int newPauseState = glfwGetKey(m_window, GLFW_KEY_P);
+    if(newPauseState == GLFW_RELEASE && oldPauseState == GLFW_PRESS)
         m_physicsPaused = !m_physicsPaused;
-    oldState = newState;
+    oldPauseState = newPauseState;
+
+    static int oldCursorState = GLFW_RELEASE;
+    int newCursorState = glfwGetKey(m_window, GLFW_KEY_C);
+    if(newCursorState == GLFW_RELEASE && oldCursorState == GLFW_PRESS){
+        m_cursorDisabled = !m_cursorDisabled;
+        if(m_cursorDisabled)
+            glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        else
+            glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    oldCursorState = newCursorState;
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos){
