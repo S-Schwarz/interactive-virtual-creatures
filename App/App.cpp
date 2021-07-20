@@ -189,7 +189,7 @@ int ivc::App::update() {
 
     // ----------------------------
 
-    m_projectionMatrix = glm::perspective(glm::radians(45.0f), (float)m_windowWidth / (float)m_windowHeight, 0.1f, 100.0f);
+    m_projectionMatrix = glm::perspective(glm::radians(45.0f), (float)m_windowWidth / (float)m_windowHeight, 0.1f, 1000.0f);
 
     glm::mat4 view = m_camera.GetViewMatrix();
     m_shader->setMat4("view", view);
