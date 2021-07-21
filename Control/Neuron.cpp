@@ -128,6 +128,10 @@ void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation) {
     if(forceMutation || dis(*gen) <= MUTATE_SINE_CHANCE)
         m_sin_vertical = Mutator::mutateFloat(gen,m_sin_vertical, INFINITY, -INFINITY);
 
+    //mutate sine osci step
+    if(forceMutation || dis(*gen) <= MUTATE_OSCI_CHANCE)
+        m_osci_stepSize = Mutator::mutateFloat(gen,m_osci_stepSize, INFINITY, -INFINITY);
+
     //mutate sum_threshold threshold
     if(forceMutation || dis(*gen) <= MUTATE_THRESHOLD_CHANCE)
         m_threshold = Mutator::mutateFloat(gen,m_threshold, INFINITY, -INFINITY);
