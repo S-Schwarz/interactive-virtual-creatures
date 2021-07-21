@@ -16,7 +16,7 @@ const int CREATURES_PER_GENERATION = 500;
 const int NUMBER_OF_GENERATIONS = 100;
 const int STEPS_PER_GENERATION = 1500;
 
-const int FALL_DOWN_STEPS = 500;
+const int FALL_DOWN_STEPS = 0;
 
 //body nodes
 const float MEAN_PART_SIZE = 3.0f;
@@ -65,5 +65,6 @@ const float MUTATE_NEW_NEURON_CHANCE = 0.2;
 const float MUTATE_REMOVE_NEURON_CHANCE = 0.1;
 const float MUTATE_THRESHOLD_CHANCE = 0.2;
 const float MUTATE_SINE_CHANCE = 0.2;
+const float MUTATE_OSCI_CHANCE = 0.2;
 
 #endif //INTERACTIVE_VIRTUAL_CREATURES_CONSTANTS_H

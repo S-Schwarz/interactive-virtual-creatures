@@ -9,6 +9,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
     m_position = pos;
     m_physics = pxPhysics;
     m_material = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
+    reporter = new ContactReporter;
 
     auto rootBody = createBox(rootNode.getDimensions()/2, m_position, PxVec3(0,0,0));
 
@@ -17,6 +18,12 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
     auto brainVec = rootNode.getBrain()->getCopyOfNeurons();
     m_neuronVector.insert(m_neuronVector.end(), rootVec.begin(), rootVec.end());
     m_neuronVector.insert(m_neuronVector.end(), brainVec.begin(), brainVec.end());
+
+    //add root contact sensor
+    auto contactSensor = rootNode.getLocalNeurons()->getCopyOfContactSensor();
+    contactSensor->initContactVec();
+    m_contactVector.push_back(contactSensor);
+    addContactTriggers(rootBody,rootNode.getHalfExtents(),contactSensor);
 
     buildChildNodes(&rootNode, m_position, PxVec3(1,1,1), rootBody, 0);
 
@@ -36,6 +43,18 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPh
             m_gateMap[id] = newGate;
         }
         sensor->setOutputGates(newGates);
+    }
+
+    //and for contact Sensors
+    for(auto contact : m_contactVector){
+        auto outVec = contact->getOutputIDs();
+        std::vector<Gate*> newGates;
+        for(auto id : outVec){
+            auto newGate = new Gate();
+            newGates.push_back(newGate);
+            m_gateMap[id] = newGate;
+        }
+        contact->setOutputGates(newGates);
     }
 
     //connect inputs for neurons
@@ -126,6 +145,12 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
 
         auto childBody = createBox(childHalfExtents, childPos, childRotation);
 
+        //add contactSensor
+        auto contactSensor = child->getLocalNeurons()->getCopyOfContactSensor();
+        contactSensor->initContactVec();
+        m_contactVector.push_back(contactSensor);
+        addContactTriggers(childBody,childHalfExtents,contactSensor);
+
         PxTransform parentTrans(parentVecModified);
         PxTransform childTrans(-1 * childVec);
         auto d6joint = PxD6JointCreate(*m_physics, parentBody, parentTrans, childBody, childTrans);
@@ -171,6 +196,7 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
 PxRigidDynamic* ivc::PhysicalCreature::createBox(PxVec3 halfextents, PxVec3 position, PxVec3 rotation) {
 
     PxShape* boxShape = m_physics->createShape(PxBoxGeometry(halfextents), *m_material);
+    boxShape->setName("draw");
     glm::quat glmQuat = glm::quat(glm::vec3(rotation.x,rotation.y,rotation.z));
     PxQuat physxQuat = PxQuat(glmQuat.x,glmQuat.y,glmQuat.z,glmQuat.w);
     PxTransform transform(position, physxQuat);
@@ -194,6 +220,10 @@ void ivc::PhysicalCreature::performBrainStep() {
         sensor->step();
     }
 
+    for(auto contact : m_contactVector){
+        contact->step();
+    }
+
     for(auto neuron : m_neuronVector){
         neuron->step();
     }
@@ -207,6 +237,10 @@ void ivc::PhysicalCreature::performBrainStep() {
         sensor->swap();
     }
 
+    for(auto contact : m_contactVector){
+        contact->swap();
+    }
+
     for(auto neuron : m_neuronVector){
         neuron->swap();
     }
@@ -215,4 +249,61 @@ void ivc::PhysicalCreature::performBrainStep() {
 
 PxVec3 ivc::PhysicalCreature::getPosition() {
     return bodyParts.front()->getGlobalPose().p;
+}
+
+void ivc::PhysicalCreature::updateContactStates() {
+
+    auto contactMap = reporter->retrieveAndResetMap();
+
+    for(auto const& pair : contactMap){
+        std::string id_string = pair.first;
+        auto state = pair.second;
+
+        for(auto contactSensor : m_contactVector){
+            if(contactSensor->contains(id_string)){
+
+                if(state == PxPairFlag::eNOTIFY_TOUCH_FOUND)
+                    contactSensor->setState(id_string,true);
+                else if(state == PxPairFlag::eNOTIFY_TOUCH_LOST)
+                    contactSensor->setState(id_string,false);
+
+                break;
+            }
+        }
+
+    }
+
+}
+
+void ivc::PhysicalCreature::addContactTriggers(PxRigidDynamic * body, PxVec3 halfExtents, ContactSensor* contactSensor) {
+
+    std::vector<std::pair<PxVec3, PxTransform>> triggerVec = {
+            {PxVec3(0.9f * halfExtents.x, 0.1f * halfExtents.y, 0.9f * halfExtents.z), PxTransform(PxVec3(0,halfExtents.y,0))},
+            {PxVec3(0.9f * halfExtents.x, 0.1f * halfExtents.y, 0.9f * halfExtents.z), PxTransform(PxVec3(0,-halfExtents.y,0))},
+            {PxVec3(0.1f * halfExtents.x, 0.9f * halfExtents.y, 0.9f * halfExtents.z), PxTransform(PxVec3(halfExtents.x,0,0))},
+            {PxVec3(0.1f * halfExtents.x, 0.9f * halfExtents.y, 0.9f * halfExtents.z), PxTransform(PxVec3(-halfExtents.x,0,0))},
+            {PxVec3(0.9f * halfExtents.x, 0.9f * halfExtents.y, 0.1f * halfExtents.z), PxTransform(PxVec3(0,0,halfExtents.z))},
+            {PxVec3(0.9f * halfExtents.x, 0.9f * halfExtents.y, 0.1f * halfExtents.z), PxTransform(PxVec3(0,0,-halfExtents.z))}
+    };
+
+    auto ids = contactSensor->getOutputIDs();
+
+    for (auto pair : triggerVec) {
+        PxShape* triggerShape = m_physics->createShape(PxBoxGeometry(pair.first), *m_material);
+        triggerShape->setLocalPose(pair.second);
+        triggerShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+        triggerShape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+        body->attachShape(*triggerShape);
+
+        triggerShape->setName(std::to_string(ids.back()).c_str());
+        ids.pop_back();
+    }
+
+    if(!ids.empty())
+        throw std::logic_error("SOMETHING WENT WRONG");
+
+}
+
+ContactReporter *ivc::PhysicalCreature::getReporter() {
+    return reporter;
 }

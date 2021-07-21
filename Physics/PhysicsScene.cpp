@@ -13,11 +13,11 @@ int ivc::PhysicsScene::init(PhysicsBase* base, RootMorphNode rootNode) {
     sceneDesc.filterShader = PxDefaultSimulationFilterShader;
     sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
 
-    m_scene = m_base->getPhysics()->createScene(sceneDesc);
-
-    createPlane(PxVec3(0,1,0), 0, m_base->getMaterial());
-
     m_creature = new PhysicalCreature(rootNode,PxVec3(0,MEAN_PART_SIZE * 2,0), m_base->getPhysics());
+    sceneDesc.simulationEventCallback = m_creature->getReporter();
+
+    m_scene = m_base->getPhysics()->createScene(sceneDesc);
+    createPlane(PxVec3(0,1,0), 0, m_base->getMaterial());
 
     for(auto part : m_creature->getBodies()){
         m_scene->addActor(*part);
@@ -62,6 +62,8 @@ int ivc::PhysicsScene::simulate(bool brainSteps) {
 
     m_scene->simulate(SIMULATION_STEP_SIZE);
     m_scene->fetchResults(true);
+
+    m_creature->updateContactStates();
 
     if(brainSteps){
         for(int i = 0; i < BRAINSTEPS_PER_SIMSTEP; ++i){

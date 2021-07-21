@@ -247,11 +247,19 @@ int ivc::App::update() {
         glm::quat rotQuat = glm::quat(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
 
         //TODO: ???
-        PxShape* bodyShape = nullptr;
-        body->getShapes(&bodyShape, sizeof(bodyShape),0);
-        PxBoxGeometry* bodyGeom = new PxBoxGeometry();
-        bodyShape->getBoxGeometry(*bodyGeom);
-        glm::vec3 scaleVec = glm::vec3(bodyGeom->halfExtents.x * 2, bodyGeom->halfExtents.y * 2, bodyGeom->halfExtents.z * 2);
+        glm::vec3 scaleVec;
+
+        auto numShapes = body->getNbShapes();
+        PxShape **shapes = new PxShape*[numShapes];
+        body->getShapes(shapes, numShapes * sizeof(PxShape));
+        for(int i = 0; i < numShapes; ++i){
+            if(std::strcmp(shapes[i]->getName(),"draw") == 0){
+                PxBoxGeometry* bodyGeom = new PxBoxGeometry();
+                shapes[i]->getBoxGeometry(*bodyGeom);
+                scaleVec = glm::vec3(bodyGeom->halfExtents.x * 2, bodyGeom->halfExtents.y * 2, bodyGeom->halfExtents.z * 2);
+                break;
+            }
+        }
 
         if(m_physicsPaused)
             drawShape(TEXTURED_BOX, posVec, rotQuat, scaleVec, COLOR_RED, false);

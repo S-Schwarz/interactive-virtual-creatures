@@ -12,6 +12,7 @@
 #include "Joints/JointSensor.h"
 #include "Joints/JointEffector.h"
 #include "IDHandler.h"
+#include "ContactSensor.h"
 
 namespace ivc {
 
@@ -20,6 +21,7 @@ namespace ivc {
         std::vector<Neuron*> m_neuronVector;
         JointSensor* m_sensor = nullptr;
         JointEffector* m_effector = nullptr;
+        ContactSensor* m_contact = nullptr;
         std::vector<unsigned long> m_outputGates;
         std::vector<unsigned long> m_possibleInputGates;
         std::mt19937* m_generator = nullptr;
@@ -31,6 +33,8 @@ namespace ivc {
         void randomizeConnections();
         std::vector<Neuron*> getCopyOfNeurons();
         std::pair<JointSensor*,JointEffector*> getCopiesOfJointNeurons();
+        ContactSensor* getCopyOfContactSensor();
+        void setContactSensor(ContactSensor*);
         void mutateNeurons();
         void mutateNewNeurons(IDHandler*);
         void mutateConnections();

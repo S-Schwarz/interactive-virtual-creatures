@@ -22,20 +22,31 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, I
         m_neuronVector.push_back(newNeuron);
     }
 
-    if(!isBrain && !isRoot){
-        m_sensor = new JointSensor();
-        m_sensor->randomize(gen);
-        auto sensorID_0 = idHandler->getNewID();
-        m_outputGates.push_back(sensorID_0);
-        auto sensorID_1 = idHandler->getNewID();
-        m_outputGates.push_back(sensorID_1);
-        auto sensorID_2 = idHandler->getNewID();
-        m_outputGates.push_back(sensorID_2);
-        m_sensor->setIDs(sensorID_0,sensorID_1,sensorID_2);
+    if(!isBrain){
+        m_contact = new ContactSensor();
+        std::vector<unsigned long> contactIDs;
+        for(int i = 0; i < 6; ++i){
+            auto newID = idHandler->getNewID();
+            m_outputGates.push_back(newID);
+            contactIDs.push_back(newID);
+        }
+        m_contact->setIDs(contactIDs);
+        if(!isRoot){
+            m_sensor = new JointSensor();
+            m_sensor->randomize(gen);
+            auto sensorID_0 = idHandler->getNewID();
+            m_outputGates.push_back(sensorID_0);
+            auto sensorID_1 = idHandler->getNewID();
+            m_outputGates.push_back(sensorID_1);
+            auto sensorID_2 = idHandler->getNewID();
+            m_outputGates.push_back(sensorID_2);
+            m_sensor->setIDs(sensorID_0,sensorID_1,sensorID_2);
 
-        m_effector = new JointEffector();
-        m_effector->randomize(gen);
+            m_effector = new JointEffector();
+            m_effector->randomize(gen);
+        }
     }
+
 
 }
 
@@ -122,8 +133,10 @@ ivc::NeuronCluster *ivc::NeuronCluster::copy() {
     auto copiedCluster = new NeuronCluster(*this);
 
     copiedCluster->setNeurons(getCopyOfNeurons());
-    if(m_sensor != nullptr)
+    if(m_sensor != nullptr){
         copiedCluster->setJointNeurons(new JointSensor(*m_sensor), new JointEffector(*m_effector));
+        copiedCluster->setContactSensor(new ContactSensor(*m_contact));
+    }
 
     return copiedCluster;
 }
@@ -139,4 +152,12 @@ void ivc::NeuronCluster::setJointNeurons(ivc::JointSensor * sensor, ivc::JointEf
 
 void ivc::NeuronCluster::setGenerator(std::mt19937 *gen) {
     m_generator = gen;
+}
+
+ivc::ContactSensor *ivc::NeuronCluster::getCopyOfContactSensor() {
+    return new ContactSensor(*m_contact);
+}
+
+void ivc::NeuronCluster::setContactSensor(ContactSensor* sensor) {
+    m_contact = sensor;
 }
