@@ -259,6 +259,8 @@ void ivc::PhysicalCreature::updateContactStates() {
         std::string id_string = pair.first;
         auto state = pair.second;
 
+        //std::cout << id_string << "  -  " << state << "\n";
+
         for(auto contactSensor : m_contactVector){
             if(contactSensor->contains(id_string)){
 
@@ -295,7 +297,14 @@ void ivc::PhysicalCreature::addContactTriggers(PxRigidDynamic * body, PxVec3 hal
         triggerShape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
         body->attachShape(*triggerShape);
 
-        triggerShape->setName(std::to_string(ids.back()).c_str());
+        auto id_string = std::to_string(ids.back());
+
+        //TODO: ???
+        const std::string::size_type size = id_string.size();
+        char *buffer = new char[size + 1];
+        memcpy(buffer, id_string.c_str(), size + 1);
+
+        triggerShape->setName(buffer);
         ids.pop_back();
     }
 
