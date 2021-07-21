@@ -23,6 +23,7 @@ namespace ivc{
         SIGN,
         ABS,
         SIN,
+        SINE_OSCI,
         //two inputs
         SUM,
         MAX,
@@ -58,6 +59,10 @@ namespace ivc{
                 float m_sin_phase = 0.0f;
                 float m_sin_vertical = 0.0f;
 
+                //sine osci
+                float m_osci_stepSize = 1.0f;
+                float m_osci_offset = 0.0f;
+
             //two inputs
                 //sum_threshold neuron
                 float m_threshold = 0.0f;
@@ -80,6 +85,7 @@ namespace ivc{
             void sign();
             void abs();
             void sin();
+            void sine_osci();
             //two inputs
             void sum();
             void min();
