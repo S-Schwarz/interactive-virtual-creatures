@@ -119,11 +119,15 @@ void ivc::Evolver::createNextGeneration() {
     //find best creature
     RootMorphNode* bestCreature = nullptr;
     float bestScore = -INFINITY;
+    float worstScore = INFINITY;
     for(auto const& pair : sceneMap){
         auto score = pair.second.second;
         if(score > bestScore){
             bestCreature = pair.second.first;
             bestScore = score;
+        }
+        if(score < worstScore){
+            worstScore = score;
         }
     }
     currentBest = bestCreature;
@@ -132,7 +136,7 @@ void ivc::Evolver::createNextGeneration() {
     //normalize scores
     for(auto pair : sceneMap){
         auto score = pair.second.second;
-        sceneMap[pair.first] = {pair.second.first, score/bestScore};
+        sceneMap[pair.first] = {pair.second.first, (score-worstScore)/(bestScore-worstScore)};
     }
 
     //choose best creatures
