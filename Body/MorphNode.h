@@ -25,6 +25,7 @@ namespace ivc {
             //TODO: reflection
             bool m_terminalOnly;
         public:
+            ~MorphNode() override;
             BaseNode* copy() override;
             void mutateBodyAndNeurons() override;
             void mutateNewBodyAndNewNeurons() override;

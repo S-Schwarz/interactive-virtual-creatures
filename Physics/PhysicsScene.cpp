@@ -4,7 +4,7 @@
 
 #include "PhysicsScene.h"
 
-int ivc::PhysicsScene::init(PhysicsBase* base, RootMorphNode rootNode) {
+int ivc::PhysicsScene::init(PhysicsBase* base, RootMorphNode* rootNode) {
 
     m_base = base;
 
@@ -49,6 +49,8 @@ void ivc::PhysicsScene::destroy() {
         rigidDynamic->release();
     }
     m_rigidDynamicsVector.clear();
+
+    delete m_creature;
 
     if(m_plane)
         m_plane->release();

@@ -45,6 +45,7 @@ namespace ivc{
             bool m_isInitialized = false;
             std::mt19937* m_generator = nullptr;
         public:
+            virtual ~BaseNode();
             virtual void setParent(BaseNode*);
             virtual void setLocalNeurons(NeuronCluster*);
             virtual BaseNode* copy() = 0;

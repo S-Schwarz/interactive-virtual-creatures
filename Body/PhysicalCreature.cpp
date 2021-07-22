@@ -4,28 +4,28 @@
 
 #include "PhysicalCreature.h"
 
-ivc::PhysicalCreature::PhysicalCreature(RootMorphNode rootNode, PxVec3 pos, PxPhysics* pxPhysics) {
+ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, PxPhysics* pxPhysics) {
 
     m_position = pos;
     m_physics = pxPhysics;
     m_material = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
     reporter = new ContactReporter;
 
-    auto rootBody = createBox(rootNode.getDimensions()/2, m_position, PxVec3(0,0,0));
+    auto rootBody = createBox(rootNode->getDimensions()/2, m_position, PxVec3(0,0,0));
 
     //add root and brain neurons
-    auto rootVec = rootNode.getLocalNeurons()->getCopyOfNeurons();
-    auto brainVec = rootNode.getBrain()->getCopyOfNeurons();
+    auto rootVec = rootNode->getLocalNeurons()->getCopyOfNeurons();
+    auto brainVec = rootNode->getBrain()->getCopyOfNeurons();
     m_neuronVector.insert(m_neuronVector.end(), rootVec.begin(), rootVec.end());
     m_neuronVector.insert(m_neuronVector.end(), brainVec.begin(), brainVec.end());
 
     //add root contact sensor
-    auto contactSensor = rootNode.getLocalNeurons()->getCopyOfContactSensor();
+    auto contactSensor = rootNode->getLocalNeurons()->getCopyOfContactSensor();
     contactSensor->initContactVec();
     m_contactVector.push_back(contactSensor);
-    addContactTriggers(rootBody,rootNode.getHalfExtents(),contactSensor);
+    addContactTriggers(rootBody,rootNode->getHalfExtents(),contactSensor);
 
-    buildChildNodes(&rootNode, m_position, PxVec3(1,1,1), rootBody, 0);
+    buildChildNodes(rootNode, m_position, PxVec3(1,1,1), rootBody, 0);
 
     //create output gates for neurons
     for(auto neuron : m_neuronVector){
@@ -315,4 +315,30 @@ void ivc::PhysicalCreature::addContactTriggers(PxRigidDynamic * body, PxVec3 hal
 
 ContactReporter *ivc::PhysicalCreature::getReporter() {
     return reporter;
+}
+
+ivc::PhysicalCreature::~PhysicalCreature() {
+
+    for(auto neuron : m_neuronVector){
+        delete neuron;
+    }
+
+    for(auto sensor : m_sensorVector){
+        delete sensor;
+    }
+
+    for(auto effector : m_effectorVector){
+        delete effector;
+    }
+
+    for(auto contact : m_contactVector){
+        delete contact;
+    }
+
+    for(auto pair : m_gateMap){
+        delete pair.second;
+    }
+
+    delete reporter;
+
 }

@@ -18,7 +18,7 @@ int ivc::Evolver::init(ivc::PhysicsBase *base) {
         newRootNode->init();
         newRootNode->addNeuralConnections();
         auto newScene = new PhysicsScene();
-        newScene->init(m_base,*newRootNode);
+        newScene->init(m_base,newRootNode);
         sceneMap[newScene] = {newRootNode, -INFINITY};
     }
 
@@ -123,7 +123,7 @@ void ivc::Evolver::evolveNextGeneration() {
         newRoot->mutateNewBodyAndNewNeurons();
         newRoot->mutateNeuralConnections();
         auto newScene = new PhysicsScene();
-        newScene->init(m_base,*newRoot);
+        newScene->init(m_base,newRoot);
         nextGenMap[newScene] = {newRoot, -INFINITY};
     }
 
@@ -141,7 +141,7 @@ void ivc::Evolver::evolveNextGeneration() {
 ivc::RootMorphNode* ivc::Evolver::evolveNewCreature() {
 
     for(int i = 0; i < NUMBER_OF_GENERATIONS; ++i){
-        printf("GENERATION #%i: ", i);
+        printf("GENERATION #%i: ", i+1);
         evolveNextGeneration();
     }
 

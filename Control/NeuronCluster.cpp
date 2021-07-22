@@ -135,6 +135,8 @@ ivc::NeuronCluster *ivc::NeuronCluster::copy() {
     copiedCluster->setNeurons(getCopyOfNeurons());
     if(m_sensor != nullptr){
         copiedCluster->setJointNeurons(new JointSensor(*m_sensor), new JointEffector(*m_effector));
+    }
+    if(m_contact != nullptr){
         copiedCluster->setContactSensor(new ContactSensor(*m_contact));
     }
 
@@ -160,4 +162,16 @@ ivc::ContactSensor *ivc::NeuronCluster::getCopyOfContactSensor() {
 
 void ivc::NeuronCluster::setContactSensor(ContactSensor* sensor) {
     m_contact = sensor;
+}
+
+ivc::NeuronCluster::~NeuronCluster() {
+
+    delete m_sensor;
+    delete m_effector;
+    delete m_contact;
+
+    for(auto neuron : m_neuronVector){
+        delete neuron;
+    }
+
 }

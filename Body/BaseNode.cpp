@@ -2,6 +2,7 @@
 // Created by st on 7/7/21.
 //
 
+#include <iostream>
 #include "BaseNode.h"
 
 unsigned int ivc::BaseNode::getNumberOfParts() {
@@ -210,4 +211,16 @@ void ivc::BaseNode::setGenerator(std::mt19937 *gen) {
     for(auto child : m_childNodeVector){
         child->setGenerator(gen);
     }
+}
+
+ivc::BaseNode::~BaseNode() {
+
+    //std::cout << __FUNCTION__ << " at " << this << std::endl;
+
+    delete m_localNeurons;
+
+    for(auto child : m_childNodeVector){
+            delete child;
+    }
+
 }

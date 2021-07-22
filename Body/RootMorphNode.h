@@ -25,6 +25,7 @@ namespace ivc {
             NeuronCluster* m_brain = nullptr;
             IDHandler* m_idHandler = nullptr;
         public:
+            ~RootMorphNode() override;
             void setBrain(NeuronCluster*);
             BaseNode* copy() override;
             void mutateBodyAndNeurons() override;

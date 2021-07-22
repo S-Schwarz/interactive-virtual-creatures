@@ -169,17 +169,16 @@ int ivc::App::init(){
     PhysicsBase* physicsBase = new PhysicsBase();
     physicsBase->init();
 
-    //Evolver* evolver = new Evolver();
-    //evolver->init(physicsBase);
+    Evolver* evolver = new Evolver();
+    evolver->init(physicsBase);
+    RootMorphNode* rootNode = evolver->evolveNewCreature();
 
-    //RootMorphNode* rootNode = evolver->evolveNewCreature();
-
-    RootMorphNode* rootNode = new RootMorphNode();
-    rootNode->init();
-    rootNode->addNeuralConnections();
+    //RootMorphNode* rootNode = new RootMorphNode();
+    //rootNode->init();
+    //rootNode->addNeuralConnections();
 
     PhysicsScene* liveScene = new PhysicsScene();
-    liveScene->init(physicsBase,*rootNode);
+    liveScene->init(physicsBase,rootNode);
 
     m_liveEnvironment = new LiveEnvironment();
     m_liveEnvironment->init(liveScene);
@@ -257,9 +256,11 @@ int ivc::App::update() {
                 PxBoxGeometry* bodyGeom = new PxBoxGeometry();
                 shapes[i]->getBoxGeometry(*bodyGeom);
                 scaleVec = glm::vec3(bodyGeom->halfExtents.x * 2, bodyGeom->halfExtents.y * 2, bodyGeom->halfExtents.z * 2);
+                delete bodyGeom;
                 break;
             }
         }
+        delete[] shapes;
 
         if(m_physicsPaused)
             drawShape(TEXTURED_BOX, posVec, rotQuat, scaleVec, COLOR_RED, false);
@@ -334,7 +335,10 @@ int ivc::App::close() {
     if(!isInitialized)
         return -1;
 
+    delete m_shader;
+
     m_liveEnvironment->destroy();
+    delete m_liveEnvironment;
     glfwTerminate();
 
     return 0;

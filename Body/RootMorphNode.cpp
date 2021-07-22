@@ -145,7 +145,7 @@ void ivc::RootMorphNode::mutateNewBodyAndNewNeurons() {
         auto index = remDis(*m_generator);
         auto childNode = m_childNodeVector[index];
         auto anchor = childNode->getParentAnchor();
-        // TODO: delete node ptr
+        delete childNode;
 
         m_childNodeVector.erase(m_childNodeVector.begin() + index);
 
@@ -219,5 +219,13 @@ void ivc::RootMorphNode::setBrain(ivc::NeuronCluster * brain) {
 void ivc::RootMorphNode::setGenerator(std::mt19937 *gen) {
     BaseNode::setGenerator(gen);
     m_brain->setGenerator(gen);
+}
+
+ivc::RootMorphNode::~RootMorphNode() {
+
+    //std::cout << __FUNCTION__ << " at " << this << std::endl;
+    delete m_brain;
+    delete m_idHandler;
+
 }
 

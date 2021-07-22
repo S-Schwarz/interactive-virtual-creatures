@@ -24,7 +24,7 @@ namespace ivc{
             std::vector<PxRigidDynamic*> m_rigidDynamicsVector;
             bool isInitialized = false;
         public:
-            int init(PhysicsBase*,RootMorphNode);
+            int init(PhysicsBase*,RootMorphNode*);
             void destroy();
             int simulate(bool);
 

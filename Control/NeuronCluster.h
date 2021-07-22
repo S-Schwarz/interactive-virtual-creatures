@@ -27,6 +27,7 @@ namespace ivc {
         std::mt19937* m_generator = nullptr;
 
     public:
+        ~NeuronCluster();
         NeuronCluster(std::mt19937*,bool,bool,IDHandler*);
         std::vector<unsigned long> getOutputGates();
         void setPossibleInputs(std::vector<unsigned long>);

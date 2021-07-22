@@ -2,6 +2,7 @@
 // Created by st on 7/7/21.
 //
 
+#include <iostream>
 #include "MorphNode.h"
 
 PxVec3 ivc::MorphNode::getAnchorPosition(std::mt19937* gen){
@@ -175,7 +176,7 @@ void ivc::MorphNode::mutateNewBodyAndNewNeurons() {
         auto index = remDis(*m_generator);
         auto childNode = m_childNodeVector[index];
         auto anchor = childNode->getParentAnchor();
-        // TODO: delete node ptr
+        delete childNode;
 
         m_childNodeVector.erase(m_childNodeVector.begin() + index);
 
@@ -223,4 +224,8 @@ ivc::BaseNode *ivc::MorphNode::copy() {
     copiedNode->setLocalNeurons(m_localNeurons->copy());
 
     return copiedNode;
+}
+
+ivc::MorphNode::~MorphNode() {
+   // std::cout << __FUNCTION__ << " at " << this << std::endl;
 }

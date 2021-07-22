@@ -38,7 +38,8 @@ namespace ivc{
             void addContactTriggers(PxRigidDynamic*, PxVec3, ContactSensor*);
             void buildChildNodes(BaseNode*,PxVec3,PxVec3,PxRigidDynamic*,unsigned int);
         public:
-            PhysicalCreature(RootMorphNode, PxVec3, PxPhysics*);
+            ~PhysicalCreature();
+            PhysicalCreature(RootMorphNode*, PxVec3, PxPhysics*);
             std::vector<PxRigidDynamic*> getBodies();
             void updateContactStates();
             void performBrainStep();
