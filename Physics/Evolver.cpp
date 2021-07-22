@@ -126,7 +126,7 @@ void ivc::Evolver::createNextGeneration() {
             bestCreature = pair.second.first;
             bestScore = score;
         }
-        if(score < worstScore){
+        if(score != -INFINITY && score < worstScore){
             worstScore = score;
         }
     }
