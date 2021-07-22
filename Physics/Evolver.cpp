@@ -99,6 +99,23 @@ void ivc::Evolver::evolveNextGeneration() {
 
     allThreads.clear();
 
+    createNextGeneration();
+
+}
+
+ivc::RootMorphNode* ivc::Evolver::evolveNewCreature() {
+
+    for(int i = 0; i < NUMBER_OF_GENERATIONS; ++i){
+        printf("GENERATION #%i: ", i+1);
+        evolveNextGeneration();
+    }
+
+    return currentBest;
+
+}
+
+void ivc::Evolver::createNextGeneration() {
+
     //find best creature
     RootMorphNode* bestCreature = nullptr;
     float bestScore = -INFINITY;
@@ -112,39 +129,69 @@ void ivc::Evolver::evolveNextGeneration() {
     currentBest = bestCreature;
     printf("%f\n", bestScore);
 
+    //normalize scores
+    for(auto pair : sceneMap){
+        auto score = pair.second.second;
+        sceneMap[pair.first] = {pair.second.first, score/bestScore};
+    }
+
+    //choose best creatures
+    std::vector<std::pair<RootMorphNode*,float>> bestVec;
+    for(auto pair : sceneMap){
+        auto score = pair.second.second;
+        if(score > EVOLUTION_MIN_SCORE){
+            bestVec.push_back(pair.second);
+        }
+    }
+    printf("Chose %zu parents for next gen\n", bestVec.size());
+
+    //choose amount of children per root
+    std::vector<std::pair<RootMorphNode*,unsigned int>> amountVec;
+    float total = 0;
+    for(auto pair : bestVec){
+        total += pair.second;
+    }
+    float partSize = CREATURES_PER_GENERATION / total;
+    for(auto pair : bestVec){
+        amountVec.push_back({pair.first, floor(pair.second * partSize)});
+    }
+
     //create new generation
     std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> nextGenMap;
-    for(int i = 0; i < CREATURES_PER_GENERATION; ++i){
-        auto newRoot = dynamic_cast<RootMorphNode*>(bestCreature->copy());
-        std::random_device rd;
-        std::mt19937 generator(rd());
-        newRoot->setGenerator(&generator);
-        newRoot->mutateBodyAndNeurons();
-        newRoot->mutateNewBodyAndNewNeurons();
-        newRoot->mutateNeuralConnections();
+    for(auto pair : amountVec){
         auto newScene = new PhysicsScene();
-        newScene->init(m_base,newRoot);
-        nextGenMap[newScene] = {newRoot, -INFINITY};
+        newScene->init(m_base,pair.first);
+        nextGenMap[newScene] = {pair.first, -INFINITY};
+        for(int i = 0; i < pair.second; ++i){
+            auto newRoot = dynamic_cast<RootMorphNode*>(pair.first->copy());
+            std::random_device rd;
+            std::mt19937 generator(rd());
+            newRoot->setGenerator(&generator);
+            newRoot->mutateBodyAndNeurons();
+            newRoot->mutateNewBodyAndNewNeurons();
+            newRoot->mutateNeuralConnections();
+            newScene = new PhysicsScene();
+            newScene->init(m_base,newRoot);
+            nextGenMap[newScene] = {newRoot, -INFINITY};
+        }
     }
 
     //replace and delete old generation
     for(auto const& pair : sceneMap){
         pair.first->destroy();
         delete pair.first;
-        if(pair.second.first != currentBest)
+
+        bool keep = false;
+        for(auto p : amountVec){
+            if(pair.second.first == p.first){
+                keep = true;
+                break;
+            }
+        }
+        if(!keep)
             delete pair.second.first;
+
     }
     sceneMap = nextGenMap;
-
-}
-
-ivc::RootMorphNode* ivc::Evolver::evolveNewCreature() {
-
-    for(int i = 0; i < NUMBER_OF_GENERATIONS; ++i){
-        printf("GENERATION #%i: ", i+1);
-        evolveNextGeneration();
-    }
-
-    return currentBest;
 
 }
