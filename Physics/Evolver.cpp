@@ -53,10 +53,33 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 
         auto startPos = scene->getCreaturePos();
 
+        //check if stopped moving
+        auto lastPos = startPos;
+        int restCount = 0;
+        bool stoppedMoving = false;
+
         //start moving
         for(int i = 0; i < STEPS_PER_GENERATION; ++i){
             scene->simulate(true);
+
+            auto currentPos = scene->getCreaturePos();
+            if(currentPos == lastPos){
+                ++restCount;
+            }
+            if(restCount == MAX_RESTING_STEPS){
+                stoppedMoving = true;
+                break;
+            }
+
+            lastPos = currentPos;
+
         }
+
+        if(stoppedMoving)
+            continue;
+
+
+
         auto endPos = scene->getCreaturePos();
         float fitness = startPos.z - endPos.z;
 
