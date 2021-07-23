@@ -201,6 +201,7 @@ PxRigidDynamic* ivc::PhysicalCreature::createBox(PxVec3 halfextents, PxVec3 posi
     PxQuat physxQuat = PxQuat(glmQuat.x,glmQuat.y,glmQuat.z,glmQuat.w);
     PxTransform transform(position, physxQuat);
     PxRigidDynamic* body = m_physics->createRigidDynamic(transform);
+    body->setSolverIterationCounts(8,6);
     bodyParts.push_back(body);
     body->attachShape(*boxShape);
     PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
