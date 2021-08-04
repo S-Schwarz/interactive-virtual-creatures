@@ -27,7 +27,9 @@ void ivc::JointEffector::step() {
         zVel = -m_maxStrength;
     }
 
-    m_joint->setDriveVelocity(PxVec3(0,0,0),PxVec3(xVel,yVel,zVel));
+    m_joint->setDriveVelocity(PxArticulationAxis::eTWIST, xVel);
+    m_joint->setDriveVelocity(PxArticulationAxis::eSWING1, yVel);
+    m_joint->setDriveVelocity(PxArticulationAxis::eSWING2, zVel);
 
 }
 
@@ -47,7 +49,7 @@ int ivc::JointEffector::bindGates(std::vector<Gate *> gates) {
     return 0;
 }
 
-void ivc::JointEffector::setJoint(PxD6Joint *joint) {
+void ivc::JointEffector::setJoint(PxArticulationJointReducedCoordinate *joint) {
     m_joint = joint;
 }
 

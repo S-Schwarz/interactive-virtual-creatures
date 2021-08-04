@@ -19,7 +19,7 @@ using namespace physx;
 namespace ivc{
     class JointEffector {
     private:
-        PxD6Joint* m_joint = nullptr;
+        PxArticulationJointReducedCoordinate* m_joint = nullptr;
         Gate *input_0, *input_1, *input_2;
         unsigned long id_input_0, id_input_1, id_input_2;
         float weight_0 = 1.0f;
@@ -29,7 +29,7 @@ namespace ivc{
     public:
         void randomize(std::mt19937*);
         void step();
-        void setJoint(PxD6Joint*);
+        void setJoint(PxArticulationJointReducedCoordinate*);
         std::vector<unsigned long> getGateIDs();
         int bindGates(std::vector<Gate*>);
         void chooseRandomInputs(std::vector<unsigned long>);

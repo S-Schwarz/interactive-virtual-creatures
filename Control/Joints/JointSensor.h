@@ -17,7 +17,8 @@ using namespace physx;
 namespace ivc{
     class JointSensor {
     private:
-        PxD6Joint* m_joint = nullptr;
+        PxArticulationCache* m_cache = nullptr;
+        PxArticulationLink* m_link = nullptr;
         Gate *output_0, *output_1, *output_2;
         unsigned long id_output_0, id_output_1, id_output_2;
         float weight_0 = 1.0f;
@@ -28,7 +29,8 @@ namespace ivc{
         void randomize(std::mt19937*);
         void step();
         void swap();
-        void setJoint(PxD6Joint*);
+        void setCache(PxArticulationCache*);
+        void setLink(PxArticulationLink*);
         void setIDs(unsigned long, unsigned long, unsigned long);
         std::vector<unsigned long> getOutputIDs();
         void mutate(std::mt19937*);

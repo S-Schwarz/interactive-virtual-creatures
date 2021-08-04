@@ -19,10 +19,8 @@ int ivc::PhysicsScene::init(PhysicsBase* base, RootMorphNode* rootNode) {
     m_scene = m_base->getPhysics()->createScene(sceneDesc);
     createPlane(PxVec3(0,1,0), 0, m_base->getMaterial());
 
-    for(auto part : m_creature->getBodies()){
-        m_scene->addActor(*part);
-        m_rigidDynamicsVector.push_back(part);
-    }
+    m_scene->addArticulation(*m_creature->getArticulation());
+    m_creature->initCache();
 
     isInitialized = true;
 
@@ -45,11 +43,6 @@ void ivc::PhysicsScene::destroy() {
     if(!isInitialized)
         return;
 
-    for(auto rigidDynamic : m_rigidDynamicsVector){
-        rigidDynamic->release();
-    }
-    m_rigidDynamicsVector.clear();
-
     delete m_creature;
 
     if(m_plane)
@@ -65,6 +58,7 @@ int ivc::PhysicsScene::simulate(bool brainSteps) {
     m_scene->simulate(SIMULATION_STEP_SIZE);
     m_scene->fetchResults(true);
 
+    m_creature->updateCache();
     m_creature->updateContactStates();
 
     if(brainSteps){
@@ -77,14 +71,14 @@ int ivc::PhysicsScene::simulate(bool brainSteps) {
     return 0;
 }
 
-std::vector<PxRigidDynamic *> ivc::PhysicsScene::getRigidDynamics() {
-    return m_rigidDynamicsVector;
-}
-
 PxRigidStatic *ivc::PhysicsScene::getPlane() {
     return m_plane;
 }
 
 PxVec3 ivc::PhysicsScene::getCreaturePos() {
     return m_creature->getPosition();
+}
+
+std::vector<PxArticulationLink *> ivc::PhysicsScene::getBodyParts() {
+    return m_creature->getBodies();
 }

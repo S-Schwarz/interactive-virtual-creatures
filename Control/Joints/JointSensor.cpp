@@ -5,9 +5,10 @@
 #include "JointSensor.h"
 
 void ivc::JointSensor::step() {
-    output_0->setValue(m_joint->getTwistAngle() * weight_0);
-    output_1->setValue(m_joint->getSwingYAngle() * weight_1);
-    output_2->setValue(m_joint->getSwingZAngle() * weight_2);
+    auto index = m_link->getLinkIndex();
+    output_0->setValue(m_cache->jointPosition[index] * weight_0);
+    output_1->setValue(m_cache->jointPosition[index+1] * weight_1);
+    output_2->setValue(m_cache->jointPosition[index+2] * weight_2);
 }
 
 void ivc::JointSensor::swap() {
@@ -24,10 +25,6 @@ void ivc::JointSensor::setIDs(unsigned long id_0, unsigned long id_1, unsigned l
 
 std::vector<unsigned long> ivc::JointSensor::getOutputIDs() {
     return {id_output_0,id_output_1,id_output_2};
-}
-
-void ivc::JointSensor::setJoint(PxD6Joint *joint) {
-    m_joint = joint;
 }
 
 void ivc::JointSensor::randomize(std::mt19937* gen) {
@@ -59,4 +56,12 @@ void ivc::JointSensor::mutate(std::mt19937 *gen) {
         weight_1 = Mutator::mutateFloat(gen, weight_1, INFINITY, -INFINITY);
     if(dis(*gen) <= MUTATE_OUTPUT_WEIGHT_CHANCE)
         weight_2 = Mutator::mutateFloat(gen, weight_2, INFINITY, -INFINITY);
+}
+
+void ivc::JointSensor::setCache(PxArticulationCache* cache) {
+    m_cache = cache;
+}
+
+void ivc::JointSensor::setLink(PxArticulationLink* link) {
+    m_link = link;
 }

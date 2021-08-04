@@ -21,7 +21,6 @@ namespace ivc{
             PhysicalCreature* m_creature = nullptr;
 
             PxRigidStatic* m_plane = nullptr;
-            std::vector<PxRigidDynamic*> m_rigidDynamicsVector;
             bool isInitialized = false;
         public:
             int init(PhysicsBase*,RootMorphNode*);
@@ -29,9 +28,9 @@ namespace ivc{
             int simulate(bool);
 
             int createPlane(PxVec3 normalVec, float distance, PxMaterial* material);
-            std::vector<PxRigidDynamic*> getRigidDynamics();
             PxRigidStatic* getPlane();
             PxVec3 getCreaturePos();
+            std::vector<PxArticulationLink*> getBodyParts();
 
     };
 }

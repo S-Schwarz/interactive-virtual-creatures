@@ -16,7 +16,7 @@ namespace ivc{
             int simulate();
             void destroy();
 
-            std::vector<PxRigidDynamic*> getBodyParts();
+            std::vector<PxArticulationLink*> getBodyParts();
             PxRigidStatic* getFloorPlane();
     };
 }

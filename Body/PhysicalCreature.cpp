@@ -11,7 +11,9 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, PxP
     m_material = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
     reporter = new ContactReporter;
 
-    auto rootBody = createBox(rootNode->getDimensions()/2, m_position, PxVec3(0,0,0));
+    m_articulation = m_physics->createArticulationReducedCoordinate();
+
+    auto rootLink = createLink(nullptr,rootNode->getDimensions()/2, m_position, PxVec3(0,0,0));
 
     //add root and brain neurons
     auto rootVec = rootNode->getLocalNeurons()->getCopyOfNeurons();
@@ -23,9 +25,9 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, PxP
     auto contactSensor = rootNode->getLocalNeurons()->getCopyOfContactSensor();
     contactSensor->initContactVec();
     m_contactVector.push_back(contactSensor);
-    addContactTriggers(rootBody,rootNode->getHalfExtents(),contactSensor);
+    addContactTriggers(rootLink,rootNode->getHalfExtents(),contactSensor);
 
-    buildChildNodes(rootNode, m_position, PxVec3(1,1,1), rootBody, 0);
+    buildChildNodes(rootNode, m_position, PxVec3(1,1,1), rootLink, 0);
 
     //create output gates for neurons
     for(auto neuron : m_neuronVector){
@@ -108,7 +110,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, PxP
 */
 }
 
-void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxVec3 parentScale, PxRigidDynamic* parentBody, unsigned int recursionDepth) {
+void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxVec3 parentScale, PxArticulationLink* parentLink, unsigned int recursionDepth) {
 
     auto parentHalfExtents = parentNode->getDimensions()/2;
     parentHalfExtents = PxVec3(parentHalfExtents.x * parentScale.x, parentHalfExtents.y * parentScale.y, parentHalfExtents.z * parentScale.z);
@@ -143,32 +145,40 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
 
         PxVec3 childPos = parentPos + parentVecModified + childVec;
 
-        auto childBody = createBox(childHalfExtents, childPos, childRotation);
+        auto childLink = createLink(parentLink, childHalfExtents, childPos, childRotation);
 
         //add contactSensor
         auto contactSensor = child->getLocalNeurons()->getCopyOfContactSensor();
         contactSensor->initContactVec();
         m_contactVector.push_back(contactSensor);
-        addContactTriggers(childBody,childHalfExtents,contactSensor);
+        addContactTriggers(childLink,childHalfExtents,contactSensor);
 
+        //add joint
         PxTransform parentTrans(parentVecModified);
         PxTransform childTrans(-1 * childVec);
-        auto d6joint = PxD6JointCreate(*m_physics, parentBody, parentTrans, childBody, childTrans);
 
-        d6joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eLIMITED);
-        d6joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eLIMITED);
-        d6joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eLIMITED);
+        auto joint1 = static_cast<PxArticulationJointReducedCoordinate*>(childLink->getInboundJoint());
 
-        PxSpring spring(SPRING_STIFFNESS, SPRING_DAMPING);     //TODO: changeable (?)
+        joint1->setParentPose(parentTrans);
+        joint1->setChildPose(childTrans);
+
         auto swingY = child->getSwingLimitsY();
         auto swingZ = child->getSwingLimitsZ();
         auto twist = child->getTwistLimits();
-        PxJointAngularLimitPair limits(twist.first, twist.second);
-        PxJointLimitPyramid pyramid(swingY.first, swingY.second, swingZ.first, swingZ.second);
-        d6joint->setPyramidSwingLimit(pyramid);
-        d6joint->setTwistLimit(limits);
-        PxD6JointDrive drive(SPRING_STIFFNESS, SPRING_DAMPING, FLT_MAX);
-        d6joint->setDrive(PxD6Drive::eSLERP, drive);
+
+        joint1->setJointType(PxArticulationJointType::eSPHERICAL);
+
+        joint1->setMotion(PxArticulationAxis::eTWIST, PxArticulationMotion::eLIMITED);
+        joint1->setMotion(PxArticulationAxis::eSWING1, PxArticulationMotion::eLIMITED);
+        joint1->setMotion(PxArticulationAxis::eSWING2, PxArticulationMotion::eLIMITED);
+
+        joint1->setLimit(PxArticulationAxis::eTWIST, twist.first, twist.second);
+        joint1->setLimit(PxArticulationAxis::eSWING1, swingY.first, swingY.second);
+        joint1->setLimit(PxArticulationAxis::eSWING2, swingZ.first, swingZ.second);
+
+        joint1->setDrive(PxArticulationAxis::eTWIST, SPRING_STIFFNESS, SPRING_DAMPING, PX_MAX_F32);
+        joint1->setDrive(PxArticulationAxis::eSWING1, SPRING_STIFFNESS, SPRING_DAMPING, PX_MAX_F32);
+        joint1->setDrive(PxArticulationAxis::eSWING2, SPRING_STIFFNESS, SPRING_DAMPING, PX_MAX_F32);
 
         //collect neurons from node
         auto neuronVec = child->getLocalNeurons()->getCopyOfNeurons();
@@ -176,16 +186,16 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
 
         //associate joint with sensor/effector
         auto pair = child->getLocalNeurons()->getCopiesOfJointNeurons();
-        pair.first->setJoint(d6joint);
-        pair.second->setJoint(d6joint);
+        pair.first->setLink(childLink);
+        pair.second->setJoint(joint1);
         pair.second->calculateMaxStrength(parentHalfExtents*2,childHalfExtents*2);
         m_sensorVector.push_back(pair.first);
         m_effectorVector.push_back(pair.second);
 
         if(child == parentNode){
-            buildChildNodes(child,childPos,childScale,childBody,recursionDepth+1);
+            buildChildNodes(child,childPos,childScale,childLink,recursionDepth+1);
         }else{
-            buildChildNodes(child,childPos,childScale,childBody,0);
+            buildChildNodes(child,childPos,childScale,childLink,0);
         }
 
 
@@ -193,24 +203,24 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
 
 }
 
-PxRigidDynamic* ivc::PhysicalCreature::createBox(PxVec3 halfextents, PxVec3 position, PxVec3 rotation) {
+PxArticulationLink* ivc::PhysicalCreature::createLink(PxArticulationLink* parent, PxVec3 halfextents, PxVec3 position, PxVec3 rotation) {
 
     PxShape* boxShape = m_physics->createShape(PxBoxGeometry(halfextents), *m_material);
     boxShape->setName("draw");
     glm::quat glmQuat = glm::quat(glm::vec3(rotation.x,rotation.y,rotation.z));
     PxQuat physxQuat = PxQuat(glmQuat.x,glmQuat.y,glmQuat.z,glmQuat.w);
     PxTransform transform(position, physxQuat);
-    PxRigidDynamic* body = m_physics->createRigidDynamic(transform);
-    body->setSolverIterationCounts(8,6);
-    bodyParts.push_back(body);
-    body->attachShape(*boxShape);
-    PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+    PxArticulationLink* link = m_articulation->createLink(parent,transform);
+    //body->setSolverIterationCounts(8,6);
+    bodyParts.push_back(link);
+    link->attachShape(*boxShape);
+    PxRigidBodyExt::updateMassAndInertia(*link, 10.0f);
     boxShape->release();
 
-    return body;
+    return link;
 }
 
-std::vector<PxRigidDynamic *> ivc::PhysicalCreature::getBodies() {
+std::vector<PxArticulationLink*> ivc::PhysicalCreature::getBodies() {
     return bodyParts;
 }
 
@@ -278,7 +288,7 @@ void ivc::PhysicalCreature::updateContactStates() {
 
 }
 
-void ivc::PhysicalCreature::addContactTriggers(PxRigidDynamic * body, PxVec3 halfExtents, ContactSensor* contactSensor) {
+void ivc::PhysicalCreature::addContactTriggers(PxArticulationLink* link, PxVec3 halfExtents, ContactSensor* contactSensor) {
 
     std::vector<std::pair<PxVec3, PxTransform>> triggerVec = {
             {PxVec3(0.9f * halfExtents.x, 0.1f * halfExtents.y, 0.9f * halfExtents.z), PxTransform(PxVec3(0,halfExtents.y,0))},
@@ -296,7 +306,7 @@ void ivc::PhysicalCreature::addContactTriggers(PxRigidDynamic * body, PxVec3 hal
         triggerShape->setLocalPose(pair.second);
         triggerShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
         triggerShape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
-        body->attachShape(*triggerShape);
+        link->attachShape(*triggerShape);
 
         auto id_string = std::to_string(ids.back());
 
@@ -340,6 +350,27 @@ ivc::PhysicalCreature::~PhysicalCreature() {
         delete pair.second;
     }
 
+    delete m_cache;
+    m_articulation->release();
+
     delete reporter;
 
+}
+
+void ivc::PhysicalCreature::initCache() {
+
+    m_cache = m_articulation->createCache();
+
+    for(auto sensor : m_sensorVector){
+        sensor->setCache(m_cache);
+    }
+
+}
+
+void ivc::PhysicalCreature::updateCache() {
+    m_articulation->copyInternalStateToCache(*m_cache, PxArticulationCache::ePOSITION);
+}
+
+PxArticulationReducedCoordinate *ivc::PhysicalCreature::getArticulation() {
+    return m_articulation;
 }

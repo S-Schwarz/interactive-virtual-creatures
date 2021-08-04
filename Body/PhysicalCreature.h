@@ -24,7 +24,9 @@ namespace ivc{
             PxVec3 m_position;
             PxPhysics* m_physics;
             PxMaterial* m_material;
-            std::vector<PxRigidDynamic*> bodyParts;
+            std::vector<PxArticulationLink*> bodyParts;
+            PxArticulationReducedCoordinate* m_articulation = nullptr;
+            PxArticulationCache* m_cache = nullptr;
 
             ContactReporter* reporter;
 
@@ -34,17 +36,20 @@ namespace ivc{
             std::vector<ContactSensor*> m_contactVector;
             std::map<unsigned long, Gate*> m_gateMap;
 
-            PxRigidDynamic* createBox(PxVec3 , PxVec3 , PxVec3);
-            void addContactTriggers(PxRigidDynamic*, PxVec3, ContactSensor*);
-            void buildChildNodes(BaseNode*,PxVec3,PxVec3,PxRigidDynamic*,unsigned int);
+            PxArticulationLink* createLink(PxArticulationLink*, PxVec3 , PxVec3 , PxVec3);
+            void addContactTriggers(PxArticulationLink*, PxVec3, ContactSensor*);
+            void buildChildNodes(BaseNode*,PxVec3,PxVec3,PxArticulationLink*,unsigned int);
         public:
             ~PhysicalCreature();
             PhysicalCreature(RootMorphNode*, PxVec3, PxPhysics*);
-            std::vector<PxRigidDynamic*> getBodies();
+            std::vector<PxArticulationLink*> getBodies();
             void updateContactStates();
             void performBrainStep();
             PxVec3 getPosition();
             ContactReporter* getReporter();
+            void initCache();
+            void updateCache();
+            PxArticulationReducedCoordinate* getArticulation();
     };
 
 }

@@ -31,8 +31,8 @@ int ivc::LiveEnvironment::simulate() {
     return 0;
 }
 
-std::vector<PxRigidDynamic *> ivc::LiveEnvironment::getBodyParts() {
-    return m_scene->getRigidDynamics();
+std::vector<PxArticulationLink *> ivc::LiveEnvironment::getBodyParts() {
+    return m_scene->getBodyParts();
 }
 
 PxRigidStatic *ivc::LiveEnvironment::getFloorPlane() {
