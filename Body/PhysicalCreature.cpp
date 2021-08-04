@@ -176,9 +176,22 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         joint1->setLimit(PxArticulationAxis::eSWING1, swingY.first, swingY.second);
         joint1->setLimit(PxArticulationAxis::eSWING2, swingZ.first, swingZ.second);
 
-        joint1->setDrive(PxArticulationAxis::eTWIST, SPRING_STIFFNESS, SPRING_DAMPING, PX_MAX_F32);
-        joint1->setDrive(PxArticulationAxis::eSWING1, SPRING_STIFFNESS, SPRING_DAMPING, PX_MAX_F32);
-        joint1->setDrive(PxArticulationAxis::eSWING2, SPRING_STIFFNESS, SPRING_DAMPING, PX_MAX_F32);
+        auto dimA = parentHalfExtents*2;
+        auto dimB = childHalfExtents*2;
+        float maxStrength = 0;
+
+        float surfaceA = 2 * (dimA.x * dimA.y + dimA.x * dimA.z + dimA.y * dimA.z);
+        float surfaceB = 2 * (dimB.x * dimB.y + dimB.x * dimB.z + dimB.y * dimB.z);
+
+        if(surfaceA > surfaceB){
+            maxStrength = surfaceB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
+        }else{
+            maxStrength = surfaceA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
+        }
+
+        joint1->setDrive(PxArticulationAxis::eTWIST, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength);
+        joint1->setDrive(PxArticulationAxis::eSWING1, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength);
+        joint1->setDrive(PxArticulationAxis::eSWING2, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength);
 
         //collect neurons from node
         auto neuronVec = child->getLocalNeurons()->getCopyOfNeurons();
@@ -188,7 +201,6 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         auto pair = child->getLocalNeurons()->getCopiesOfJointNeurons();
         pair.first->setLink(childLink);
         pair.second->setJoint(joint1);
-        pair.second->calculateMaxStrength(parentHalfExtents*2,childHalfExtents*2);
         m_sensorVector.push_back(pair.first);
         m_effectorVector.push_back(pair.second);
 
@@ -214,7 +226,7 @@ PxArticulationLink* ivc::PhysicalCreature::createLink(PxArticulationLink* parent
     //body->setSolverIterationCounts(8,6);
     bodyParts.push_back(link);
     link->attachShape(*boxShape);
-    PxRigidBodyExt::updateMassAndInertia(*link, 10.0f);
+    PxRigidBodyExt::updateMassAndInertia(*link, CREATURE_DENSITY);
     boxShape->release();
 
     return link;

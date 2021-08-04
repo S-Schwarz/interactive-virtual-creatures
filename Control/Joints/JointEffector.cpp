@@ -9,28 +9,9 @@ void ivc::JointEffector::step() {
     float yVel = input_1->getValue() * weight_1;
     float zVel = input_2->getValue() * weight_2;
 
-    if(xVel > m_maxStrength){
-        xVel = m_maxStrength;
-    }else if(xVel < -m_maxStrength){
-        xVel = -m_maxStrength;
-    }
-
-    if(yVel > m_maxStrength){
-        yVel = m_maxStrength;
-    }else if(yVel < -m_maxStrength){
-        yVel = -m_maxStrength;
-    }
-
-    if(zVel > m_maxStrength){
-        zVel = m_maxStrength;
-    }else if(zVel < -m_maxStrength){
-        zVel = -m_maxStrength;
-    }
-
     m_joint->setDriveVelocity(PxArticulationAxis::eTWIST, xVel);
     m_joint->setDriveVelocity(PxArticulationAxis::eSWING1, yVel);
     m_joint->setDriveVelocity(PxArticulationAxis::eSWING2, zVel);
-
 }
 
 std::vector<unsigned long> ivc::JointEffector::getGateIDs() {
@@ -88,21 +69,6 @@ void ivc::JointEffector::mutate(std::mt19937 *gen) {
         weight_1 = Mutator::mutateFloat(gen, weight_1, INFINITY, -INFINITY);
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
         weight_2 = Mutator::mutateFloat(gen, weight_2, INFINITY, -INFINITY);
-}
-
-void ivc::JointEffector::calculateMaxStrength(PxVec3 dimA, PxVec3 dimB) {
-
-    float surfaceA = 2 * (dimA.x * dimA.y + dimA.x * dimA.z + dimA.y * dimA.z);
-    float surfaceB = 2 * (dimB.x * dimB.y + dimB.x * dimB.z + dimB.y * dimB.z);
-
-    if(surfaceA > surfaceB){
-        m_maxStrength = surfaceB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
-    }else{
-        m_maxStrength = surfaceA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
-    }
-
-
-
 }
 
 void ivc::JointEffector::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs) {

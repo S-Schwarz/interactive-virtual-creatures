@@ -25,7 +25,6 @@ namespace ivc{
         float weight_0 = 1.0f;
         float weight_1 = 1.0f;
         float weight_2 = 1.0f;
-        float m_maxStrength;
     public:
         void randomize(std::mt19937*);
         void step();
@@ -35,7 +34,6 @@ namespace ivc{
         void chooseRandomInputs(std::vector<unsigned long>);
         void mutate(std::mt19937*);
         void mutateConnections(std::mt19937*,std::vector<unsigned long>);
-        void calculateMaxStrength(PxVec3,PxVec3);
     };
 }
 

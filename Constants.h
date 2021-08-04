@@ -17,18 +17,19 @@ const int MAX_RESTING_STEPS = 10;
 
 //simulation
 const float SIMULATION_STEP_SIZE = 0.01f;
-const int CREATURES_PER_GENERATION = 300;
+const int CREATURES_PER_GENERATION = 500;
 const int NUMBER_OF_GENERATIONS = 50;
 const int STEPS_PER_GENERATION = 1500;
 
 const int FALL_DOWN_STEPS = 500;
 
 //body nodes
+const float CREATURE_DENSITY = 10.0f;
 const float MEAN_PART_SIZE = 3.0f;
 const float MEAN_SCALE = 1.0f;
-const int MAX_CHILDREN = 2;
-const float CHILD_CHANCE = 0.8;
-const float CHILD_CHANCE_DECREASE = 0.5;
+const int MAX_CHILDREN = 1;
+const float CHILD_CHANCE = 1;
+const float CHILD_CHANCE_DECREASE = 1;
 
 const float MIN_PART_SIZE = 0.5f;
 const float MIN_SCALE = 0.1f;
@@ -49,13 +50,13 @@ const float JOINT_LIMIT = M_PI/2;
 const float MEAN_SENSOR_WEIGHT = 1.0f;
 const float MEAN_EFFECTOR_WEIGHT = 10.0f;
 
-const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 1;
+const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.25;
 
 const float MUTATE_JOINT_CHANCE = STANDARD_MUTATION_CHANCE;
 
 //neurons
-const int MEAN_LOCAL_NEURONS = 3;
-const int MEAN_BRAIN_NEURONS = 6;
+const int MEAN_LOCAL_NEURONS = 5;
+const int MEAN_BRAIN_NEURONS = 10;
 const float MEAN_NEURON_WEIGHT = 1.0f;
 const float MEAN_NEURON_CONSTANT = 0.0f;
 const float MEAN_NEURON_THRESHOLD = 0.0f;
