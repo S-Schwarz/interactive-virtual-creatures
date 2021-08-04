@@ -53,6 +53,9 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 
         auto startPos = scene->getCreaturePos();
 
+        if(startPos.y < 0)
+            continue;
+
         //check if stopped moving
         auto lastPos = startPos;
         int restCount = 0;
