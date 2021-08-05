@@ -60,6 +60,9 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
         auto lastPos = startPos;
         int restCount = 0;
 
+        //check for max height
+        float maxHeight = 0;
+
         //start moving
         for(int i = 0; i < STEPS_PER_GENERATION; ++i){
             scene->simulate(true);
@@ -74,9 +77,15 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
                 break;
             }
 
+            if(currentPos.y > maxHeight)
+                maxHeight = currentPos.y;
+
             lastPos = currentPos;
 
         }
+
+        if(maxHeight > MAX_ALLOWED_HEIGHT)
+            continue;
 
         auto endPos = scene->getCreaturePos();
         float fitness = startPos.z - endPos.z;
