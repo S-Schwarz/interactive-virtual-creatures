@@ -13,14 +13,7 @@ int ivc::Evolver::init(ivc::PhysicsBase *base) {
     printf("AVAILABLE THREADS: %i\n", m_numThreads);
 
     // create first generation
-    for(int i = 0; i < CREATURES_PER_GENERATION; ++i){
-        auto newRootNode = new RootMorphNode();
-        newRootNode->init();
-        newRootNode->addNeuralConnections();
-        auto newScene = new PhysicsScene();
-        newScene->init(m_base,newRootNode);
-        sceneMap[newScene] = {newRootNode, -INFINITY};
-    }
+    createNewGeneration();
 
     return 0;
 }
@@ -56,41 +49,46 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
         if(startPos.y < 0)
             continue;
 
+
+        int stepCount = 0;
+
         //check if stopped moving
-        auto lastPos = startPos;
-        int restCount = 0;
+        auto deltaPos = startPos;
 
         //check for max height
         float maxHeight = 0;
+
+        //take score after every simulation step
+        float fitness = 0;
 
         //start moving
         for(int i = 0; i < STEPS_PER_GENERATION; ++i){
             scene->simulate(true);
 
-            auto currentPos = scene->getCreaturePos();
-            if(currentPos == lastPos){
-                ++restCount;
-            }else{
-                restCount = 0;
-            }
-            if(restCount == MAX_RESTING_STEPS){
-                break;
-            }
+            ++stepCount;
 
+            auto currentPos = scene->getCreaturePos();
             if(currentPos.y > maxHeight)
                 maxHeight = currentPos.y;
 
-            lastPos = currentPos;
+            if(stepCount == AMOUNT_STEPS_DELTA){
+
+                auto distanceTravelled = currentPos.z - deltaPos.z;
+                auto swervingX = 0.5f * abs(currentPos.x - deltaPos.x);
+                fitness += (distanceTravelled - swervingX);
+
+                if(deltaPos == currentPos)
+                    break;
+
+                stepCount = 0;
+                deltaPos = currentPos;
+            }
+
 
         }
 
         if(maxHeight > MAX_ALLOWED_HEIGHT)
             continue;
-
-        auto endPos = scene->getCreaturePos();
-        auto distanceTravelled = startPos.z - endPos.z;
-        auto swervingX = 0.5f * abs(startPos.x - endPos.x);
-        float fitness = distanceTravelled - swervingX;
 
         //write result
         (*mapPtr)[scene] = {(*mapPtr)[scene].first,fitness};
@@ -101,6 +99,8 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 void ivc::Evolver::evolveNextGeneration() {
 
     void (*testFuncPtr)(std::vector<ivc::PhysicsScene*>, std::map<ivc::PhysicsScene*,std::pair<ivc::RootMorphNode*, float>>*) = testCreatures;
+
+    printf("Size: %i\n", sceneMap.size());
 
     //fitness test all creatures
     //divide scenes among threads
@@ -138,7 +138,8 @@ void ivc::Evolver::evolveNextGeneration() {
 ivc::RootMorphNode* ivc::Evolver::evolveNewCreature() {
 
     for(int i = 0; i < NUMBER_OF_GENERATIONS; ++i){
-        printf("GENERATION #%i: ", i+1);
+        printf("---------------------------\n");
+        printf("GENERATION #%i:\n", i+1);
         evolveNextGeneration();
     }
 
@@ -163,38 +164,93 @@ void ivc::Evolver::createNextGeneration() {
         }
     }
     currentBest = bestCreature;
-    printf("%f\n", bestScore);
+    printf("Best Score: %f\n", bestScore);
 
-    //normalize scores
-    for(auto pair : sceneMap){
-        auto score = pair.second.second;
-        sceneMap[pair.first] = {pair.second.first, (score-worstScore)/(bestScore-worstScore)};
-    }
-
-    //choose best creatures
-    std::vector<std::pair<RootMorphNode*,float>> bestVec;
-    for(auto pair : sceneMap){
-        auto score = pair.second.second;
-        if(score > EVOLUTION_MIN_SCORE){
-            bestVec.push_back(pair.second);
+    if(bestScore == 0){
+        //create completely new generation
+        printf("Creating new generation!\n");
+        deleteLastGeneration({});
+        sceneMap = {};
+        createNewGeneration();
+    }else{
+        //normalize scores
+        for(auto pair : sceneMap){
+            auto score = pair.second.second;
+            if(bestScore == worstScore){
+                sceneMap[pair.first] = {pair.second.first, 1.0f};
+            }else{
+                sceneMap[pair.first] = {pair.second.first, (score-worstScore)/(bestScore-worstScore)};
+            }
         }
-    }
-    printf("Chose %zu parents for next gen\n", bestVec.size());
+        //choose best creatures
+        std::vector<std::pair<RootMorphNode*,float>> bestVec;
+        for(auto pair : sceneMap){
+            auto score = pair.second.second;
+            if(score > EVOLUTION_MIN_SCORE){
+                bestVec.push_back(pair.second);
+            }
+        }
+        printf("Chose %zu parents for next gen\n", bestVec.size());
 
-    //choose amount of children per root
-    std::vector<std::pair<RootMorphNode*,unsigned int>> amountVec;
-    float total = 0;
-    for(auto pair : bestVec){
-        total += pair.second;
-    }
-    float partSize = CREATURES_PER_GENERATION / total;
-    for(auto pair : bestVec){
-        amountVec.push_back({pair.first, floor(pair.second * partSize)});
+        //choose amount of children per root
+        std::vector<std::pair<RootMorphNode*,unsigned int>> amountVec;
+        float total = 0;
+        for(auto pair : bestVec){
+            total += pair.second;
+        }
+        float partSize = CREATURES_PER_GENERATION / total;
+
+        for(auto pair : bestVec){
+            auto amountChildren = floor(pair.second * partSize);
+            amountVec.push_back({pair.first, amountChildren});
+        }
+
+        //create new generation
+        auto nextGenMap = createNewGenerationFromParents(amountVec);
+
+        //replace and delete old generation
+        deleteLastGeneration(bestVec);
+        sceneMap = nextGenMap;
     }
 
-    //create new generation
+
+
+}
+
+void ivc::Evolver::createNewGeneration() {
+    for(int i = 0; i < CREATURES_PER_GENERATION; ++i){
+        auto newRootNode = new RootMorphNode();
+        newRootNode->init();
+        newRootNode->addNeuralConnections();
+        auto newScene = new PhysicsScene();
+        newScene->init(m_base,newRootNode);
+        sceneMap[newScene] = {newRootNode, -INFINITY};
+    }
+}
+
+void ivc::Evolver::deleteLastGeneration(std::vector<std::pair<RootMorphNode*,float>> parents) {
+    for(auto const& pair : sceneMap){
+        pair.first->destroy();
+        delete pair.first;
+
+        bool keep = false;
+        for(auto p : parents){
+            if(pair.second.first == p.first){
+                keep = true;
+                break;
+            }
+        }
+        if(!keep)
+            delete pair.second.first;
+    }
+}
+
+std::map<ivc::PhysicsScene *, std::pair<ivc::RootMorphNode *, float>>
+ivc::Evolver::createNewGenerationFromParents(std::vector<std::pair<RootMorphNode *, unsigned int>> amountPerParent) {
+
     std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> nextGenMap;
-    for(auto pair : amountVec){
+
+    for(auto pair : amountPerParent){
         auto newScene = new PhysicsScene();
         newScene->init(m_base,pair.first);
         nextGenMap[newScene] = {pair.first, -INFINITY};
@@ -212,22 +268,6 @@ void ivc::Evolver::createNextGeneration() {
         }
     }
 
-    //replace and delete old generation
-    for(auto const& pair : sceneMap){
-        pair.first->destroy();
-        delete pair.first;
-
-        bool keep = false;
-        for(auto p : amountVec){
-            if(pair.second.first == p.first){
-                keep = true;
-                break;
-            }
-        }
-        if(!keep)
-            delete pair.second.first;
-
-    }
-    sceneMap = nextGenMap;
+    return nextGenMap;
 
 }

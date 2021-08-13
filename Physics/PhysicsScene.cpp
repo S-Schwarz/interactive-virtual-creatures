@@ -13,7 +13,7 @@ int ivc::PhysicsScene::init(PhysicsBase* base, RootMorphNode* rootNode) {
     sceneDesc.filterShader = PxDefaultSimulationFilterShader;
     sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
 
-    m_creature = new PhysicalCreature(rootNode,PxVec3(0,MEAN_PART_SIZE * 2,0), m_base->getPhysics());
+    m_creature = new PhysicalCreature(rootNode,PxVec3(0,ROOT_STARTING_HEIGHT,0), m_base->getPhysics());
     sceneDesc.simulationEventCallback = m_creature->getReporter();
 
     m_scene = m_base->getPhysics()->createScene(sceneDesc);

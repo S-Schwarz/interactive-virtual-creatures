@@ -180,18 +180,19 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         auto dimB = childHalfExtents*2;
         float maxStrength = 0;
 
-        float surfaceA = 2 * (dimA.x * dimA.y + dimA.x * dimA.z + dimA.y * dimA.z);
-        float surfaceB = 2 * (dimB.x * dimB.y + dimB.x * dimB.z + dimB.y * dimB.z);
+        float volumeA = dimA.x * dimA.y * dimA.z;
+        float volumeB = dimB.x * dimB.y * dimB.z;
 
-        if(surfaceA > surfaceB){
-            maxStrength = surfaceB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
+        // TODO: choose smaller or larger ???
+        if(volumeA > volumeB){
+            maxStrength = volumeB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
         }else{
-            maxStrength = surfaceA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
+            maxStrength = volumeA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
         }
 
-        joint1->setDrive(PxArticulationAxis::eTWIST, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength);
-        joint1->setDrive(PxArticulationAxis::eSWING1, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength);
-        joint1->setDrive(PxArticulationAxis::eSWING2, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength);
+        joint1->setDrive(PxArticulationAxis::eTWIST, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
+        joint1->setDrive(PxArticulationAxis::eSWING1, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
+        joint1->setDrive(PxArticulationAxis::eSWING2, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
 
         //collect neurons from node
         auto neuronVec = child->getLocalNeurons()->getCopyOfNeurons();
@@ -223,7 +224,6 @@ PxArticulationLink* ivc::PhysicalCreature::createLink(PxArticulationLink* parent
     PxQuat physxQuat = PxQuat(glmQuat.x,glmQuat.y,glmQuat.z,glmQuat.w);
     PxTransform transform(position, physxQuat);
     PxArticulationLink* link = m_articulation->createLink(parent,transform);
-    //body->setSolverIterationCounts(8,6);
     bodyParts.push_back(link);
     link->attachShape(*boxShape);
     PxRigidBodyExt::updateMassAndInertia(*link, CREATURE_DENSITY);

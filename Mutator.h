@@ -25,9 +25,8 @@ namespace ivc{
                 std::normal_distribution<> dis(old, stddev);
                 auto newValue = dis(*gen);
 
-                std::uniform_int_distribution<> dis2(0,1);
-                auto changeSign = dis2(*gen);
-                if(changeSign)
+                std::uniform_real_distribution<> dis2(0, 1);
+                if(dis2(*gen) <= MUTATE_SIGN_CHANCE)
                     newValue *= -1;
 
                 if(newValue > upperLimit)

@@ -9,6 +9,21 @@ void ivc::JointEffector::step() {
     float yVel = input_1->getValue() * weight_1;
     float zVel = input_2->getValue() * weight_2;
 
+    if(xVel > MAX_JOINT_VELOCITY)
+        xVel = MAX_JOINT_VELOCITY;
+    else if(xVel < -MAX_JOINT_VELOCITY)
+        xVel = -MAX_JOINT_VELOCITY;
+
+    if(yVel > MAX_JOINT_VELOCITY)
+        yVel = MAX_JOINT_VELOCITY;
+    else if(yVel < -MAX_JOINT_VELOCITY)
+        yVel = -MAX_JOINT_VELOCITY;
+
+    if(zVel > MAX_JOINT_VELOCITY)
+        zVel = MAX_JOINT_VELOCITY;
+    else if(zVel < -MAX_JOINT_VELOCITY)
+        zVel = -MAX_JOINT_VELOCITY;
+
     m_joint->setDriveVelocity(PxArticulationAxis::eTWIST, xVel);
     m_joint->setDriveVelocity(PxArticulationAxis::eSWING1, yVel);
     m_joint->setDriveVelocity(PxArticulationAxis::eSWING2, zVel);

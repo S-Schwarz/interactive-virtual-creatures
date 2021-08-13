@@ -23,6 +23,9 @@ namespace ivc{
             std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> sceneMap;
             void evolveNextGeneration();
             void createNextGeneration();
+            void createNewGeneration();
+            std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> createNewGenerationFromParents(std::vector<std::pair<RootMorphNode*,unsigned int>>);
+            void deleteLastGeneration(std::vector<std::pair<RootMorphNode*,float>>);
         public:
             int init(PhysicsBase*);
             RootMorphNode* evolveNewCreature();
