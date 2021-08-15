@@ -4,11 +4,11 @@
 
 #include "PhysicalCreature.h"
 
-ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, PxPhysics* pxPhysics) {
+ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, PhysicsBase* base) {
 
     m_position = pos;
-    m_physics = pxPhysics;
-    m_material = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
+    m_physics = base->getPhysics();
+    m_material = base->getMaterial();
     reporter = new ContactReporter;
 
     m_articulation = m_physics->createArticulationReducedCoordinate();

@@ -14,6 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../Constants.h"
 #include "../Physics/ContactReporter.h"
+#include "../Physics/PhysicsBase.h"
 
 using namespace physx;
 
@@ -41,7 +42,7 @@ namespace ivc{
             void buildChildNodes(BaseNode*,PxVec3,PxVec3,PxArticulationLink*,unsigned int);
         public:
             ~PhysicalCreature();
-            PhysicalCreature(RootMorphNode*, PxVec3, PxPhysics*);
+            PhysicalCreature(RootMorphNode*, PxVec3, PhysicsBase*);
             std::vector<PxArticulationLink*> getBodies();
             void updateContactStates();
             void performBrainStep();
