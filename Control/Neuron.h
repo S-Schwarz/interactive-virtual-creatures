@@ -25,6 +25,7 @@ namespace ivc{
         ABS,
         SIN,
         SINE_OSCI_ONE_IN,
+        DELAY,
         //two inputs
         SUM,
         MAX,
@@ -66,6 +67,8 @@ namespace ivc{
                 float m_osci_stepSize = 1.0f;
                 float m_osci_offset = 0.0f;
 
+                //delay memory
+                float m_delayed_input = 0.0f;
             //two inputs
                 //sum_threshold neuron
                 float m_threshold = 0.0f;
@@ -91,6 +94,7 @@ namespace ivc{
             void abs();
             void sin();
             void sine_osci_one_in();
+            void delay();
             //two inputs
             void sum();
             void min();

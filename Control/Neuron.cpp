@@ -30,6 +30,9 @@ void ivc::Neuron::step() {
         case SINE_OSCI_ONE_IN:
             sine_osci_one_in();
             break;
+        case DELAY:
+            delay();
+            break;
         //two inputs
         case SUM:
             sum();
@@ -159,6 +162,7 @@ ivc::Neuron::Neuron(std::mt19937* gen) {
         case ABS:
         case SIN:
         case SINE_OSCI_ONE_IN:
+        case DELAY:
             m_numberInputs = 1;
             break;
         case SUM:
@@ -317,4 +321,10 @@ void ivc::Neuron::if_then_else() {
     }else{
         output->setValue(val_2);
     }
+}
+
+void ivc::Neuron::delay() {
+    auto last = m_delayed_input;
+    m_delayed_input = m_inputWeights[0] * m_inputGates[0]->getValue();
+    output->setValue(last);
 }
