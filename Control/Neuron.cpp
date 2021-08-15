@@ -14,6 +14,9 @@ void ivc::Neuron::step() {
         case CONSTANT:
             output->setValue(m_constant);
             break;
+        case SINE_OSCI:
+            sine_osci();
+            break;
         //one input
         case SIGN:
             sign();
@@ -24,8 +27,8 @@ void ivc::Neuron::step() {
         case SIN:
             sin();
             break;
-        case SINE_OSCI:
-            sine_osci();
+        case SINE_OSCI_ONE_IN:
+            sine_osci_one_in();
             break;
         //two inputs
         case SUM:
@@ -145,12 +148,13 @@ ivc::Neuron::Neuron(std::mt19937* gen) {
 
     switch (m_type){
         case CONSTANT:
+        case SINE_OSCI:
             m_numberInputs = 0;
             break;
         case SIGN:
         case ABS:
         case SIN:
-        case SINE_OSCI:
+        case SINE_OSCI_ONE_IN:
             m_numberInputs = 1;
             break;
         case SUM:
@@ -218,7 +222,7 @@ void ivc::Neuron::sin() {
     output->setValue(result);
 }
 
-void ivc::Neuron::sine_osci() {
+void ivc::Neuron::sine_osci_one_in() {
     float val = m_inputWeights[0] * m_inputGates[0]->getValue();
     float result = m_sin_amplitude * std::sin(m_sin_period * (val + m_osci_offset)) + m_sin_vertical;
     m_osci_offset += m_osci_stepSize;
@@ -288,4 +292,10 @@ void ivc::Neuron::greater_than() {
     else
         output->setValue(0.0f);
 
+}
+
+void ivc::Neuron::sine_osci() {
+    float result = m_sin_amplitude * std::sin(m_sin_period * (m_osci_offset)) + m_sin_vertical;
+    m_osci_offset += m_osci_stepSize;
+    output->setValue(result);
 }

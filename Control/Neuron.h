@@ -19,11 +19,12 @@ namespace ivc{
     enum NEURON_TYPE{
         //no input
         CONSTANT,
+        SINE_OSCI,
         //one input
         SIGN,
         ABS,
         SIN,
-        SINE_OSCI,
+        SINE_OSCI_ONE_IN,
         //two inputs
         SUM,
         MAX,
@@ -81,11 +82,13 @@ namespace ivc{
             void mutate(std::mt19937*,bool);
             void mutateConnections(std::mt19937*,std::vector<unsigned long>);
 
+            //no inputs
+            void sine_osci();
             //one input
             void sign();
             void abs();
             void sin();
-            void sine_osci();
+            void sine_osci_one_in();
             //two inputs
             void sum();
             void min();
