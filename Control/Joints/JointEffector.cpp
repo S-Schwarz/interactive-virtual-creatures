@@ -24,9 +24,13 @@ void ivc::JointEffector::step() {
     else if(zVel < -MAX_JOINT_VELOCITY)
         zVel = -MAX_JOINT_VELOCITY;
 
-    m_joint->setDriveVelocity(PxArticulationAxis::eTWIST, xVel);
-    m_joint->setDriveVelocity(PxArticulationAxis::eSWING1, yVel);
-    m_joint->setDriveVelocity(PxArticulationAxis::eSWING2, zVel);
+    addToHistory(PxVec3(xVel,yVel,zVel));
+
+    auto average = getAverageValue();
+
+    m_joint->setDriveVelocity(PxArticulationAxis::eTWIST, average.x);
+    m_joint->setDriveVelocity(PxArticulationAxis::eSWING1, average.y);
+    m_joint->setDriveVelocity(PxArticulationAxis::eSWING2, average.z);
 }
 
 std::vector<unsigned long> ivc::JointEffector::getGateIDs() {
@@ -109,4 +113,34 @@ void ivc::JointEffector::mutateConnections(std::mt19937 *gen, std::vector<unsign
         std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
         id_input_2 = possibleInputs[0];
     }
+}
+
+void ivc::JointEffector::addToHistory(PxVec3 newValue) {
+
+    if(lastValues.size() < NUMBER_SAVED_EFFECTOR_VALUES){
+        lastValues.push_back(newValue);
+    }else{
+
+        lastValues[lastValuesIndex] = newValue;
+
+        if(lastValuesIndex == 9){
+            lastValuesIndex = 0;
+        }else{
+            ++lastValuesIndex;
+        }
+    }
+
+}
+
+PxVec3 ivc::JointEffector::getAverageValue() {
+
+    PxVec3 averageVec(0,0,0);
+
+    for(auto vec : lastValues){
+        averageVec += vec;
+    }
+
+    averageVec /= lastValues.size();
+
+    return averageVec;
 }

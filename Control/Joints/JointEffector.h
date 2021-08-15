@@ -25,6 +25,11 @@ namespace ivc{
         float weight_0 = 1.0f;
         float weight_1 = 1.0f;
         float weight_2 = 1.0f;
+        std::vector<PxVec3> lastValues;
+        unsigned int lastValuesIndex = 0;
+
+        void addToHistory(PxVec3);
+        PxVec3 getAverageValue();
     public:
         void randomize(std::mt19937*);
         void step();
