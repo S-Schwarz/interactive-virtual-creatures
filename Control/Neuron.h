@@ -33,6 +33,8 @@ namespace ivc{
         DIVIDE,
         SUM_THRESHOLD,
         GREATER_THAN,
+        //three inputs
+        IF_THEN_ELSE,
         COUNT
     };
 
@@ -97,6 +99,8 @@ namespace ivc{
             void divide();
             void sum_threshold();
             void greater_than();
+            //three inputs
+            void if_then_else();
     };
 
 }

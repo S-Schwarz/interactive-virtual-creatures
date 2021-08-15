@@ -52,6 +52,10 @@ void ivc::Neuron::step() {
         case GREATER_THAN:
             greater_than();
             break;
+        //three inputs
+        case IF_THEN_ELSE:
+            if_then_else();
+            break;
         default:
             throw std::invalid_argument("INVALID NEURON TYPE");
     }
@@ -165,6 +169,9 @@ ivc::Neuron::Neuron(std::mt19937* gen) {
         case SUM_THRESHOLD:
         case GREATER_THAN:
             m_numberInputs = 2;
+            break;
+        case IF_THEN_ELSE:
+            m_numberInputs = 3;
             break;
         default:
             throw std::invalid_argument("INVALID NEURON TYPE");
@@ -298,4 +305,16 @@ void ivc::Neuron::sine_osci() {
     float result = m_sin_amplitude * std::sin(m_sin_period * (m_osci_offset)) + m_sin_vertical;
     m_osci_offset += m_osci_stepSize;
     output->setValue(result);
+}
+
+void ivc::Neuron::if_then_else() {
+    float val_0 = m_inputWeights[0] * m_inputGates[0]->getValue();
+    float val_1 = m_inputWeights[1] * m_inputGates[1]->getValue();
+    float val_2 = m_inputWeights[2] * m_inputGates[2]->getValue();
+
+    if(val_0){
+        output->setValue(val_1);
+    }else{
+        output->setValue(val_2);
+    }
 }
