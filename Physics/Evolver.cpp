@@ -72,11 +72,6 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
                 maxHeight = currentPos.y;
 
             if(stepCount == AMOUNT_STEPS_DELTA){
-
-                auto distanceTravelled = currentPos.z - deltaPos.z;
-                auto swervingX = 0.75f * abs(currentPos.x - deltaPos.x);
-                fitness += (distanceTravelled - swervingX);
-
                 if(deltaPos == currentPos)
                     break;
 
@@ -89,6 +84,11 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 
         if(maxHeight > MAX_ALLOWED_HEIGHT)
             continue;
+
+        auto endPos = scene->getCreaturePos();
+        auto distanceTravelled = startPos.z - endPos.z;
+        auto swervingX = 0.5f * abs(startPos.x - endPos.x);
+        fitness = (distanceTravelled - swervingX);
 
         //write result
         (*mapPtr)[scene] = {(*mapPtr)[scene].first,fitness};

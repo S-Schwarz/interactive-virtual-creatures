@@ -8,22 +8,22 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-const float STANDARD_DEVIATION_FACTOR = 0.3f;
+const float STANDARD_DEVIATION_FACTOR = 0.2f;
 const float STANDARD_MUTATION_CHANCE = 0.05f;
 
 //evolution
 const float EVOLUTION_MIN_SCORE = 0.9995;
 const int AMOUNT_STEPS_DELTA = 100;
-const float MAX_ALLOWED_HEIGHT = 15;
+const float MAX_ALLOWED_HEIGHT = 50;
 
 //simulation
 const float SIMULATION_STEP_SIZE = 0.01f;
-const int CREATURES_PER_GENERATION = 500;
+const int CREATURES_PER_GENERATION = 1000;
 const int NUMBER_OF_GENERATIONS = 100;
-const int STEPS_PER_GENERATION = 2000;
+const int STEPS_PER_GENERATION = 5000;
 
-const int FALL_DOWN_STEPS = 500;
-const float ROOT_STARTING_HEIGHT = 5;
+const int FALL_DOWN_STEPS = 1000;
+const float ROOT_STARTING_HEIGHT = 10;
 
 //body nodes
 const float CREATURE_DENSITY = 10.0f;
@@ -54,7 +54,7 @@ const float MEAN_SENSOR_WEIGHT = 1.0f;
 const float MEAN_EFFECTOR_WEIGHT = 1.0f;
 const int NUMBER_SAVED_EFFECTOR_VALUES = 10.0f;
 
-const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 5.0f;
+const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 15.0f;
 
 const float MUTATE_JOINT_CHANCE = STANDARD_MUTATION_CHANCE;
 
