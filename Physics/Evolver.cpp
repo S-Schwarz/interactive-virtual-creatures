@@ -74,7 +74,7 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
             if(stepCount == AMOUNT_STEPS_DELTA){
 
                 auto distanceTravelled = currentPos.z - deltaPos.z;
-                auto swervingX = 0.5f * abs(currentPos.x - deltaPos.x);
+                auto swervingX = 0.75f * abs(currentPos.x - deltaPos.x);
                 fitness += (distanceTravelled - swervingX);
 
                 if(deltaPos == currentPos)
