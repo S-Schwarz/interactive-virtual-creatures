@@ -13,6 +13,7 @@ const float STANDARD_MUTATION_CHANCE = 0.05f;
 
 //evolution
 const float EVOLUTION_MIN_SCORE = 0.9995;
+const int EVOLUTION_MAX_PARENTS = 100;
 const int AMOUNT_STEPS_DELTA = 100;
 const float MAX_ALLOWED_HEIGHT = 50;
 

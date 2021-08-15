@@ -190,6 +190,17 @@ void ivc::Evolver::createNextGeneration() {
                 bestVec.push_back(pair.second);
             }
         }
+
+        //sort by score
+        std::sort(bestVec.begin(), bestVec.end(), [](auto &left, auto &right) {
+            return left.second > right.second;
+        });
+
+        //cap number of parents
+        if(bestVec.size() > EVOLUTION_MAX_PARENTS){
+            bestVec.resize(EVOLUTION_MAX_PARENTS);
+        }
+
         printf("Chose %zu parents for next gen\n", bestVec.size());
 
         //choose amount of children per root
