@@ -235,7 +235,8 @@ int ivc::App::update() {
 
     //-------------------------
 
-    drawShape(BOX, glm::vec3(0,5,0),glm::quat(),glm::vec3(0.2,0.2,0.2), COLOR_RED, false);
+    drawShape(BOX, glm::vec3(0,0,0),glm::quat(),glm::vec3(0.1,0.1,1000.0), COLOR_RED, false);
+    drawShape(BOX, glm::vec3(0,0,0),glm::quat(),glm::vec3(20.0,0.1,0.1), COLOR_RED, false);
 
     // PHYSX OBJECTS ----------
     for(auto body : m_liveEnvironment->getBodyParts()){
