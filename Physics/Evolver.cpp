@@ -163,7 +163,7 @@ void ivc::Evolver::createNextGeneration() {
             worstScore = score;
         }
     }
-    currentBest = bestCreature;
+
     printf("Best Score: %f\n", bestScore);
 
     if(bestScore == 0){
@@ -197,11 +197,14 @@ void ivc::Evolver::createNextGeneration() {
         });
 
         //cap number of parents
+        int vecSize = bestVec.size();
         if(bestVec.size() > EVOLUTION_MAX_PARENTS){
             bestVec.resize(EVOLUTION_MAX_PARENTS);
         }
 
-        printf("Chose %zu parents for next gen\n", bestVec.size());
+        currentBest = bestVec.front().first;
+
+        printf("Chose %zu parents for next gen\nDiscarded %i possible parents\n", bestVec.size(), vecSize > EVOLUTION_MAX_PARENTS?vecSize - EVOLUTION_MAX_PARENTS:0);
 
         //choose amount of children per root
         std::vector<std::pair<RootMorphNode*,unsigned int>> amountVec;
