@@ -235,7 +235,7 @@ int ivc::App::update() {
 
     //-------------------------
 
-    drawShape(BOX, glm::vec3(0,0,0),glm::quat(),glm::vec3(0.1,0.1,1000.0), COLOR_RED, false);
+    drawShape(BOX, glm::vec3(0,0,-240),glm::quat(),glm::vec3(0.1,0.1,500.0), COLOR_RED, false);
     drawShape(BOX, glm::vec3(0,0,0),glm::quat(),glm::vec3(20.0,0.1,0.1), COLOR_RED, false);
 
     // PHYSX OBJECTS ----------
