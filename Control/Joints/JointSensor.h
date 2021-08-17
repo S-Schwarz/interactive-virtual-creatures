@@ -32,6 +32,7 @@ namespace ivc{
         void setCache(PxArticulationCache*);
         void setLink(PxArticulationLink*);
         void setIDs(unsigned long, unsigned long, unsigned long);
+        void setIDs(std::vector<unsigned long>);
         std::vector<unsigned long> getOutputIDs();
         void mutate(std::mt19937*);
     };

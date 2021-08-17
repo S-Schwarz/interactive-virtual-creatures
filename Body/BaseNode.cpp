@@ -224,3 +224,115 @@ ivc::BaseNode::~BaseNode() {
     }
 
 }
+
+void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
+
+    std::uniform_real_distribution<> dis(0, 1);
+    static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
+
+    //reflect child node
+    if(dis(*m_generator) <= MUTATE_REFLECTION_CHANCE){
+        std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
+        for(auto child : m_childNodeVector){
+
+            //get opposite anchor
+            auto anchor = child->getParentAnchor();
+            PxVec3 oppositeAnchor = anchor;
+            NODE_SIDE oldSide, oppositeSide;
+
+            if(anchor.x == 1 || anchor.x == -1){
+                oppositeAnchor.x = anchor.x * -1;
+                if(oppositeAnchor.x == 1){
+                    oppositeSide = POS_X;
+                    oldSide = NEG_X;
+                }else{
+                    oppositeSide = NEG_X;
+                    oldSide = POS_X;
+                }
+            }else if(anchor.y == 1 || anchor.y == -1){
+                oppositeAnchor.y = anchor.y * -1;
+                if(oppositeAnchor.y == 1){
+                    oppositeSide = POS_Y;
+                    oldSide = NEG_Y;
+                }else{
+                    oppositeSide = NEG_Y;
+                    oldSide = POS_Y;
+                }
+            }else if(anchor.z == 1 || anchor.z == -1){
+                oppositeAnchor.z = anchor.z * -1;
+                if(oppositeAnchor.z == 1){
+                    oppositeSide = POS_Z;
+                    oldSide = NEG_Z;
+                }else{
+                    oppositeSide = NEG_Z;
+                    oldSide = POS_Z;
+                }
+            }
+            //check if side is free
+            if(std::find(m_freeSides.begin(), m_freeSides.end(), oppositeSide) != m_freeSides.end()){
+                setSideAsOccupied(oppositeSide);
+                auto reflectedChild = reflectChild(child);
+                reflectedChild->setSideAsOccupied(oldSide);
+                reflectedChild->setSideAsFree(oppositeSide);
+                reflectedChild->setParentAnchor(oppositeAnchor);
+                reflectedChild->setParentSide(oppositeSide);
+                m_childNodeVector.push_back(reflectedChild);
+                break;
+            }else{
+                continue;
+            }
+
+        }
+    }
+
+}
+
+ivc::BaseNode *ivc::BaseNode::reflectChild(ivc::BaseNode* child) {
+
+    //copy child
+    auto reflectedChild = child->copy();
+
+    //choose new outputs
+    std::map<unsigned long,unsigned long> newOutputIDs;
+    reflectedChild->chooseNewNeuronIDs(&newOutputIDs);
+
+    //rewire inputs
+    reflectedChild->rewireInputs(&newOutputIDs);
+
+    return reflectedChild;
+}
+
+void ivc::BaseNode::chooseNewNeuronIDs(std::map<unsigned long, unsigned long>* map) {
+
+    m_localNeurons->chooseNewNeuronIDs(map, getIDHandler());
+
+    for(auto child : m_childNodeVector){
+        child->chooseNewNeuronIDs(map);
+    }
+}
+
+void ivc::BaseNode::rewireInputs(std::map<unsigned long, unsigned long>* map) {
+
+    m_localNeurons->rewireInputs(map);
+
+    for(auto child : m_childNodeVector){
+        child->rewireInputs(map);
+    }
+
+}
+
+void ivc::BaseNode::setSideAsFree(ivc::NODE_SIDE side) {
+
+    if(std::find(m_freeSides.begin(), m_freeSides.end(), side) == m_freeSides.end()){
+        m_freeSides.push_back(side);
+    }
+
+}
+
+void ivc::BaseNode::setParentAnchor(PxVec3 newAnchor) {
+    m_parentAnchor = newAnchor;
+}
+
+void ivc::BaseNode::setParentSide(ivc::NODE_SIDE side) {
+    m_parentSide = side;
+}

@@ -19,10 +19,7 @@ namespace ivc {
     class MorphNode : public BaseNode {
         private:
             //connection
-            PxVec3 m_parentAnchor;
-            NODE_SIDE m_parentSide;
             PxVec3 m_orientation = PxVec3(0,0,0);
-            //TODO: reflection
             bool m_terminalOnly;
         public:
             ~MorphNode() override;

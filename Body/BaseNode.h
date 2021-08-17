@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <random>
 #include "../Mutator.h"
+#include <map>
 
 using namespace physx;
 
@@ -31,6 +32,8 @@ namespace ivc{
             //body
             PxVec3 m_dimension = PxVec3(MEAN_PART_SIZE,MEAN_PART_SIZE,MEAN_PART_SIZE);
             PxVec3 m_recursionAnchor;
+            PxVec3 m_parentAnchor;
+            NODE_SIDE m_parentSide;
             PxVec3 m_scale = PxVec3(1,1,1);
             unsigned int m_recursionLimit;
             NeuronCluster* m_localNeurons = nullptr;
@@ -50,7 +53,7 @@ namespace ivc{
             virtual void setLocalNeurons(NeuronCluster*);
             virtual BaseNode* copy() = 0;
             virtual void mutateBodyAndNeurons();
-            virtual void mutateNewBodyAndNewNeurons() = 0;
+            virtual void mutateNewBodyAndNewNeurons();
             virtual void mutateNeuralConnections();
             virtual unsigned int getNumberOfParts();
             virtual std::vector<BaseNode*> getChildren();
@@ -67,6 +70,7 @@ namespace ivc{
             virtual std::pair<float,float> getTwistLimits();
             virtual NODE_SIDE occupyRandomSide();
             virtual int setSideAsOccupied(NODE_SIDE);
+            virtual void setSideAsFree(NODE_SIDE);
             virtual IDHandler* getIDHandler();
             virtual NeuronCluster* getLocalNeurons();
             virtual NeuronCluster* getBrain();
@@ -75,6 +79,11 @@ namespace ivc{
             virtual void addNeuralConnections();
             virtual std::mt19937* getGenerator();
             virtual void setGenerator(std::mt19937*);
+            virtual BaseNode* reflectChild(BaseNode*);
+            virtual void chooseNewNeuronIDs(std::map<unsigned long,unsigned long>*);
+            virtual void rewireInputs(std::map<unsigned long,unsigned long>*);
+            virtual void setParentAnchor(PxVec3);
+            virtual void setParentSide(NODE_SIDE);
     };
 
 }

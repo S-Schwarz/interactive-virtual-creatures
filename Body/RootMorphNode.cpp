@@ -137,6 +137,8 @@ void ivc::RootMorphNode::mutateBodyAndNeurons() {
 
 void ivc::RootMorphNode::mutateNewBodyAndNewNeurons() {
 
+    BaseNode::mutateNewBodyAndNewNeurons();
+
     std::uniform_real_distribution<> dis(0, 1);
 
     // remove child node

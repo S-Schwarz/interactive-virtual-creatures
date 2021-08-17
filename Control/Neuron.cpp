@@ -328,3 +328,14 @@ void ivc::Neuron::delay() {
     m_delayed_input = m_inputWeights[0] * m_inputGates[0]->getValue();
     output->setValue(last);
 }
+
+std::vector<unsigned long> ivc::Neuron::getInputs() {
+    return m_inputIDs;
+}
+
+void ivc::Neuron::setInputs(std::vector<unsigned long> newInputs) {
+    if(newInputs.size() != m_numberInputs)
+        return;
+
+    m_inputIDs = newInputs;
+}

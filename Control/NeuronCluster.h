@@ -13,6 +13,7 @@
 #include "Joints/JointEffector.h"
 #include "IDHandler.h"
 #include "ContactSensor.h"
+#include <map>
 
 namespace ivc {
 
@@ -43,6 +44,8 @@ namespace ivc {
         void setNeurons(std::vector<Neuron*>);
         void setJointNeurons(JointSensor*,JointEffector*);
         void setGenerator(std::mt19937*);
+        void chooseNewNeuronIDs(std::map<unsigned long,unsigned long>*,IDHandler*);
+        void rewireInputs(std::map<unsigned long,unsigned long>*);
     };
 
 }

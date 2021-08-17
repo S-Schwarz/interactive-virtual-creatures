@@ -65,3 +65,12 @@ void ivc::JointSensor::setCache(PxArticulationCache* cache) {
 void ivc::JointSensor::setLink(PxArticulationLink* link) {
     m_link = link;
 }
+
+void ivc::JointSensor::setIDs(std::vector<unsigned long> idVec) {
+    if(idVec.size() != 3)
+        return;
+
+    id_output_0 = idVec[0];
+    id_output_1 = idVec[1];
+    id_output_2 = idVec[2];
+}

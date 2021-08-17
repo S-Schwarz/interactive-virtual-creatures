@@ -175,3 +175,75 @@ ivc::NeuronCluster::~NeuronCluster() {
     }
 
 }
+
+void ivc::NeuronCluster::chooseNewNeuronIDs(std::map<unsigned long, unsigned long>* map,IDHandler* idHandler) {
+
+    //new IDs for sensors
+    auto oldSensorIDs = m_sensor->getOutputIDs();
+    std::vector<unsigned long> newSensorIDs;
+    for(auto id : oldSensorIDs){
+        auto newID = idHandler->getNewID();
+        newSensorIDs.push_back(newID);
+        (*map)[id] = newID;
+    }
+    m_sensor->setIDs(newSensorIDs);
+
+    //new IDs for contacts
+    auto oldContactIDs = m_contact->getOutputIDs();
+    std::vector<unsigned long> newContactIDs;
+    for(auto id : oldContactIDs){
+        auto newID = idHandler->getNewID();
+        newContactIDs.push_back(newID);
+        (*map)[id] = newID;
+    }
+    m_contact->setIDs(newContactIDs);
+
+    //new IDs for neurons
+    std::vector<unsigned long> newNeuronIDs;
+    for(auto neuron : m_neuronVector){
+        auto oldID = neuron->getOutputID();
+        auto newID = idHandler->getNewID();
+        newNeuronIDs.push_back(newID);
+        neuron->setID(newID);
+        (*map)[oldID] = newID;
+    }
+
+    //update outputGateVec
+    std::vector<unsigned long> newOutputIDs = newSensorIDs;
+    newOutputIDs.insert(newOutputIDs.end(), newContactIDs.begin(), newContactIDs.end());
+    newOutputIDs.insert(newOutputIDs.end(), newNeuronIDs.begin(), newNeuronIDs.end());
+
+    m_outputGates = newOutputIDs;
+
+
+}
+
+void ivc::NeuronCluster::rewireInputs(std::map<unsigned long, unsigned long>* map) {
+
+    //set new effector inputs
+    auto oldEffectorIDs = m_effector->getInputs();
+    std::vector<unsigned long> newEffectorIDs;
+    for(auto id : oldEffectorIDs){
+        if(map->find(id) != map->end()){
+            newEffectorIDs.push_back((*map)[id]);
+        }else{
+            newEffectorIDs.push_back(id);
+        }
+    }
+    m_effector->setInputs(newEffectorIDs);
+
+    //set new neuron inputs
+    for(auto neuron : m_neuronVector){
+        auto oldNeuronIDs = neuron->getInputs();
+        std::vector<unsigned long> newNeuronIDs;
+        for(auto id : oldNeuronIDs){
+            if(map->find(id) != map->end()){
+                newNeuronIDs.push_back((*map)[id]);
+            }else{
+                newNeuronIDs.push_back(id);
+            }
+        }
+        neuron->setInputs(newNeuronIDs);
+    }
+
+}

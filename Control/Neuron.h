@@ -87,6 +87,9 @@ namespace ivc{
             void mutate(std::mt19937*,bool);
             void mutateConnections(std::mt19937*,std::vector<unsigned long>);
 
+            std::vector<unsigned long> getInputs();
+            void setInputs(std::vector<unsigned long>);
+
             //no inputs
             void sine_osci();
             //one input

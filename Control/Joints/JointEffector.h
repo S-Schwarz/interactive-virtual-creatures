@@ -39,6 +39,9 @@ namespace ivc{
         void chooseRandomInputs(std::vector<unsigned long>);
         void mutate(std::mt19937*);
         void mutateConnections(std::mt19937*,std::vector<unsigned long>);
+
+        std::vector<unsigned long> getInputs();
+        void setInputs(std::vector<unsigned long>);
     };
 }
 

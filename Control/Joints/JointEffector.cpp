@@ -144,3 +144,18 @@ PxVec3 ivc::JointEffector::getAverageValue() {
 
     return averageVec;
 }
+
+void ivc::JointEffector::setInputs(std::vector<unsigned long> newInputs) {
+
+    if(newInputs.size() != 3)
+        return;
+
+    id_input_0 = newInputs[0];
+    id_input_1 = newInputs[1];
+    id_input_2 = newInputs[2];
+
+}
+
+std::vector<unsigned long> ivc::JointEffector::getInputs() {
+    return {id_input_0,id_input_1,id_input_2};
+}
