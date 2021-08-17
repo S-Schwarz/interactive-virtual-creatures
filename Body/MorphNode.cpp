@@ -132,6 +132,20 @@ void ivc::MorphNode::mutateBodyAndNeurons() {
 
     BaseNode::mutateBodyAndNeurons();
 
+    //mutate orientation
+    float newX = m_orientation.x;
+    float newY = m_orientation.y;
+    float newZ = m_orientation.z;
+
+    if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
+        newX = Mutator::mutateFloat(m_generator, m_orientation.x, MAX_ROTATION, -MAX_ROTATION);
+    if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
+        newY = Mutator::mutateFloat(m_generator, m_orientation.y, MAX_ROTATION, -MAX_ROTATION);
+    if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
+        newZ = Mutator::mutateFloat(m_generator, m_orientation.z, MAX_ROTATION, -MAX_ROTATION);
+
+    m_orientation = PxVec3(newX,newY,newZ);
+
     //mutateBodyAndNeurons joint
     if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
         std::pair<float,float> newLimitX = {Mutator::mutateFloat(m_generator, m_jointLimitX.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitX.second, JOINT_LIMIT, -JOINT_LIMIT)};

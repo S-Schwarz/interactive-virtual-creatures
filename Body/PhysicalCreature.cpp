@@ -27,7 +27,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, Phy
     m_contactVector.push_back(contactSensor);
     addContactTriggers(rootLink,rootNode->getHalfExtents(),contactSensor);
 
-    buildChildNodes(rootNode, m_position, PxVec3(1,1,1), rootLink, 0);
+    buildChildNodes(rootNode, m_position, PxVec3(1,1,1), PxVec3(0,0,0),rootLink, 0);
 
     //create output gates for neurons
     for(auto neuron : m_neuronVector){
@@ -110,7 +110,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, Phy
 */
 }
 
-void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxVec3 parentScale, PxArticulationLink* parentLink, unsigned int recursionDepth) {
+void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxVec3 parentScale, PxVec3 parentRotation, PxArticulationLink* parentLink, unsigned int recursionDepth) {
 
     auto parentHalfExtents = parentNode->getDimensions()/2;
     parentHalfExtents = PxVec3(parentHalfExtents.x * parentScale.x, parentHalfExtents.y * parentScale.y, parentHalfExtents.z * parentScale.z);
@@ -128,6 +128,7 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         PxVec3 childHalfExtents = PxVec3(childSize.x * childScale.x, childSize.y * childScale.y, childSize.z * childScale.z);
 
         PxVec3 childRotation = child->getOrientation();
+        childRotation += parentRotation;
 
         PxVec3 parentVec = child->getParentAnchor();
         PxVec3 childVec;
@@ -206,9 +207,9 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         m_effectorVector.push_back(pair.second);
 
         if(child == parentNode){
-            buildChildNodes(child,childPos,childScale,childLink,recursionDepth+1);
+            buildChildNodes(child,childPos,childScale,childRotation,childLink,recursionDepth+1);
         }else{
-            buildChildNodes(child,childPos,childScale,childLink,0);
+            buildChildNodes(child,childPos,childScale,childRotation,childLink,0);
         }
 
 
