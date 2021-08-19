@@ -27,7 +27,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, Phy
     m_contactVector.push_back(contactSensor);
     addContactTriggers(rootLink,rootNode->getHalfExtents(),contactSensor);
 
-    buildChildNodes(rootNode, m_position, PxVec3(1,1,1), PxVec3(0,0,0),rootLink, 0);
+    buildChildNodes(rootNode, m_position, PxVec3(1,1,1), PxVec3(0,0,0),rootLink);
 
     //create output gates for neurons
     for(auto neuron : m_neuronVector){
@@ -110,14 +110,12 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, Phy
 */
 }
 
-void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxVec3 parentScale, PxVec3 parentRotation, PxArticulationLink* parentLink, unsigned int recursionDepth) {
+void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxVec3 parentScale, PxVec3 parentRotation, PxArticulationLink* parentLink) {
 
     auto parentHalfExtents = parentNode->getDimensions()/2;
     parentHalfExtents = PxVec3(parentHalfExtents.x * parentScale.x, parentHalfExtents.y * parentScale.y, parentHalfExtents.z * parentScale.z);
 
     auto childNodes = parentNode->getChildren();
-    if(parentNode->getRecursionLimit() > recursionDepth)
-        childNodes.push_back(parentNode);
 
     for(auto child : childNodes){
 
@@ -206,13 +204,7 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
         m_sensorVector.push_back(pair.first);
         m_effectorVector.push_back(pair.second);
 
-        if(child == parentNode){
-            buildChildNodes(child,childPos,childScale,childRotation,childLink,recursionDepth+1);
-        }else{
-            buildChildNodes(child,childPos,childScale,childRotation,childLink,0);
-        }
-
-
+        buildChildNodes(child,childPos,childScale,childRotation,childLink);
     }
 
 }

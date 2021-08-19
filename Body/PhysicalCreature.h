@@ -39,7 +39,7 @@ namespace ivc{
 
             PxArticulationLink* createLink(PxArticulationLink*, PxVec3 , PxVec3 , PxVec3);
             void addContactTriggers(PxArticulationLink*, PxVec3, ContactSensor*);
-            void buildChildNodes(BaseNode*,PxVec3,PxVec3,PxVec3,PxArticulationLink*,unsigned int);
+            void buildChildNodes(BaseNode*,PxVec3,PxVec3,PxVec3,PxArticulationLink*);
         public:
             ~PhysicalCreature();
             PhysicalCreature(RootMorphNode*, PxVec3, PhysicsBase*);
