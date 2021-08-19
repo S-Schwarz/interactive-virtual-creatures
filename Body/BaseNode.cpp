@@ -254,15 +254,10 @@ ivc::BaseNode *ivc::BaseNode::reflectChild(ivc::BaseNode* child) {
 
     //copy child
     auto reflectedChild = child->copy();
-
     NODE_SIDE oldSide = child->getParentSide();
-    NODE_SIDE oppositeSide = getOppositeSide(oldSide);
-    PxVec3 oppositeAnchor = flipAnchor(child->getParentAnchor());
 
-    reflectedChild->setSideAsOccupied(oldSide);
-    reflectedChild->setSideAsFree(oppositeSide);
-    reflectedChild->setParentAnchor(oppositeAnchor);
-    reflectedChild->setParentSide(oppositeSide);
+    //flip children recursively along axis
+    reflectedChild->reflectAlongAxis(oldSide);
 
     //choose new outputs
     std::map<unsigned long,unsigned long> newOutputIDs;
@@ -272,6 +267,47 @@ ivc::BaseNode *ivc::BaseNode::reflectChild(ivc::BaseNode* child) {
     reflectedChild->rewireInputs(&newOutputIDs);
 
     return reflectedChild;
+}
+
+void ivc::BaseNode::reflectAlongAxis(ivc::NODE_SIDE side) {
+
+    m_parentSide = getOppositeSide(m_parentSide);
+    m_parentAnchor = flipAnchor(m_parentAnchor);
+
+    //correctly set sides as free/occupied along axis
+    auto oppositeSide = getOppositeSide(side);
+    bool sideFree;
+    bool oppositeFree;
+
+    if(isFree(side)){
+        oppositeFree = true;
+    }else{
+        oppositeFree = false;
+    }
+    if(isFree(oppositeSide)){
+        sideFree = true;
+    }else{
+        sideFree = false;
+    }
+
+    if(sideFree){
+        setSideAsFree(side);
+    }else{
+        setSideAsOccupied(side);
+    }
+    if(oppositeFree){
+        setSideAsFree(oppositeSide);
+    }else{
+        setSideAsOccupied(oppositeSide);
+    }
+
+    //do for all children along axis
+    for(auto child : m_childNodeVector){
+        if(child->getParentSide() == side || child->getParentSide() == oppositeSide){
+            child->reflectAlongAxis(side);
+        }
+    }
+
 }
 
 void ivc::BaseNode::chooseNewNeuronIDs(std::map<unsigned long, unsigned long>* map) {
@@ -341,5 +377,13 @@ ivc::NODE_SIDE ivc::BaseNode::getOppositeSide(ivc::NODE_SIDE old) {
             return POS_Z;
         default:
             throw std::invalid_argument("INVALID NODE_SIDE");
+    }
+}
+
+bool ivc::BaseNode::isFree(ivc::NODE_SIDE side) {
+    if(std::find(m_freeSides.begin(), m_freeSides.end(), side) == m_freeSides.end()){
+        return false;
+    }else{
+        return true;
     }
 }

@@ -71,6 +71,7 @@ namespace ivc{
             virtual NODE_SIDE occupyRandomSide();
             virtual int setSideAsOccupied(NODE_SIDE);
             virtual void setSideAsFree(NODE_SIDE);
+            virtual bool isFree(NODE_SIDE side);
             virtual IDHandler* getIDHandler();
             virtual NeuronCluster* getLocalNeurons();
             virtual NeuronCluster* getBrain();
@@ -87,6 +88,7 @@ namespace ivc{
             virtual void setParentSide(NODE_SIDE);
             virtual PxVec3 flipAnchor(PxVec3);
             virtual NODE_SIDE getOppositeSide(NODE_SIDE);
+            virtual void reflectAlongAxis(NODE_SIDE);
     };
 
 }
