@@ -230,8 +230,8 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
     std::uniform_real_distribution<> dis(0, 1);
     static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
-    //reflect child node
-    if(dis(*m_generator) <= MUTATE_REFLECTION_CHANCE){
+    //reflect child node one time
+    if(dis(*m_generator) <= MUTATE_ONE_TIME_REFLECTION_CHANCE){
         std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
         for(auto child : m_childNodeVector){
             //check if opposite side is free
@@ -240,6 +240,23 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
                 setSideAsOccupied(oppositeSide);
                 auto reflectedChild = child->reflect();
                 m_childNodeVector.push_back(reflectedChild);
+                break;
+            }else{
+                continue;
+            }
+
+        }
+    }
+
+    //set reflection flag for child
+    if(dis(*m_generator) <= MUTATE_REFLECTION_FLAG_CHANCE){
+        std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
+        for(auto child : m_childNodeVector){
+            //check if opposite side is free and flag not already set
+            NODE_SIDE oppositeSide = getOppositeSide(child->getParentSide());
+            if(std::find(m_freeSides.begin(), m_freeSides.end(), oppositeSide) != m_freeSides.end() && !child->shouldBeReflected()){
+                setSideAsOccupied(oppositeSide);
+                child->setReflectionFlag();
                 break;
             }else{
                 continue;
@@ -385,4 +402,12 @@ bool ivc::BaseNode::isFree(ivc::NODE_SIDE side) {
     }else{
         return true;
     }
+}
+
+bool ivc::BaseNode::shouldBeReflected() {
+    return m_reflect;
+}
+
+bool ivc::BaseNode::setReflectionFlag() {
+    m_reflect = true;
 }

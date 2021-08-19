@@ -101,6 +101,10 @@ void ivc::MorphNode::init(BaseNode* parent, std::mt19937* gen, unsigned int dept
 
     std::uniform_real_distribution<> dis(0, 1);
 
+    if(dis(*gen) <= MUTATE_REFLECTION_FLAG_CHANCE){
+        m_reflect = true;
+    }
+
     for(int i = 0; i < MAX_CHILDREN; ++i){
         if(dis(*gen) < (CHILD_CHANCE - CHILD_CHANCE_DECREASE * depth) && !m_freeSides.empty()) {
             MorphNode *newChild = new MorphNode();

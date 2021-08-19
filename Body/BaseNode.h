@@ -45,6 +45,7 @@ namespace ivc{
             std::vector<BaseNode*> m_childNodeVector;
             std::vector<NODE_SIDE> m_freeSides = {POS_X,NEG_X,POS_Y,NEG_Y,POS_Z,NEG_Z};
 
+            bool m_reflect = false;
             bool m_isInitialized = false;
             std::mt19937* m_generator = nullptr;
         public:
@@ -89,6 +90,8 @@ namespace ivc{
             virtual PxVec3 flipAnchor(PxVec3);
             virtual NODE_SIDE getOppositeSide(NODE_SIDE);
             virtual void reflectAlongAxis(NODE_SIDE);
+            virtual bool shouldBeReflected();
+            virtual bool setReflectionFlag();
     };
 
 }

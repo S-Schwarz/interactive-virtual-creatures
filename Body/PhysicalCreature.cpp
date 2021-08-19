@@ -118,94 +118,101 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
     auto childNodes = parentNode->getChildren();
 
     for(auto child : childNodes){
-
-        PxVec3 scale = child->getScale();
-        PxVec3 childScale = PxVec3(parentScale.x * scale.x, parentScale.y * scale.y, parentScale.z * scale.z);
-
-        PxVec3 childSize = child->getHalfExtents();
-        PxVec3 childHalfExtents = PxVec3(childSize.x * childScale.x, childSize.y * childScale.y, childSize.z * childScale.z);
-
-        PxVec3 childRotation = child->getOrientation();
-        childRotation += parentRotation;
-
-        PxVec3 parentVec = child->getParentAnchor();
-        PxVec3 childVec;
-
-        //TODO: ???
-        if(parentVec.x == 1 || parentVec.x == -1){
-            childVec = PxVec3(childHalfExtents.x * parentVec.x,0,0);
-        }else if(parentVec.y == 1 || parentVec.y == -1){
-            childVec = PxVec3(0,childHalfExtents.y * parentVec.y,0);
-        }else{
-            childVec = PxVec3(0,0,childHalfExtents.z * parentVec.z);
+        buildNode(child, parentPos, parentScale, parentRotation, parentLink, parentHalfExtents);
+        if(child->shouldBeReflected()){
+            buildNode(child->reflect(), parentPos, parentScale, parentRotation, parentLink, parentHalfExtents);
         }
-
-        PxVec3 parentVecModified = PxVec3(parentVec.x * parentHalfExtents.x, parentVec.y * parentHalfExtents.y, parentVec.z * parentHalfExtents.z);
-
-        PxVec3 childPos = parentPos + parentVecModified + childVec;
-
-        auto childLink = createLink(parentLink, childHalfExtents, childPos, childRotation);
-
-        //add contactSensor
-        auto contactSensor = child->getLocalNeurons()->getCopyOfContactSensor();
-        contactSensor->initContactVec();
-        m_contactVector.push_back(contactSensor);
-        addContactTriggers(childLink,childHalfExtents,contactSensor);
-
-        //add joint
-        PxTransform parentTrans(parentVecModified);
-        PxTransform childTrans(-1 * childVec);
-
-        auto joint1 = static_cast<PxArticulationJointReducedCoordinate*>(childLink->getInboundJoint());
-
-        joint1->setParentPose(parentTrans);
-        joint1->setChildPose(childTrans);
-
-        auto swingY = child->getSwingLimitsY();
-        auto swingZ = child->getSwingLimitsZ();
-        auto twist = child->getTwistLimits();
-
-        joint1->setJointType(PxArticulationJointType::eSPHERICAL);
-
-        joint1->setMotion(PxArticulationAxis::eTWIST, PxArticulationMotion::eLIMITED);
-        joint1->setMotion(PxArticulationAxis::eSWING1, PxArticulationMotion::eLIMITED);
-        joint1->setMotion(PxArticulationAxis::eSWING2, PxArticulationMotion::eLIMITED);
-
-        joint1->setLimit(PxArticulationAxis::eTWIST, twist.first, twist.second);
-        joint1->setLimit(PxArticulationAxis::eSWING1, swingY.first, swingY.second);
-        joint1->setLimit(PxArticulationAxis::eSWING2, swingZ.first, swingZ.second);
-
-        auto dimA = parentHalfExtents*2;
-        auto dimB = childHalfExtents*2;
-        float maxStrength = 0;
-
-        float volumeA = dimA.x * dimA.y * dimA.z;
-        float volumeB = dimB.x * dimB.y * dimB.z;
-
-        // TODO: choose smaller or larger ???
-        if(volumeA > volumeB){
-            maxStrength = volumeB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
-        }else{
-            maxStrength = volumeA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
-        }
-
-        joint1->setDrive(PxArticulationAxis::eTWIST, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
-        joint1->setDrive(PxArticulationAxis::eSWING1, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
-        joint1->setDrive(PxArticulationAxis::eSWING2, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
-
-        //collect neurons from node
-        auto neuronVec = child->getLocalNeurons()->getCopyOfNeurons();
-        m_neuronVector.insert(m_neuronVector.end(), neuronVec.begin(), neuronVec.end());
-
-        //associate joint with sensor/effector
-        auto pair = child->getLocalNeurons()->getCopiesOfJointNeurons();
-        pair.first->setLink(childLink);
-        pair.second->setJoint(joint1);
-        m_sensorVector.push_back(pair.first);
-        m_effectorVector.push_back(pair.second);
-
-        buildChildNodes(child,childPos,childScale,childRotation,childLink);
     }
+
+}
+
+void ivc::PhysicalCreature::buildNode(BaseNode* child, PxVec3 parentPos, PxVec3 parentScale, PxVec3 parentRotation, PxArticulationLink* parentLink, PxVec3 parentHalfExtents) {
+
+    PxVec3 scale = child->getScale();
+    PxVec3 childScale = PxVec3(parentScale.x * scale.x, parentScale.y * scale.y, parentScale.z * scale.z);
+
+    PxVec3 childSize = child->getHalfExtents();
+    PxVec3 childHalfExtents = PxVec3(childSize.x * childScale.x, childSize.y * childScale.y, childSize.z * childScale.z);
+
+    PxVec3 childRotation = child->getOrientation();
+    childRotation += parentRotation;
+
+    PxVec3 parentVec = child->getParentAnchor();
+    PxVec3 childVec;
+
+    //TODO: ???
+    if(parentVec.x == 1 || parentVec.x == -1){
+        childVec = PxVec3(childHalfExtents.x * parentVec.x,0,0);
+    }else if(parentVec.y == 1 || parentVec.y == -1){
+        childVec = PxVec3(0,childHalfExtents.y * parentVec.y,0);
+    }else{
+        childVec = PxVec3(0,0,childHalfExtents.z * parentVec.z);
+    }
+
+    PxVec3 parentVecModified = PxVec3(parentVec.x * parentHalfExtents.x, parentVec.y * parentHalfExtents.y, parentVec.z * parentHalfExtents.z);
+    PxVec3 childPos = parentPos + parentVecModified + childVec;
+
+    auto childLink = createLink(parentLink, childHalfExtents, childPos, childRotation);
+
+    //add contactSensor
+    auto contactSensor = child->getLocalNeurons()->getCopyOfContactSensor();
+    contactSensor->initContactVec();
+    m_contactVector.push_back(contactSensor);
+    addContactTriggers(childLink,childHalfExtents,contactSensor);
+
+    //add joint
+    PxTransform parentTrans(parentVecModified);
+    PxTransform childTrans(-1 * childVec);
+
+    auto joint1 = static_cast<PxArticulationJointReducedCoordinate*>(childLink->getInboundJoint());
+
+    joint1->setParentPose(parentTrans);
+    joint1->setChildPose(childTrans);
+
+    auto swingY = child->getSwingLimitsY();
+    auto swingZ = child->getSwingLimitsZ();
+    auto twist = child->getTwistLimits();
+
+    joint1->setJointType(PxArticulationJointType::eSPHERICAL);
+
+    joint1->setMotion(PxArticulationAxis::eTWIST, PxArticulationMotion::eLIMITED);
+    joint1->setMotion(PxArticulationAxis::eSWING1, PxArticulationMotion::eLIMITED);
+    joint1->setMotion(PxArticulationAxis::eSWING2, PxArticulationMotion::eLIMITED);
+
+    joint1->setLimit(PxArticulationAxis::eTWIST, twist.first, twist.second);
+    joint1->setLimit(PxArticulationAxis::eSWING1, swingY.first, swingY.second);
+    joint1->setLimit(PxArticulationAxis::eSWING2, swingZ.first, swingZ.second);
+
+    auto dimA = parentHalfExtents*2;
+    auto dimB = childHalfExtents*2;
+    float maxStrength = 0;
+
+    float volumeA = dimA.x * dimA.y * dimA.z;
+    float volumeB = dimB.x * dimB.y * dimB.z;
+
+    // TODO: choose smaller or larger ???
+    if(volumeA > volumeB){
+        maxStrength = volumeB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
+    }else{
+        maxStrength = volumeA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
+    }
+
+    joint1->setDrive(PxArticulationAxis::eTWIST, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
+    joint1->setDrive(PxArticulationAxis::eSWING1, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
+    joint1->setDrive(PxArticulationAxis::eSWING2, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
+
+    //collect neurons from node
+    auto neuronVec = child->getLocalNeurons()->getCopyOfNeurons();
+    m_neuronVector.insert(m_neuronVector.end(), neuronVec.begin(), neuronVec.end());
+
+    //associate joint with sensor/effector
+    auto pair = child->getLocalNeurons()->getCopiesOfJointNeurons();
+    pair.first->setLink(childLink);
+    pair.second->setJoint(joint1);
+    m_sensorVector.push_back(pair.first);
+    m_effectorVector.push_back(pair.second);
+
+    buildChildNodes(child,childPos,childScale,childRotation,childLink);
 
 }
 
