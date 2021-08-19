@@ -80,7 +80,7 @@ namespace ivc{
             virtual void addNeuralConnections();
             virtual std::mt19937* getGenerator();
             virtual void setGenerator(std::mt19937*);
-            virtual BaseNode* reflectChild(BaseNode*);
+            virtual BaseNode* reflect();
             virtual void chooseNewNeuronIDs(std::map<unsigned long,unsigned long>*);
             virtual void rewireInputs(std::map<unsigned long,unsigned long>*);
             virtual void setParentAnchor(PxVec3);

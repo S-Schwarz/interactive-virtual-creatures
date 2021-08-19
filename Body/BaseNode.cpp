@@ -238,7 +238,7 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
             NODE_SIDE oppositeSide = getOppositeSide(child->getParentSide());
             if(std::find(m_freeSides.begin(), m_freeSides.end(), oppositeSide) != m_freeSides.end()){
                 setSideAsOccupied(oppositeSide);
-                auto reflectedChild = reflectChild(child);
+                auto reflectedChild = child->reflect();
                 m_childNodeVector.push_back(reflectedChild);
                 break;
             }else{
@@ -250,23 +250,22 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
 
 }
 
-ivc::BaseNode *ivc::BaseNode::reflectChild(ivc::BaseNode* child) {
+ivc::BaseNode *ivc::BaseNode::reflect() {
 
-    //copy child
-    auto reflectedChild = child->copy();
-    NODE_SIDE oldSide = child->getParentSide();
+    //copy this node recursively
+    auto reflectedVersion = copy();
 
     //flip children recursively along axis
-    reflectedChild->reflectAlongAxis(oldSide);
+    reflectedVersion->reflectAlongAxis(getParentSide());
 
-    //choose new outputs
+    //choose new outputs recursively
     std::map<unsigned long,unsigned long> newOutputIDs;
-    reflectedChild->chooseNewNeuronIDs(&newOutputIDs);
+    reflectedVersion->chooseNewNeuronIDs(&newOutputIDs);
 
-    //rewire inputs
-    reflectedChild->rewireInputs(&newOutputIDs);
+    //rewire inputs recursively
+    reflectedVersion->rewireInputs(&newOutputIDs);
 
-    return reflectedChild;
+    return reflectedVersion;
 }
 
 void ivc::BaseNode::reflectAlongAxis(ivc::NODE_SIDE side) {
