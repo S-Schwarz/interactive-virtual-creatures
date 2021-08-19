@@ -234,48 +234,11 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
     if(dis(*m_generator) <= MUTATE_REFLECTION_CHANCE){
         std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
         for(auto child : m_childNodeVector){
-
-            //get opposite anchor
-            auto anchor = child->getParentAnchor();
-            PxVec3 oppositeAnchor = anchor;
-            NODE_SIDE oldSide, oppositeSide;
-
-            if(anchor.x == 1 || anchor.x == -1){
-                oppositeAnchor.x = anchor.x * -1;
-                if(oppositeAnchor.x == 1){
-                    oppositeSide = POS_X;
-                    oldSide = NEG_X;
-                }else{
-                    oppositeSide = NEG_X;
-                    oldSide = POS_X;
-                }
-            }else if(anchor.y == 1 || anchor.y == -1){
-                oppositeAnchor.y = anchor.y * -1;
-                if(oppositeAnchor.y == 1){
-                    oppositeSide = POS_Y;
-                    oldSide = NEG_Y;
-                }else{
-                    oppositeSide = NEG_Y;
-                    oldSide = POS_Y;
-                }
-            }else if(anchor.z == 1 || anchor.z == -1){
-                oppositeAnchor.z = anchor.z * -1;
-                if(oppositeAnchor.z == 1){
-                    oppositeSide = POS_Z;
-                    oldSide = NEG_Z;
-                }else{
-                    oppositeSide = NEG_Z;
-                    oldSide = POS_Z;
-                }
-            }
-            //check if side is free
+            //check if opposite side is free
+            NODE_SIDE oppositeSide = getOppositeSide(child->getParentSide());
             if(std::find(m_freeSides.begin(), m_freeSides.end(), oppositeSide) != m_freeSides.end()){
                 setSideAsOccupied(oppositeSide);
                 auto reflectedChild = reflectChild(child);
-                reflectedChild->setSideAsOccupied(oldSide);
-                reflectedChild->setSideAsFree(oppositeSide);
-                reflectedChild->setParentAnchor(oppositeAnchor);
-                reflectedChild->setParentSide(oppositeSide);
                 m_childNodeVector.push_back(reflectedChild);
                 break;
             }else{
@@ -291,6 +254,15 @@ ivc::BaseNode *ivc::BaseNode::reflectChild(ivc::BaseNode* child) {
 
     //copy child
     auto reflectedChild = child->copy();
+
+    NODE_SIDE oldSide = child->getParentSide();
+    NODE_SIDE oppositeSide = getOppositeSide(oldSide);
+    PxVec3 oppositeAnchor = flipAnchor(child->getParentAnchor());
+
+    reflectedChild->setSideAsOccupied(oldSide);
+    reflectedChild->setSideAsFree(oppositeSide);
+    reflectedChild->setParentAnchor(oppositeAnchor);
+    reflectedChild->setParentSide(oppositeSide);
 
     //choose new outputs
     std::map<unsigned long,unsigned long> newOutputIDs;
@@ -335,4 +307,39 @@ void ivc::BaseNode::setParentAnchor(PxVec3 newAnchor) {
 
 void ivc::BaseNode::setParentSide(ivc::NODE_SIDE side) {
     m_parentSide = side;
+}
+
+ivc::NODE_SIDE ivc::BaseNode::getParentSide() {
+    return m_parentSide;
+}
+
+PxVec3 ivc::BaseNode::flipAnchor(PxVec3 oldVec) {
+    auto newVec = oldVec;
+    if(oldVec.x == 1 || oldVec.x == -1){
+        newVec.x = -1 * oldVec.x;
+    }else if(oldVec.y == 1 || oldVec.y == -1){
+        newVec.y = -1 * oldVec.y;
+    }else if(oldVec.z == 1 || oldVec.z == -1){
+        newVec.z = -1 * oldVec.z;
+    }
+    return newVec;
+}
+
+ivc::NODE_SIDE ivc::BaseNode::getOppositeSide(ivc::NODE_SIDE old) {
+    switch(old){
+        case POS_X:
+            return NEG_X;
+        case NEG_X:
+            return POS_X;
+        case POS_Y:
+            return NEG_Y;
+        case NEG_Y:
+            return POS_Y;
+        case POS_Z:
+            return NEG_Z;
+        case NEG_Z:
+            return POS_Z;
+        default:
+            throw std::invalid_argument("INVALID NODE_SIDE");
+    }
 }

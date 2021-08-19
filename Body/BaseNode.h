@@ -83,7 +83,10 @@ namespace ivc{
             virtual void chooseNewNeuronIDs(std::map<unsigned long,unsigned long>*);
             virtual void rewireInputs(std::map<unsigned long,unsigned long>*);
             virtual void setParentAnchor(PxVec3);
+            virtual NODE_SIDE getParentSide();
             virtual void setParentSide(NODE_SIDE);
+            virtual PxVec3 flipAnchor(PxVec3);
+            virtual NODE_SIDE getOppositeSide(NODE_SIDE);
     };
 
 }
