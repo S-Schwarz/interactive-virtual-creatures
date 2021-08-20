@@ -192,9 +192,9 @@ void ivc::PhysicalCreature::buildNode(BaseNode* child, PxVec3 parentPos, PxVec3 
 
     // TODO: choose smaller or larger ???
     if(volumeA > volumeB){
-        maxStrength = volumeB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
+        maxStrength = volumeB * volumeB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
     }else{
-        maxStrength = volumeA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
+        maxStrength = volumeA * volumeA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
     }
 
     joint1->setDrive(PxArticulationAxis::eTWIST, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);

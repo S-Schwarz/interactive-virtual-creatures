@@ -87,7 +87,7 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 
         auto endPos = scene->getCreaturePos();
         auto distanceTravelled = startPos.z - endPos.z;
-        auto swervingX = 0.5f * abs(startPos.x - endPos.x);
+        auto swervingX = 0.2f * abs(startPos.x - endPos.x);
         fitness = (distanceTravelled - swervingX);
 
         //write result
