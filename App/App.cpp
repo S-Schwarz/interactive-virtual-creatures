@@ -222,7 +222,16 @@ int ivc::App::update() {
         }
     }
 
-    // ----------------------------
+    // insert new creature ------------
+
+    auto currentGenNum = m_evolver->getNumberGenerations();
+    if(currentGenNum != m_lastGenNum && currentGenNum % 3 == 0){
+        printf("INSERTING NEW CREATURE INTO LIVE SCENE\n");
+        m_liveEnvironment->insertNewCreature(m_evolver->getCurrentBest());
+        m_lastGenNum = currentGenNum;
+    }
+
+    // ---------------------------
 
     m_projectionMatrix = glm::perspective(glm::radians(45.0f), (float)m_windowWidth / (float)m_windowHeight, 0.1f, 1000.0f);
 

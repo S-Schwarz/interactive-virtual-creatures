@@ -50,6 +50,8 @@ namespace ivc {
             float m_lastTime= 0.0f;
             float m_accumulator  = 0.0f;
 
+            unsigned int m_lastGenNum = 0;
+
             glm::mat4 m_projectionMatrix;
 
             unsigned int m_blockTexture;

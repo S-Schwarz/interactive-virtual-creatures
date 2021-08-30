@@ -305,3 +305,7 @@ void ivc::Evolver::stopEvolution() {
 ivc::RootMorphNode *ivc::Evolver::getCurrentBest() {
     return currentBest;
 }
+
+unsigned int ivc::Evolver::getNumberGenerations() {
+    return m_numberGenerations;
+}

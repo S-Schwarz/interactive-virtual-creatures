@@ -42,3 +42,7 @@ PxRigidStatic *ivc::LiveEnvironment::getFloorPlane() {
 void ivc::LiveEnvironment::destroy() {
     m_scene->destroy();
 }
+
+void ivc::LiveEnvironment::insertNewCreature(ivc::RootMorphNode* newNode) {
+    m_scene->insertNewCreature(newNode);
+}

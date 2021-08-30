@@ -32,6 +32,8 @@ namespace ivc{
             PxVec3 getCreaturePos();
             std::vector<PxArticulationLink*> getBodyParts();
 
+            void insertNewCreature(RootMorphNode*);
+
     };
 }
 

@@ -34,6 +34,7 @@ namespace ivc{
             void startContinuousEvolution();
             void stopEvolution();
             RootMorphNode* getCurrentBest();
+            unsigned int getNumberGenerations();
 
 
     };

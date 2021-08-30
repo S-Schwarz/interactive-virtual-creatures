@@ -82,3 +82,28 @@ PxVec3 ivc::PhysicsScene::getCreaturePos() {
 std::vector<PxArticulationLink *> ivc::PhysicsScene::getBodyParts() {
     return m_creature->getBodies();
 }
+
+void ivc::PhysicsScene::insertNewCreature(ivc::RootMorphNode* newNode) {
+
+    auto lastPos = m_creature->getPosition();
+    lastPos += PxVec3(0,0.1,0);
+
+    delete m_creature;
+    m_plane->release();
+    m_scene->release();
+
+    PxSceneDesc sceneDesc(m_base->getPhysics()->getTolerancesScale());
+    sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+    sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+    sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
+
+    m_creature = new PhysicalCreature(newNode,lastPos, m_base);
+    sceneDesc.simulationEventCallback = m_creature->getReporter();
+
+    m_scene = m_base->getPhysics()->createScene(sceneDesc);
+    createPlane(PxVec3(0,1,0), 0, m_base->getMaterial());
+
+    m_scene->addArticulation(*m_creature->getArticulation());
+    m_creature->initCache();
+
+}
