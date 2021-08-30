@@ -45,6 +45,9 @@ void ivc::App::processInput()
     if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
         m_camera.ProcessKeyboard(RIGHT, m_deltaTime);
 
+    if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS)
+        m_liveEnvironment->resetCreaturePosition();
+
     static int oldPauseState = GLFW_RELEASE;
     int newPauseState = glfwGetKey(m_window, GLFW_KEY_P);
     if(newPauseState == GLFW_RELEASE && oldPauseState == GLFW_PRESS)
@@ -225,7 +228,7 @@ int ivc::App::update() {
     // insert new creature ------------
 
     auto currentGenNum = m_evolver->getNumberGenerations();
-    if(currentGenNum != m_lastGenNum && currentGenNum % 3 == 0){
+    if(currentGenNum != m_lastGenNum && currentGenNum % 1 == 0){
         printf("INSERTING NEW CREATURE INTO LIVE SCENE\n");
         m_liveEnvironment->insertNewCreature(m_evolver->getCurrentBest());
         m_lastGenNum = currentGenNum;

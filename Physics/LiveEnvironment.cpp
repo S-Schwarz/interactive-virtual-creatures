@@ -27,7 +27,13 @@ int ivc::LiveEnvironment::init(ivc::PhysicsScene *scene) {
 }
 
 int ivc::LiveEnvironment::simulate() {
-    m_scene->simulate(true);
+    if(inactiveTime > 0){
+        m_scene->simulate(false);
+        --inactiveTime;
+    }else{
+        m_scene->simulate(true);
+    }
+
     return 0;
 }
 
@@ -45,4 +51,15 @@ void ivc::LiveEnvironment::destroy() {
 
 void ivc::LiveEnvironment::insertNewCreature(ivc::RootMorphNode* newNode) {
     m_scene->insertNewCreature(newNode);
+}
+
+void ivc::LiveEnvironment::resetCreaturePosition() {
+
+    m_scene->resetCreaturePosition();
+    setInactiveTime(250);
+
+}
+
+void ivc::LiveEnvironment::setInactiveTime(unsigned int time) {
+    inactiveTime = time;
 }

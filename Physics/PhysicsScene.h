@@ -20,6 +20,8 @@ namespace ivc{
             PxScene* m_scene = nullptr;
             PhysicalCreature* m_creature = nullptr;
 
+            RootMorphNode* m_rootNode = nullptr;
+
             PxRigidStatic* m_plane = nullptr;
             bool isInitialized = false;
         public:
@@ -34,6 +36,9 @@ namespace ivc{
 
             void insertNewCreature(RootMorphNode*);
             void alignChildren(std::vector<PxArticulationLink*>, std::vector<PxArticulationLink*>, PxArticulationCache*, PxArticulationCache*);
+
+            void resetCreaturePosition();
+            void rebuild();
 
     };
 }

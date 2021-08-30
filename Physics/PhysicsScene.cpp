@@ -7,6 +7,7 @@
 int ivc::PhysicsScene::init(PhysicsBase* base, RootMorphNode* rootNode) {
 
     m_base = base;
+    m_rootNode = rootNode;
 
     PxSceneDesc sceneDesc(m_base->getPhysics()->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
@@ -85,6 +86,7 @@ std::vector<PxArticulationLink *> ivc::PhysicsScene::getBodyParts() {
 
 void ivc::PhysicsScene::insertNewCreature(ivc::RootMorphNode* newNode) {
 
+    m_rootNode = newNode;
     auto lastPos = m_creature->getPosition();
     lastPos += PxVec3(0,0.1,0);
 
@@ -156,5 +158,34 @@ void ivc::PhysicsScene::alignChildren(std::vector<PxArticulationLink*> oldVec, s
             }
         }
     }
+
+}
+
+void ivc::PhysicsScene::resetCreaturePosition() {
+
+    rebuild();
+
+}
+
+void ivc::PhysicsScene::rebuild() {
+
+    if(m_rootNode == nullptr)
+        return;
+
+    destroy();
+
+    PxSceneDesc sceneDesc(m_base->getPhysics()->getTolerancesScale());
+    sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+    sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+    sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
+
+    m_creature = new PhysicalCreature(m_rootNode,PxVec3(0,ROOT_STARTING_HEIGHT,0), m_base);
+    sceneDesc.simulationEventCallback = m_creature->getReporter();
+
+    m_scene = m_base->getPhysics()->createScene(sceneDesc);
+    createPlane(PxVec3(0,1,0), 0, m_base->getMaterial());
+
+    m_scene->addArticulation(*m_creature->getArticulation());
+    m_creature->initCache();
 
 }
