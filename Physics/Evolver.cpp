@@ -285,3 +285,23 @@ ivc::Evolver::createNewGenerationFromParents(std::vector<std::pair<RootMorphNode
     return nextGenMap;
 
 }
+
+void ivc::Evolver::startContinuousEvolution() {
+
+    int i = 0;
+    while(!m_pauseEvolution){
+        printf("---------------------------\n");
+        printf("GENERATION #%i:\n", ++i);
+        evolveNextGeneration();
+        m_numberGenerations += 1;
+    }
+
+}
+
+void ivc::Evolver::stopEvolution() {
+    m_pauseEvolution = true;
+}
+
+ivc::RootMorphNode *ivc::Evolver::getCurrentBest() {
+    return currentBest;
+}

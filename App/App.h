@@ -38,6 +38,8 @@ namespace ivc {
 
             void processInput();
             LiveEnvironment* m_liveEnvironment = nullptr;
+            Evolver* m_evolver = nullptr;
+            std::thread* m_evolutionThread = nullptr;
 
             const int c_WIDTH = 800, c_HEIGHT = 600;
             int m_windowWidth = c_WIDTH, m_windowHeight = c_HEIGHT;

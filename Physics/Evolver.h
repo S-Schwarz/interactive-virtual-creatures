@@ -17,8 +17,10 @@ namespace ivc{
         private:
             PhysicsBase* m_base = nullptr;
             RootMorphNode* currentBest = nullptr;
+            unsigned int m_numberGenerations = 0;
 
             unsigned int m_numThreads = 1;
+            bool m_pauseEvolution = false;
 
             std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> sceneMap;
             void evolveNextGeneration();
@@ -29,6 +31,9 @@ namespace ivc{
         public:
             int init(PhysicsBase*);
             RootMorphNode* evolveNewCreature();
+            void startContinuousEvolution();
+            void stopEvolution();
+            RootMorphNode* getCurrentBest();
 
 
     };

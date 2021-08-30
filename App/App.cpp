@@ -12,6 +12,9 @@ glm::vec4 COLOR_RED(0.8f, 0.2f, 0.3f, 1.0f);
 glm::vec4 COLOR_PLANE(0.0f, 0.5f, 0.2f, 1.0f);
 glm::vec4 COLOR_CLEAR(0.0f, 0.7f, 0.9f, 1.0f);
 
+void backgroundEvolution(ivc::Evolver* evo){
+    evo->startContinuousEvolution();
+}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -170,15 +173,19 @@ int ivc::App::init(){
     physicsBase->init();
 
     Evolver* evolver = new Evolver();
+    m_evolver = evolver;
     evolver->init(physicsBase);
-    RootMorphNode* rootNode = evolver->evolveNewCreature();
 
-    //RootMorphNode* rootNode = new RootMorphNode();
-    //rootNode->init();
-    //rootNode->addNeuralConnections();
+    m_evolutionThread = new std::thread(backgroundEvolution, evolver);
 
     PhysicsScene* liveScene = new PhysicsScene();
-    liveScene->init(physicsBase,rootNode);
+
+    RootMorphNode* firstCreature = nullptr;
+    while(firstCreature == nullptr){
+        firstCreature = evolver->getCurrentBest();
+    }
+
+    liveScene->init(physicsBase,firstCreature);
 
     m_liveEnvironment = new LiveEnvironment();
     m_liveEnvironment->init(liveScene);
@@ -337,7 +344,8 @@ int ivc::App::close() {
         return -1;
 
     delete m_shader;
-
+    m_evolver->stopEvolution();
+    m_evolutionThread->join();
     m_liveEnvironment->destroy();
     delete m_liveEnvironment;
     glfwTerminate();
