@@ -14,6 +14,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, Phy
     m_articulation = m_physics->createArticulationReducedCoordinate();
 
     auto rootLink = createLink(nullptr,rootNode->getDimensions()/2, m_position, PxVec3(0,0,0));
+    m_rootLink = rootLink;
 
     //add root and brain neurons
     auto rootVec = rootNode->getLocalNeurons()->getCopyOfNeurons();
@@ -153,6 +154,13 @@ void ivc::PhysicalCreature::buildNode(BaseNode* child, PxVec3 parentPos, PxVec3 
     PxVec3 childPos = parentPos + parentVecModified + childVec;
 
     auto childLink = createLink(parentLink, childHalfExtents, childPos, childRotation);
+    auto sideString = child->getParentSideAsString();
+
+    const std::string::size_type size = sideString.size();
+    char *buffer = new char[size + 1];
+    memcpy(buffer, sideString.c_str(), size + 1);
+
+    childLink->setName(buffer);
 
     //add contactSensor
     auto contactSensor = child->getLocalNeurons()->getCopyOfContactSensor();
@@ -385,4 +393,12 @@ void ivc::PhysicalCreature::updateCache() {
 
 PxArticulationReducedCoordinate *ivc::PhysicalCreature::getArticulation() {
     return m_articulation;
+}
+
+PxArticulationLink *ivc::PhysicalCreature::getRootLink() {
+    return m_rootLink;
+}
+
+PxArticulationCache *ivc::PhysicalCreature::getCache() {
+    return m_cache;
 }

@@ -411,3 +411,23 @@ bool ivc::BaseNode::shouldBeReflected() {
 bool ivc::BaseNode::setReflectionFlag() {
     m_reflect = true;
 }
+
+std::string ivc::BaseNode::getParentSideAsString() {
+        switch (m_parentSide) {
+            case POS_X:
+                return "POS_X";
+            case NEG_X:
+                return "NEG_X";
+            case POS_Y:
+                return "POS_Y";
+            case NEG_Y:
+                return "NEG_Y";
+            case POS_Z:
+                return "POS_Z";
+            case NEG_Z:
+                return "NEG_Z";
+            case NONE:
+                return "NONE";
+
+        }
+}

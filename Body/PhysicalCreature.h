@@ -27,6 +27,9 @@ namespace ivc{
             PxMaterial* m_material;
             std::vector<PxArticulationLink*> bodyParts;
             PxArticulationReducedCoordinate* m_articulation = nullptr;
+
+            PxArticulationLink* m_rootLink = nullptr;
+
             PxArticulationCache* m_cache = nullptr;
 
             ContactReporter* reporter;
@@ -52,6 +55,9 @@ namespace ivc{
             void initCache();
             void updateCache();
             PxArticulationReducedCoordinate* getArticulation();
+            PxArticulationLink* getRootLink();
+            PxArticulationCache* getCache();
+
     };
 
 }

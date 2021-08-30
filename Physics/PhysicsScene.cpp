@@ -88,7 +88,8 @@ void ivc::PhysicsScene::insertNewCreature(ivc::RootMorphNode* newNode) {
     auto lastPos = m_creature->getPosition();
     lastPos += PxVec3(0,0.1,0);
 
-    delete m_creature;
+    auto oldCreature = m_creature;
+    auto oldCache = m_creature->getCache();
     m_plane->release();
     m_scene->release();
 
@@ -105,5 +106,55 @@ void ivc::PhysicsScene::insertNewCreature(ivc::RootMorphNode* newNode) {
 
     m_scene->addArticulation(*m_creature->getArticulation());
     m_creature->initCache();
+
+    // set position and rotation of new creature equal to old creature
+
+    auto newRoot = m_creature->getRootLink();
+    auto oldRoot = oldCreature->getRootLink();
+
+    newRoot->setGlobalPose(oldRoot->getGlobalPose());
+
+    PxArticulationLink* newChildrenArray[newRoot->getNbChildren()];
+    newRoot->getChildren(newChildrenArray,newRoot->getNbChildren());
+    std::vector<PxArticulationLink*> newChildren(newChildrenArray, newChildrenArray + newRoot->getNbChildren());
+
+    PxArticulationLink* oldChildrenArray[oldRoot->getNbChildren()];
+    newRoot->getChildren(oldChildrenArray,oldRoot->getNbChildren());
+    std::vector<PxArticulationLink*> oldChildren(oldChildrenArray, oldChildrenArray + oldRoot->getNbChildren());
+
+    alignChildren(oldChildren,newChildren, oldCache, m_creature->getCache());
+
+}
+
+void ivc::PhysicsScene::alignChildren(std::vector<PxArticulationLink*> oldVec, std::vector<PxArticulationLink*> newVec, PxArticulationCache* oldCache, PxArticulationCache* newCache) {
+
+    for(auto newLink : newVec){
+        auto parentSide = newLink->getName();
+        for(auto oldLink : oldVec){
+            if(oldLink->getName() == parentSide){
+                auto oldIndex = oldLink->getLinkIndex();
+                PxVec3 pos = PxVec3(oldCache->jointPosition[oldIndex],oldCache->jointPosition[oldIndex+1],oldCache->jointPosition[oldIndex+2]);
+                auto newIndex = newLink->getLinkIndex();
+
+                newCache->jointPosition[newIndex] = pos.x;
+                newCache->jointPosition[newIndex+1] = pos.y;
+                newCache->jointPosition[newIndex+2] = pos.z;
+
+                auto newArticulation = m_creature->getArticulation();
+                newArticulation->applyCache(*newCache,PxArticulationCache::ePOSITION);
+
+                PxArticulationLink* newChildrenArray[newLink->getNbChildren()];
+                newLink->getChildren(newChildrenArray,newLink->getNbChildren());
+                std::vector<PxArticulationLink*> newChildren(newChildrenArray, newChildrenArray + newLink->getNbChildren());
+
+                PxArticulationLink* oldChildrenArray[oldLink->getNbChildren()];
+                oldLink->getChildren(oldChildrenArray,oldLink->getNbChildren());
+                std::vector<PxArticulationLink*> oldChildren(oldChildrenArray, oldChildrenArray + oldLink->getNbChildren());
+
+                alignChildren(oldChildren,newChildren,oldCache,newCache);
+                break;
+            }
+        }
+    }
 
 }

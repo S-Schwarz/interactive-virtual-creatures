@@ -33,6 +33,7 @@ namespace ivc{
             std::vector<PxArticulationLink*> getBodyParts();
 
             void insertNewCreature(RootMorphNode*);
+            void alignChildren(std::vector<PxArticulationLink*>, std::vector<PxArticulationLink*>, PxArticulationCache*, PxArticulationCache*);
 
     };
 }
