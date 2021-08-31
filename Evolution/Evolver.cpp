@@ -149,85 +149,30 @@ ivc::RootMorphNode* ivc::Evolver::evolveNewCreature() {
 
 void ivc::Evolver::createNextGeneration() {
 
-    //find best creature
-    RootMorphNode* bestCreature = nullptr;
-    float bestScore = -INFINITY;
-    float worstScore = INFINITY;
-    for(auto const& pair : sceneMap){
-        auto score = pair.second.second;
-        if(score > bestScore){
-            bestCreature = pair.second.first;
-            bestScore = score;
-        }
-        if(score != -INFINITY && score < worstScore){
-            worstScore = score;
-        }
-    }
+    auto newData = new EvoData();
+    newData->setGeneration(m_numberGenerations);
+    newData->calculateScoreData(getAllScores());
 
-    printf("Best Score: %f\n", bestScore);
+    m_dataVec.push_back(newData);
 
-    if(bestScore == 0){
+    printf("Best Score: %f\n", newData->getBestScore());
+
+    currentBest = newData->getBestCreature();
+
+    if(newData->getBestScore() == 0){
         //create completely new generation
         printf("Creating new generation!\n");
         deleteLastGeneration({});
         sceneMap = {};
         createNewGeneration();
     }else{
-        //normalize scores
-        for(auto pair : sceneMap){
-            auto score = pair.second.second;
-            if(bestScore == worstScore){
-                sceneMap[pair.first] = {pair.second.first, 1.0f};
-            }else{
-                sceneMap[pair.first] = {pair.second.first, (score-worstScore)/(bestScore-worstScore)};
-            }
-        }
-        //choose best creatures
-        std::vector<std::pair<RootMorphNode*,float>> bestVec;
-        for(auto pair : sceneMap){
-            auto score = pair.second.second;
-            if(score > EVOLUTION_MIN_SCORE){
-                bestVec.push_back(pair.second);
-            }
-        }
-
-        //sort by score
-        std::sort(bestVec.begin(), bestVec.end(), [](auto &left, auto &right) {
-            return left.second > right.second;
-        });
-
-        //cap number of parents
-        int vecSize = bestVec.size();
-        if(bestVec.size() > EVOLUTION_MAX_PARENTS){
-            bestVec.resize(EVOLUTION_MAX_PARENTS);
-        }
-
-        currentBest = bestVec.front().first;
-
-        printf("Chose %zu parents for next gen\nDiscarded %i possible parents\n", bestVec.size(), vecSize > EVOLUTION_MAX_PARENTS?vecSize - EVOLUTION_MAX_PARENTS:0);
-
-        //choose amount of children per root
-        std::vector<std::pair<RootMorphNode*,unsigned int>> amountVec;
-        float total = 0;
-        for(auto pair : bestVec){
-            total += pair.second;
-        }
-        float partSize = CREATURES_PER_GENERATION / total;
-
-        for(auto pair : bestVec){
-            auto amountChildren = floor(pair.second * partSize);
-            amountVec.push_back({pair.first, amountChildren});
-        }
-
         //create new generation
-        auto nextGenMap = createNewGenerationFromParents(amountVec);
+        auto nextGenMap = createNewGenerationFromParents(newData->getParentVec());
 
         //replace and delete old generation
-        deleteLastGeneration(bestVec);
+        deleteLastGeneration(newData->getParents());
         sceneMap = nextGenMap;
     }
-
-
 
 }
 
@@ -242,14 +187,14 @@ void ivc::Evolver::createNewGeneration() {
     }
 }
 
-void ivc::Evolver::deleteLastGeneration(std::vector<std::pair<RootMorphNode*,float>> parents) {
+void ivc::Evolver::deleteLastGeneration(std::vector<RootMorphNode*> parents) {
     for(auto const& pair : sceneMap){
         pair.first->destroy();
         delete pair.first;
 
         bool keep = false;
         for(auto p : parents){
-            if(pair.second.first == p.first){
+            if(pair.second.first == p){
                 keep = true;
                 break;
             }
@@ -308,4 +253,15 @@ ivc::RootMorphNode *ivc::Evolver::getCurrentBest() {
 
 unsigned int ivc::Evolver::getNumberGenerations() {
     return m_numberGenerations;
+}
+
+std::vector<std::pair<ivc::RootMorphNode*, float>> ivc::Evolver::getAllScores() {
+    std::vector<std::pair<RootMorphNode*, float>> scoreVec;
+    for(auto const& pair : sceneMap){
+        auto score = pair.second.second;
+        if(score != -INFINITY && score != INFINITY){
+            scoreVec.push_back(pair.second);
+        }
+    }
+    return scoreVec;
 }

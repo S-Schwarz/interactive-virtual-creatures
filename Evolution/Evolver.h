@@ -5,9 +5,10 @@
 #ifndef INTERACTIVE_VIRTUAL_CREATURES_EVOLVER_H
 #define INTERACTIVE_VIRTUAL_CREATURES_EVOLVER_H
 
-#include "PhysicsBase.h"
+#include "../Physics/PhysicsBase.h"
 #include "../Body/RootMorphNode.h"
-#include "PhysicsScene.h"
+#include "../Physics/PhysicsScene.h"
+#include "EvoData.h"
 #include <vector>
 #include <map>
 #include <thread>
@@ -22,12 +23,15 @@ namespace ivc{
             unsigned int m_numThreads = 1;
             bool m_pauseEvolution = false;
 
+            std::vector<EvoData*> m_dataVec;
+
             std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> sceneMap;
             void evolveNextGeneration();
             void createNextGeneration();
             void createNewGeneration();
             std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> createNewGenerationFromParents(std::vector<std::pair<RootMorphNode*,unsigned int>>);
-            void deleteLastGeneration(std::vector<std::pair<RootMorphNode*,float>>);
+            void deleteLastGeneration(std::vector<RootMorphNode*>);
+            std::vector<std::pair<RootMorphNode*, float>> getAllScores();
         public:
             int init(PhysicsBase*);
             RootMorphNode* evolveNewCreature();
