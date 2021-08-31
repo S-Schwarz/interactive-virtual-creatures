@@ -24,18 +24,21 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<RootMorphNode*, floa
     m_averageScore = scoreSum / scoreVec.size();
 
     //normalize scores
+    std::vector<std::pair<RootMorphNode*, float>> normalizedScores;
     for(auto pair : scoreVec){
         auto score = pair.second;
+        if(score == bestScore)
+            printf("TEST\n");
         if(bestScore == worstScore){
-            pair.second = 1.0f;
+            normalizedScores.push_back({pair.first,1.0f});
         }else{
-            pair.second = (score-worstScore)/(bestScore-worstScore);
+            normalizedScores.push_back({pair.first,(score-worstScore)/(bestScore-worstScore)});
         }
     }
 
     //choose best creatures
     std::vector<std::pair<RootMorphNode*,float>> bestVec;
-    for(auto pair : scoreVec){
+    for(auto pair : normalizedScores){
         auto score = pair.second;
         if(score > EVOLUTION_MIN_SCORE){
             bestVec.push_back(pair);
