@@ -39,6 +39,7 @@ namespace ivc{
             void stopEvolution();
             RootMorphNode* getCurrentBest();
             unsigned int getNumberGenerations();
+            std::vector<EvoData*> getEvoDataVec();
 
 
     };

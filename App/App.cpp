@@ -143,6 +143,24 @@ int ivc::App::init(){
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, c_WIDTH, c_HEIGHT);
 
+    // GUI -------------
+
+    guiScreen = new nanogui::Screen();
+    guiScreen->initialize(m_window, true);
+
+    bool enabled = true;
+    nanogui::FormHelper *gui = new nanogui::FormHelper(guiScreen);
+    nanogui::ref<nanogui::Window> nanoguiWindow = gui->add_window(nanogui::Vector2i(10, 10), "Form helper example");
+
+    gui->add_group("Other widgets");
+    gui->add_button("A button", []() { std::cout << "Button pressed." << std::endl; })->set_tooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");;
+
+    guiScreen->set_visible(true);
+    guiScreen->perform_layout();
+    nanoguiWindow->center();
+
+    //----------------
+
     m_shader = new Shader("../Res/shader.vert", "../Res/shader.frag");
 
     //load textures
@@ -302,6 +320,9 @@ int ivc::App::update() {
     drawShape(PLANE, posVec, rotQuat, glm::vec3(1000.0f, 0.0f, 1000.0f), COLOR_PLANE, false);
 
     //-------------------------
+
+    guiScreen->draw_contents();
+    guiScreen->draw_widgets();
 
     glfwSwapBuffers(m_window);
     glfwPollEvents();

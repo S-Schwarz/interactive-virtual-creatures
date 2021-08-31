@@ -265,3 +265,7 @@ std::vector<std::pair<ivc::RootMorphNode*, float>> ivc::Evolver::getAllScores() 
     }
     return scoreVec;
 }
+
+std::vector<ivc::EvoData*> ivc::Evolver::getEvoDataVec() {
+    return m_dataVec;
+}

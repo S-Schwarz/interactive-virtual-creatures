@@ -23,6 +23,8 @@
 #include "../Constants.h"
 #include "../Evolution/Evolver.h"
 
+#include <nanogui/nanogui.h>
+
 namespace ivc {
 
     class App {
@@ -35,6 +37,8 @@ namespace ivc {
             bool m_cursorDisabled = false;
 
             Shader* m_shader = nullptr;
+
+            nanogui::Screen* guiScreen = nullptr;
 
             void processInput();
             LiveEnvironment* m_liveEnvironment = nullptr;
