@@ -88,7 +88,7 @@ void ivc::PhysicsScene::insertNewCreature(ivc::RootMorphNode* newNode) {
 
     m_rootNode = newNode;
     auto lastPos = m_creature->getPosition();
-    lastPos += PxVec3(0,0.1,0);
+    lastPos += PxVec3(0,0.5,0);
 
     auto oldCreature = m_creature;
     auto oldCache = m_creature->getCache();

@@ -56,7 +56,7 @@ void ivc::LiveEnvironment::insertNewCreature(ivc::RootMorphNode* newNode) {
 void ivc::LiveEnvironment::resetCreaturePosition() {
 
     m_scene->resetCreaturePosition();
-    setInactiveTime(250);
+    setInactiveTime(FALL_DOWN_STEPS);
 
 }
 
