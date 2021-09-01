@@ -29,7 +29,7 @@ namespace ivc {
 
     class App {
         private:
-            GLFWwindow* m_window;
+            GLFWwindow* m_liveWindow = nullptr;
             Camera m_camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f));
             bool m_shouldClose = false;
             bool isInitialized = false;
@@ -38,7 +38,9 @@ namespace ivc {
 
             Shader* m_shader = nullptr;
 
+            GLFWwindow* m_guiWindow = nullptr;
             nanogui::Screen* guiScreen = nullptr;
+            nanogui::ref<nanogui::Window> nanoguiWindow;
 
             void processInput();
             LiveEnvironment* m_liveEnvironment = nullptr;
@@ -61,6 +63,11 @@ namespace ivc {
             unsigned int m_blockTexture;
 
             int drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe);
+            void initLiveWindow();
+            void initShadersAndextures();
+            void initGUIWindow();
+            void drawLiveWindow();
+            void drawGUIWindow();
         public:
             bool shouldClose();
 
@@ -73,6 +80,8 @@ namespace ivc {
             std::pair<double,double> getLastMousePos();
             void setLastMousePos(double,double);
             void setWindowSize(int w, int h);
+            GLFWwindow* getLiveWindow();
+            nanogui::Screen* getGUIScreen();
     };
 
 }
