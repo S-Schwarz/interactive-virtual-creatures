@@ -200,9 +200,12 @@ int ivc::App::update() {
 
     auto currentGenNum = m_evolver->getNumberGenerations();
     if(currentGenNum != m_lastGenNum && currentGenNum % 1 == 0){
-        printf("INSERTING NEW CREATURE INTO LIVE SCENE\n");
-        m_liveEnvironment->insertNewCreature(m_evolver->getCurrentBest());
-        m_lastGenNum = currentGenNum;
+        auto newCreature = m_evolver->getCurrentBest();
+        if(newCreature != nullptr){
+            printf("INSERTING NEW CREATURE INTO LIVE SCENE\n");
+            m_liveEnvironment->insertNewCreature(newCreature);
+            m_lastGenNum = currentGenNum;
+        }
     }
 
     // ---------------------------
@@ -354,16 +357,17 @@ void ivc::App::initGUIWindow() {
     guiScreen = new nanogui::Screen();
     guiScreen->initialize(m_guiWindow, true);
 
-    bool enabled = true;
-    nanogui::FormHelper *gui = new nanogui::FormHelper(guiScreen);
-    nanoguiWindow = gui->add_window(nanogui::Vector2i(10, 10), "Form helper example");
-
-    gui->add_group("Other widgets");
-    gui->add_button("A button", []() { std::cout << "Button pressed." << std::endl; })->set_tooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");;
+    auto fitnessGraph = guiScreen->add<nanogui::Graph>("Fitness Graph");
+    fitnessGraph->set_size(nanogui::Vector2i(400,100));
+    fitnessGraph->set_stroke_color(nanogui::Color(255,0,0,255));
+    std::vector<float> &valueVec = fitnessGraph->values();
+    valueVec.resize(400);
+    for(int i = 0;  i < 400; ++i) {
+        valueVec[i] = ((float)i)/4;
+    }
 
     guiScreen->set_visible(true);
-    guiScreen->perform_layout();
-    nanoguiWindow->center();
+    //guiScreen->perform_layout();
 
     //----------------
 

@@ -151,15 +151,16 @@ void ivc::Evolver::createNextGeneration() {
 
     auto newData = new EvoData();
     newData->setGeneration(m_numberGenerations);
-    newData->calculateScoreData(getAllScores());
+    auto scores = getAllScores();
 
-    m_dataVec.push_back(newData);
+    if(!scores.empty()){
+        newData->calculateScoreData(getAllScores());
+        m_dataVec.push_back(newData);
+        printf("Best Score: %f\n", newData->getBestScore());
+        currentBest = newData->getBestCreature();
+    }
 
-    printf("Best Score: %f\n", newData->getBestScore());
-
-    currentBest = newData->getBestCreature();
-
-    if(newData->getBestScore() == 0){
+    if(newData->getBestScore() == 0 || scores.empty()){
         //create completely new generation
         printf("Creating new generation!\n");
         deleteLastGeneration({});
@@ -199,8 +200,12 @@ void ivc::Evolver::deleteLastGeneration(std::vector<RootMorphNode*> parents) {
                 break;
             }
         }
-        if(!keep)
+        if(!keep){
+            if(pair.second.first == currentBest)
+                currentBest = nullptr;
             delete pair.second.first;
+        }
+
     }
 }
 
