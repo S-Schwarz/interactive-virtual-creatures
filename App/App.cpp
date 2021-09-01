@@ -25,8 +25,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     if(window == appPtr->getLiveWindow())
         appPtr->setWindowSize(width,height);
     else
-        //appPtr->getGUIScreen()->resize_callback_event(width,height);
-        appPtr->getGUIScreen()->set_size(nanogui::Vector2i(width,height));
+        appPtr->getGUIScreen()->resize_callback_event(width,height);
 }
 
 void ivc::App::setWindowSize(int w, int h) {
@@ -76,6 +75,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     glfwMakeContextCurrent(window);
 
     auto appPtr = (ivc::App*)glfwGetWindowUserPointer(window);
+
+    if(appPtr->getLiveWindow() != window){
+        appPtr->getGUIScreen()->cursor_pos_callback_event(xpos, ypos);
+        return;
+    }
+
     double lastX = appPtr->getLastMousePos().first;
     double lastY = appPtr->getLastMousePos().second;
 
@@ -335,6 +340,13 @@ void ivc::App::initGUIWindow() {
     }
     glfwMakeContextCurrent(m_guiWindow);
     glfwSetFramebufferSizeCallback(m_guiWindow, framebuffer_size_callback);
+    glfwSetCursorPosCallback(m_guiWindow, mouse_callback);
+    glfwSetMouseButtonCallback(m_guiWindow,
+                               [](GLFWwindow *window, int button, int action, int modifiers) {
+                                   auto appPtr = (ivc::App*) glfwGetWindowUserPointer(window);
+                                   appPtr->getGUIScreen()->mouse_button_callback_event(button, action, modifiers);
+                               }
+    );
     glfwSetWindowUserPointer(m_guiWindow, this);
 
     // GUI -------------
