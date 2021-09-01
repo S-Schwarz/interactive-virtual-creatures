@@ -199,7 +199,7 @@ int ivc::App::update() {
     // insert new creature ------------
 
     auto currentGenNum = m_evolver->getNumberGenerations();
-    if(currentGenNum != m_lastGenNum && currentGenNum % 1 == 0){
+    if(currentGenNum != m_lastGenNum && currentGenNum % 5 == 0){
         auto newCreature = m_evolver->getCurrentBest();
         if(newCreature != nullptr){
             printf("INSERTING NEW CREATURE INTO LIVE SCENE\n");

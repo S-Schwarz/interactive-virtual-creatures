@@ -51,6 +51,21 @@ void ivc::LiveEnvironment::destroy() {
 
 void ivc::LiveEnvironment::insertNewCreature(ivc::RootMorphNode* newNode) {
     m_scene->insertNewCreature(newNode);
+
+    //settle in to stable position
+    int stableSteps = 0;
+    for(int i = 0; i < FALL_DOWN_STEPS; ++i){
+        if(stableSteps == 5)
+            break;
+        auto beforePos = m_scene->getCreaturePos();
+        m_scene->simulate(false);
+        auto afterPos = m_scene->getCreaturePos();
+        if(beforePos == afterPos){
+            ++stableSteps;
+        }else{
+            stableSteps = 0;
+        }
+    }
 }
 
 void ivc::LiveEnvironment::resetCreaturePosition() {

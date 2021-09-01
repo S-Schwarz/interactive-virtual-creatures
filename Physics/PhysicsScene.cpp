@@ -87,20 +87,20 @@ std::vector<PxArticulationLink *> ivc::PhysicsScene::getBodyParts() {
 void ivc::PhysicsScene::insertNewCreature(ivc::RootMorphNode* newNode) {
 
     m_rootNode = newNode;
-    auto lastPos = m_creature->getPosition();
-    lastPos += PxVec3(0,0.5,0);
+    //auto lastPos = m_creature->getPosition();
+    //lastPos += PxVec3(0,0.5,0);
 
-    auto oldCreature = m_creature;
+    /*auto oldCreature = m_creature;
     auto oldCache = m_creature->getCache();
     m_plane->release();
-    m_scene->release();
+    m_scene->release();*/
 
     PxSceneDesc sceneDesc(m_base->getPhysics()->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
     sceneDesc.filterShader = PxDefaultSimulationFilterShader;
     sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
 
-    m_creature = new PhysicalCreature(newNode,lastPos, m_base);
+    m_creature = new PhysicalCreature(newNode,PxVec3(0,ROOT_STARTING_HEIGHT,0), m_base);
     sceneDesc.simulationEventCallback = m_creature->getReporter();
 
     m_scene = m_base->getPhysics()->createScene(sceneDesc);
@@ -111,7 +111,7 @@ void ivc::PhysicsScene::insertNewCreature(ivc::RootMorphNode* newNode) {
 
     // set position and rotation of new creature equal to old creature
 
-    auto newRoot = m_creature->getRootLink();
+    /*auto newRoot = m_creature->getRootLink();
     auto oldRoot = oldCreature->getRootLink();
 
     newRoot->setGlobalPose(oldRoot->getGlobalPose());
@@ -125,7 +125,7 @@ void ivc::PhysicsScene::insertNewCreature(ivc::RootMorphNode* newNode) {
     std::vector<PxArticulationLink*> oldChildren(oldChildrenArray, oldChildrenArray + oldRoot->getNbChildren());
 
     alignChildren(oldChildren,newChildren, oldCache, m_creature->getCache());
-
+*/
 }
 
 void ivc::PhysicsScene::alignChildren(std::vector<PxArticulationLink*> oldVec, std::vector<PxArticulationLink*> newVec, PxArticulationCache* oldCache, PxArticulationCache* newCache) {
