@@ -40,7 +40,7 @@ namespace ivc {
 
             GLFWwindow* m_guiWindow = nullptr;
             nanogui::Screen* guiScreen = nullptr;
-            nanogui::ref<nanogui::Window> nanoguiWindow;
+            nanogui::Graph* m_fitnessGraph = nullptr;
 
             void processInput();
             LiveEnvironment* m_liveEnvironment = nullptr;
@@ -68,6 +68,7 @@ namespace ivc {
             void initGUIWindow();
             void drawLiveWindow();
             void drawGUIWindow();
+            void updateFitnessGraph(std::vector<EvoData*>);
         public:
             bool shouldClose();
 

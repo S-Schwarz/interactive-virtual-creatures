@@ -209,6 +209,8 @@ int ivc::App::update() {
     }
 
     // ---------------------------
+    updateFitnessGraph(m_evolver->getEvoDataVec());
+    //----------------------------
 
     drawLiveWindow();
     drawGUIWindow();
@@ -357,17 +359,12 @@ void ivc::App::initGUIWindow() {
     guiScreen = new nanogui::Screen();
     guiScreen->initialize(m_guiWindow, true);
 
-    auto fitnessGraph = guiScreen->add<nanogui::Graph>("Fitness Graph");
-    fitnessGraph->set_size(nanogui::Vector2i(400,100));
-    fitnessGraph->set_stroke_color(nanogui::Color(255,0,0,255));
-    std::vector<float> &valueVec = fitnessGraph->values();
-    valueVec.resize(400);
-    for(int i = 0;  i < 400; ++i) {
-        valueVec[i] = ((float)i)/4;
-    }
+    m_fitnessGraph = guiScreen->add<nanogui::Graph>("Fitness Graph");
+    m_fitnessGraph->set_size(nanogui::Vector2i(400,100));
+    m_fitnessGraph->set_stroke_color(nanogui::Color(255,0,0,255));
 
     guiScreen->set_visible(true);
-    //guiScreen->perform_layout();
+    guiScreen->perform_layout();
 
     //----------------
 
@@ -458,4 +455,26 @@ GLFWwindow *ivc::App::getLiveWindow() {
 
 nanogui::Screen *ivc::App::getGUIScreen() {
     return guiScreen;
+}
+
+void ivc::App::updateFitnessGraph(std::vector<EvoData*> dataVec) {
+
+    float bestScore = -INFINITY;
+    float worstScore = INFINITY;
+
+    for(auto data : dataVec){
+        if(data->getBestScore() > bestScore)
+            bestScore = data->getBestScore();
+        if(data->getBestScore() < worstScore)
+            worstScore = data->getBestScore();
+    }
+
+    std::vector<float> valueVec;
+    for(auto data : dataVec){
+        auto normalized = (data->getBestScore()-worstScore)/(bestScore-worstScore);
+        valueVec.push_back(normalized);
+    }
+
+    m_fitnessGraph->set_values(valueVec);
+
 }

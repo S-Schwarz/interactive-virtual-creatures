@@ -27,8 +27,6 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<RootMorphNode*, floa
     std::vector<std::pair<RootMorphNode*, float>> normalizedScores;
     for(auto pair : scoreVec){
         auto score = pair.second;
-        if(score == bestScore)
-            printf("TEST\n");
         if(bestScore == worstScore){
             normalizedScores.push_back({pair.first,1.0f});
         }else{
