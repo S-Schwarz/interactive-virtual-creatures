@@ -78,37 +78,9 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, Phy
         }
         effector->bindGates(gateVec);
     }
-/*
-    printf("NEURONS: %i\n", m_neuronVector.size());
-    for(auto neuron : m_neuronVector){
-        printf("IN: \n");
-        auto inVec = neuron->getGateIDs();
-        for(auto id : inVec){
-            printf("%li\n", id);
-        }
-        printf("OUT: %li\n", neuron->getOutputID());
-    }
-    printf("SENSORS: %i\n", m_sensorVector.size());
-    for(auto sensor : m_sensorVector){
-        printf("OUT: \n");
-        auto outVec = sensor->getOutputIDs();
-        for(auto id : outVec){
-            printf("%li\n", id);
-        }
-    }
-    printf("EFFECTORS: %i\n", m_effectorVector.size());
-    for(auto effector : m_effectorVector){
-        printf("IN: \n");
-        auto inVec = effector->getGateIDs();
-        for(auto id : inVec){
-            printf("%li\n", id);
-        }
-    }
-    printf("GATES: %i\n", m_gateMap.size());
-    for(auto const& pair : m_gateMap){
-        printf("%li\n", pair.first);
-    }
-*/
+
+    checkNeuronsForActivity();
+
 }
 
 void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxVec3 parentScale, PxVec3 parentRotation, PxArticulationLink* parentLink) {
@@ -401,4 +373,84 @@ PxArticulationLink *ivc::PhysicalCreature::getRootLink() {
 
 PxArticulationCache *ivc::PhysicalCreature::getCache() {
     return m_cache;
+}
+
+std::vector<ivc::JointEffector *> ivc::PhysicalCreature::getJointEffectors() {
+    return m_effectorVector;
+}
+
+std::vector<ivc::Neuron *> ivc::PhysicalCreature::getActiveNeurons() {
+    return m_activeNeuronVector;
+}
+
+std::vector<ivc::JointSensor *> ivc::PhysicalCreature::getActiveJointSensors() {
+    return m_activeSensorVector;
+}
+
+std::vector<ivc::ContactSensor *> ivc::PhysicalCreature::getActiveContactSensors() {
+    return m_activeContactVector;
+}
+
+void ivc::PhysicalCreature::checkNeuronsForActivity() {
+
+    // find all neurons, sensors that connect to effectors
+    std::set<unsigned long> activeIDs;
+    std::vector<unsigned long> toCheck;
+    std::set<unsigned long> checkedIDs;
+
+    for(auto effector : m_effectorVector){
+        auto inVec = effector->getInputs();
+        for(auto id : inVec){
+            activeIDs.insert(id);
+            toCheck.push_back(id);
+        }
+    }
+
+    while(!toCheck.empty()){
+        auto id = toCheck.back();
+        toCheck.pop_back();
+        checkedIDs.insert(id);
+
+        Neuron* neuron = nullptr;
+        for(auto n : m_neuronVector){
+            if(n->getOutputID() == id){
+                neuron = n;
+                break;
+            }
+        }
+
+        if(neuron != nullptr){
+            auto inVec = neuron->getInputs();
+            for(auto inID : inVec){
+                activeIDs.insert(inID);
+                if(checkedIDs.find(inID) == checkedIDs.end())
+                    toCheck.push_back(inID);
+            }
+        }
+
+    }
+
+    //fill vectors
+    for(auto neuron : m_neuronVector){
+        auto id = neuron->getOutputID();
+        if(activeIDs.find(id) != activeIDs.end())
+            m_activeNeuronVector.push_back(neuron);
+    }
+
+    for(auto sensor : m_sensorVector){
+        auto idVec = sensor->getOutputIDs();
+        for(auto id : idVec){
+            if(activeIDs.find(id) != activeIDs.end())
+                m_activeSensorVector.push_back(sensor);
+        }
+    }
+
+    for(auto contact : m_contactVector){
+        auto idVec = contact->getOutputIDs();
+        for(auto id : idVec){
+            if(activeIDs.find(id) != activeIDs.end())
+                m_activeContactVector.push_back(contact);
+        }
+    }
+
 }

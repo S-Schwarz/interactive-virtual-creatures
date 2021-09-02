@@ -16,6 +16,8 @@
 #include "../Physics/ContactReporter.h"
 #include "../Physics/PhysicsBase.h"
 
+#include <set>
+
 using namespace physx;
 
 namespace ivc{
@@ -40,10 +42,16 @@ namespace ivc{
             std::vector<ContactSensor*> m_contactVector;
             std::map<unsigned long, Gate*> m_gateMap;
 
+            std::vector<Neuron*> m_activeNeuronVector;
+            std::vector<JointSensor*> m_activeSensorVector;
+            std::vector<ContactSensor*> m_activeContactVector;
+
             PxArticulationLink* createLink(PxArticulationLink*, PxVec3 , PxVec3 , PxVec3);
             void addContactTriggers(PxArticulationLink*, PxVec3, ContactSensor*);
             void buildChildNodes(BaseNode*,PxVec3,PxVec3,PxVec3,PxArticulationLink*);
             void buildNode(BaseNode*, PxVec3, PxVec3, PxVec3, PxArticulationLink*, PxVec3);
+
+            void checkNeuronsForActivity();
         public:
             ~PhysicalCreature();
             PhysicalCreature(RootMorphNode*, PxVec3, PhysicsBase*);
@@ -57,6 +65,11 @@ namespace ivc{
             PxArticulationReducedCoordinate* getArticulation();
             PxArticulationLink* getRootLink();
             PxArticulationCache* getCache();
+
+            std::vector<Neuron*> getActiveNeurons();
+            std::vector<JointSensor*> getActiveJointSensors();
+            std::vector<ContactSensor*> getActiveContactSensors();
+            std::vector<JointEffector*> getJointEffectors();
 
     };
 
