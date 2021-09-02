@@ -4,7 +4,7 @@
 
 #include "ShapeHandler.h"
 
-unsigned int ivc::ShapeHandler::s_boxVAO, ivc::ShapeHandler::s_planeVAO, ivc::ShapeHandler::s_texturedBoxVAO;
+unsigned int ivc::ShapeHandler::s_boxVAO, ivc::ShapeHandler::s_planeVAO, ivc::ShapeHandler::s_texturedBoxVAO, ivc::ShapeHandler::s_neuronVAO;
 
 float boxVertices[] = {
         -0.5f, -0.5f, -0.5f,
@@ -105,7 +105,17 @@ float planeVertices[] = {
         0.5,0,0.5
 };
 
-int ivc::ShapeHandler::initShapes() {
+float neuronVertices[] = {
+        0,0.5,0,
+        0.5,0,0,
+        -0.5,0,0,
+
+        0,-0.5,0,
+        -0.5,0,0,
+        0.5,0,0
+};
+
+int ivc::ShapeHandler::initLiveShapes() {
 
     glGenVertexArrays(1, &s_boxVAO);
     glBindVertexArray(s_boxVAO);
@@ -152,5 +162,23 @@ int ivc::ShapeHandler::bindPlaneVAO() {
 
 int ivc::ShapeHandler::bindTexturedBoxVAO() {
     glBindVertexArray(s_texturedBoxVAO);
+    return 0;
+}
+
+int ivc::ShapeHandler::initNeuronShapes() {
+    glGenVertexArrays(1, &s_neuronVAO);
+    glBindVertexArray(s_neuronVAO);
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(neuronVertices), neuronVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    return 0;
+}
+
+int ivc::ShapeHandler::bindNeuronVAO() {
+    glBindVertexArray(s_neuronVAO);
     return 0;
 }

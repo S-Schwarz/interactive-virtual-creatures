@@ -13,7 +13,7 @@ class Shader
 {
 public:
     unsigned int ID;
-    // constructor generates the m_shader on the fly
+    // constructor generates the m_liveShader on the fly
     // ------------------------------------------------------------------------
     Shader(const char* vertexPath, const char* fragmentPath)
     {
@@ -49,7 +49,7 @@ public:
         const char * fShaderCode = fragmentCode.c_str();
         // 2. compile shaders
         unsigned int vertex, fragment;
-        // vertex m_shader
+        // vertex m_liveShader
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
         glCompileShader(vertex);
@@ -59,7 +59,7 @@ public:
         glShaderSource(fragment, 1, &fShaderCode, NULL);
         glCompileShader(fragment);
         checkCompileErrors(fragment, "FRAGMENT");
-        // m_shader Program
+        // m_liveShader Program
         ID = glCreateProgram();
         glAttachShader(ID, vertex);
         glAttachShader(ID, fragment);
@@ -70,7 +70,7 @@ public:
         glDeleteShader(fragment);
 
     }
-    // activate the m_shader
+    // activate the m_liveShader
     // ------------------------------------------------------------------------
     void use() const
     {
@@ -136,7 +136,7 @@ public:
     }
 
 private:
-    // utility function for checking m_shader compilation/linking errors.
+    // utility function for checking m_liveShader compilation/linking errors.
     // ------------------------------------------------------------------------
     void checkCompileErrors(GLuint shader, std::string type)
     {

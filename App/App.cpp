@@ -133,13 +133,7 @@ int ivc::App::init(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    initLiveWindow();
-
-    initShadersAndextures();
-
     //--------------
-
-    ShapeHandler::initShapes();
 
     PhysicsBase* physicsBase = new PhysicsBase();
     physicsBase->init();
@@ -162,7 +156,10 @@ int ivc::App::init(){
     m_liveEnvironment = new LiveEnvironment();
     m_liveEnvironment->init(liveScene);
 
+    initLiveWindow();
+    initNeuronWindow();
     initGUIWindow();
+    initShadersAndextures();
 
     isInitialized = true;
 
@@ -213,6 +210,7 @@ int ivc::App::update() {
     //----------------------------
 
     drawLiveWindow();
+    drawNeuronWindow();
     drawGUIWindow();
     //-------------------------
 
@@ -229,8 +227,8 @@ int ivc::App::drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm
         model = model * glm::mat4_cast(rotation);
         model = glm::scale(model, scale);
 
-        m_shader->setMat4("model", model);
-        m_shader->setVec4("drawColor", color);
+        m_liveShader->setMat4("model", model);
+        m_liveShader->setVec4("drawColor", color);
 
         if(wireframe){
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -241,17 +239,17 @@ int ivc::App::drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm
         switch(shape){
             case BOX:
                 ShapeHandler::bindBoxVAO();
-                m_shader->setBool("drawTexture", false);
+                m_liveShader->setBool("drawTexture", false);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
                 break;
             case PLANE:
                 ShapeHandler::bindPlaneVAO();
-                m_shader->setBool("drawTexture", false);
+                m_liveShader->setBool("drawTexture", false);
                 glDrawArrays(GL_TRIANGLES, 0, 6);
                 break;
             case TEXTURED_BOX:
                 ShapeHandler::bindTexturedBoxVAO();
-                m_shader->setBool("drawTexture", true);
+                m_liveShader->setBool("drawTexture", true);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
                 break;
             default:
@@ -267,7 +265,7 @@ int ivc::App::close() {
     if(!isInitialized)
         return -1;
 
-    delete m_shader;
+    delete m_liveShader;
     m_evolver->stopEvolution();
     m_evolutionThread->join();
     m_liveEnvironment->destroy();
@@ -304,11 +302,14 @@ void ivc::App::initLiveWindow() {
 
     glfwSetWindowUserPointer(m_liveWindow, this);
 
+    ShapeHandler::initLiveShapes();
+
 }
 
 void ivc::App::initShadersAndextures() {
 
-    m_shader = new Shader("../Res/shader.vert", "../Res/shader.frag");
+    glfwMakeContextCurrent(m_liveWindow);
+    m_liveShader = new Shader("../Res/shader.vert", "../Res/shader.frag");
 
     //load textures
     glGenTextures(1,&m_blockTexture);
@@ -330,6 +331,9 @@ void ivc::App::initShadersAndextures() {
     }
 
     stbi_image_free(data);
+
+    glfwMakeContextCurrent(m_neuronWindow);
+    m_neuronShader = new Shader("../Res/neuron.vert", "../Res/neuron.frag");
 
 }
 
@@ -375,18 +379,18 @@ void ivc::App::drawLiveWindow() {
     m_projectionMatrix = glm::perspective(glm::radians(45.0f), (float)m_windowWidth / (float)m_windowHeight, 0.1f, 1000.0f);
 
     glm::mat4 view = m_camera.GetViewMatrix();
-    m_shader->setMat4("view", view);
+    m_liveShader->setMat4("view", view);
 
-    int viewLoc = glGetUniformLocation(m_shader->ID, "view");
+    int viewLoc = glGetUniformLocation(m_liveShader->ID, "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-    int projectionLoc = glGetUniformLocation(m_shader->ID, "projection");
+    int projectionLoc = glGetUniformLocation(m_liveShader->ID, "projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(m_projectionMatrix));
 
     glClearColor(COLOR_CLEAR.r, COLOR_CLEAR.g, COLOR_CLEAR.b, COLOR_CLEAR.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_shader->use();
+    m_liveShader->use();
 
     //-------------------------
 
@@ -477,4 +481,39 @@ void ivc::App::updateFitnessGraph(std::vector<EvoData*> dataVec) {
 
     m_fitnessGraph->set_values(valueVec);
 
+}
+
+void ivc::App::initNeuronWindow() {
+
+    // Create Window
+    m_neuronWindow = glfwCreateWindow(c_WIDTH, c_HEIGHT, "Interactive Virtual Creatures", nullptr, nullptr);
+    if (m_neuronWindow == nullptr)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        throw std::bad_exception();
+    }
+    glfwMakeContextCurrent(m_neuronWindow);
+    glfwSetFramebufferSizeCallback(m_neuronWindow, framebuffer_size_callback);
+
+    glViewport(0, 0, c_WIDTH, c_HEIGHT);
+    glfwSetWindowUserPointer(m_neuronWindow, this);
+
+    ShapeHandler::initNeuronShapes();
+
+}
+
+void ivc::App::drawNeuronWindow() {
+    glfwMakeContextCurrent(m_neuronWindow);
+    glClearColor(0, 0, 0, 255);
+    glClear(GL_COLOR_BUFFER_BIT);
+    m_neuronShader->use();
+    m_neuronShader->setVec4("drawColor", COLOR_RED);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    ShapeHandler::bindNeuronVAO();
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glfwSwapBuffers(m_neuronWindow);
 }

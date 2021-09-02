@@ -36,11 +36,14 @@ namespace ivc {
             bool m_physicsPaused = true;
             bool m_cursorDisabled = false;
 
-            Shader* m_shader = nullptr;
+            Shader* m_liveShader = nullptr;
+            Shader* m_neuronShader = nullptr;
 
             GLFWwindow* m_guiWindow = nullptr;
             nanogui::Screen* guiScreen = nullptr;
             nanogui::Graph* m_fitnessGraph = nullptr;
+
+            GLFWwindow* m_neuronWindow = nullptr;
 
             void processInput();
             LiveEnvironment* m_liveEnvironment = nullptr;
@@ -66,8 +69,10 @@ namespace ivc {
             void initLiveWindow();
             void initShadersAndextures();
             void initGUIWindow();
+            void initNeuronWindow();
             void drawLiveWindow();
             void drawGUIWindow();
+            void drawNeuronWindow();
             void updateFitnessGraph(std::vector<EvoData*>);
         public:
             bool shouldClose();

@@ -19,9 +19,9 @@ const float MAX_ALLOWED_HEIGHT = 25;
 
 //simulation
 const float SIMULATION_STEP_SIZE = 0.01f;
-const int CREATURES_PER_GENERATION = 1000;
+const int CREATURES_PER_GENERATION = 500;
 const int NUMBER_OF_GENERATIONS = 100;
-const int STEPS_PER_GENERATION = 2500;
+const int STEPS_PER_GENERATION = 1500;
 
 const int FALL_DOWN_STEPS = 1000;
 const float ROOT_STARTING_HEIGHT = 10;
