@@ -9,10 +9,10 @@ ivc::NeuronVisualizer::NeuronVisualizer(GLFWwindow* w, Shader* s) {
     m_window = w;
     m_shader = s;
 
-    glGenVertexArrays(1, &lineVAO);
-    glBindVertexArray(lineVAO);
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glGenVertexArrays(1, &m_lineVAO);
+    glBindVertexArray(m_lineVAO);
+    glGenBuffers(1, &m_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -20,10 +20,10 @@ ivc::NeuronVisualizer::NeuronVisualizer(GLFWwindow* w, Shader* s) {
 
 void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
     m_gatePosMap = {};
-    m_neuronPosVec = {};
-    m_sensorPosVec = {};
-    m_contactPosVec = {};
-    m_effectorPosVec = {};
+    m_neuronPosMap = {};
+    m_sensorPosMap = {};
+    m_contactPosMap = {};
+    m_effectorPosMap = {};
 
     m_creature = c;
 
@@ -49,7 +49,7 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
     int i = 0;
     for(auto neuron : neuronVec){
         auto position = glm::vec3(0,(1 - m_yPos) - m_yPos * 2 * i,0);
-        m_neuronPosVec[neuron] = position;
+        m_neuronPosMap[neuron] = position;
         auto inVec = neuron->getInputs();
         for(auto in : inVec){
             m_gatePosMap[in] = {position,glm::vec3(INFINITY)};
@@ -60,20 +60,20 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
     i = 0;
     for(auto sensor : sensorVec){
         auto position = glm::vec3(-1+(1.f/3.f),(1 - m_yPos) - m_yPos * 2 * i,0);
-        m_sensorPosVec[sensor.first] = position;
+        m_sensorPosMap[sensor.first] = position;
         ++i;
     }
 
     for(auto contact : contactVec){
         auto position = glm::vec3(-1+(1.f/3.f),(1 - m_yPos) - m_yPos * 2 * i,0);
-        m_contactPosVec[contact.first] = position;
+        m_contactPosMap[contact.first] = position;
         ++i;
     }
 
     i = 0;
     for(auto effector : effectorVec){
         auto position = glm::vec3(1-(1.f/3.f),(1 - m_yPos) - m_yPos * 2 * i,0);
-        m_effectorPosVec[effector] = position;
+        m_effectorPosMap[effector] = position;
         auto inVec = effector->getInputs();
         for(auto in : inVec){
             m_gatePosMap[in] = {position,glm::vec3(INFINITY)};
@@ -85,7 +85,7 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
     for(auto const& [id,value] : m_gatePosMap) {
         bool found = false;
 
-        for (auto const&[neuron, pos]: m_neuronPosVec) {
+        for (auto const&[neuron, pos]: m_neuronPosMap) {
             if (found)
                 break;
             if (neuron->getOutputID() == id) {
@@ -94,7 +94,7 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
             }
         }
 
-        for (auto const&[sensor, pos]: m_sensorPosVec) {
+        for (auto const&[sensor, pos]: m_sensorPosMap) {
             if (found)
                 break;
             for (auto sensor_id: sensor->getOutputIDs()) {
@@ -106,7 +106,7 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
             }
         }
 
-        for (auto const&[contact, pos]: m_contactPosVec) {
+        for (auto const&[contact, pos]: m_contactPosMap) {
             if (found)
                 break;
             for (auto contact_id: contact->getOutputIDs()) {
@@ -144,8 +144,8 @@ void ivc::NeuronVisualizer::draw() {
                 pos.second.x, pos.second.y, pos.second.z
         };
 
-        glBindVertexArray(lineVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindVertexArray(m_lineVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -156,7 +156,7 @@ void ivc::NeuronVisualizer::draw() {
     ShapeHandler::bindNeuronVAO();
 
     m_shader->setVec4("drawColor", glm::vec4(0,0,180,255));
-    for(auto const& [neuron,pos] : m_neuronPosVec){
+    for(auto const& [neuron,pos] : m_neuronPosMap){
         scale = glm::vec3(m_xSize,m_ySize,1);
 
         glm::mat4 model = glm::mat4(1.0f);
@@ -168,7 +168,7 @@ void ivc::NeuronVisualizer::draw() {
     }
 
     m_shader->setVec4("drawColor", glm::vec4(0,180,0,255));
-    for(auto const& [sensor,pos] : m_sensorPosVec){
+    for(auto const& [sensor,pos] : m_sensorPosMap){
         scale = glm::vec3(m_xSize,m_ySize,1);
 
         glm::mat4 model = glm::mat4(1.0f);
@@ -180,7 +180,7 @@ void ivc::NeuronVisualizer::draw() {
     }
 
     m_shader->setVec4("drawColor", glm::vec4(180,0,0,255));
-    for(auto const& [contact,pos] : m_contactPosVec){
+    for(auto const& [contact,pos] : m_contactPosMap){
         scale = glm::vec3(m_xSize,m_ySize,1);
 
         glm::mat4 model = glm::mat4(1.0f);
@@ -192,7 +192,7 @@ void ivc::NeuronVisualizer::draw() {
     }
 
     m_shader->setVec4("drawColor", glm::vec4(180,0,200,255));
-    for(auto const& [effector,pos] : m_effectorPosVec){
+    for(auto const& [effector,pos] : m_effectorPosMap){
         scale = glm::vec3(m_xSize,m_ySize,1);
 
         glm::mat4 model = glm::mat4(1.0f);

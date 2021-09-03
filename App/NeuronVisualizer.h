@@ -21,13 +21,13 @@ namespace ivc{
         PhysicalCreature* m_creature = nullptr;
 
         std::map<unsigned long, std::pair<glm::vec3, glm::vec3>> m_gatePosMap;
-        std::map<Neuron*, glm::vec3> m_neuronPosVec;
-        std::map<JointSensor*, glm::vec3> m_sensorPosVec;
-        std::map<ContactSensor*, glm::vec3> m_contactPosVec;
-        std::map<JointEffector*, glm::vec3> m_effectorPosVec;
+        std::map<Neuron*, glm::vec3> m_neuronPosMap;
+        std::map<JointSensor*, glm::vec3> m_sensorPosMap;
+        std::map<ContactSensor*, glm::vec3> m_contactPosMap;
+        std::map<JointEffector*, glm::vec3> m_effectorPosMap;
 
-        unsigned int lineVAO;
-        unsigned int VBO;
+        unsigned int m_lineVAO;
+        unsigned int m_VBO;
 
         float m_yPos = 0;
         float m_ySize = 0;
