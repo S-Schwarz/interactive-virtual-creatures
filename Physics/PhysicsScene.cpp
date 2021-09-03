@@ -189,3 +189,7 @@ void ivc::PhysicsScene::rebuild() {
     m_creature->initCache();
 
 }
+
+ivc::PhysicalCreature *ivc::PhysicsScene::getCreature() {
+    return m_creature;
+}

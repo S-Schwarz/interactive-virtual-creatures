@@ -40,6 +40,8 @@ namespace ivc{
             void resetCreaturePosition();
             void rebuild();
 
+            PhysicalCreature* getCreature();
+
     };
 }
 

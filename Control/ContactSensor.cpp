@@ -58,3 +58,7 @@ void ivc::ContactSensor::setState(std::string id_string, bool state) {
         }
     }
 }
+
+std::vector<ivc::Gate *> ivc::ContactSensor::getOutputGates() {
+    return m_outputGates;
+}

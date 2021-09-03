@@ -22,6 +22,7 @@
 
 #include "../Constants.h"
 #include "../Evolution/Evolver.h"
+#include "NeuronVisualizer.h"
 
 #include <nanogui/nanogui.h>
 
@@ -38,6 +39,8 @@ namespace ivc {
 
             Shader* m_liveShader = nullptr;
             Shader* m_neuronShader = nullptr;
+
+            NeuronVisualizer* m_neuronVisualizer = nullptr;
 
             GLFWwindow* m_guiWindow = nullptr;
             nanogui::Screen* guiScreen = nullptr;
@@ -72,7 +75,6 @@ namespace ivc {
             void initNeuronWindow();
             void drawLiveWindow();
             void drawGUIWindow();
-            void drawNeuronWindow();
             void updateFitnessGraph(std::vector<EvoData*>);
         public:
             bool shouldClose();

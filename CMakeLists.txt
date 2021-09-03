@@ -30,7 +30,7 @@ add_executable(interactive_virtual_creatures
         Control/Gate.h Control/Gate.cpp
         Control/Joints/JointSensor.h Control/Joints/JointSensor.cpp Control/Joints/JointEffector.h Control/Joints/JointEffector.cpp Control/IDHandler.h Control/IDHandler.cpp
         Mutator.h Physics/PhysicsBase.cpp Physics/PhysicsBase.h Physics/PhysicsScene.cpp Physics/PhysicsScene.h Physics/LiveEnvironment.cpp Physics/LiveEnvironment.h
-        Evolution/Evolver.cpp Evolution/Evolver.h Res/stb_image.h Control/ContactSensor.cpp Control/ContactSensor.h Physics/ContactReporter.h Evolution/EvoData.cpp Evolution/EvoData.h)
+        Evolution/Evolver.cpp Evolution/Evolver.h Res/stb_image.h Control/ContactSensor.cpp Control/ContactSensor.h Physics/ContactReporter.h Evolution/EvoData.cpp Evolution/EvoData.h App/NeuronVisualizer.cpp App/NeuronVisualizer.h)
 
 TARGET_LINK_LIBRARIES(interactive_virtual_creatures ${CMAKE_CURRENT_SOURCE_DIR}/Res/nanogui/build/libnanogui.so ${NANOGUI_EXTRA_LIBS} glfw3.a PhysXExtensions_static_64.a PhysX_static_64.a PhysXPvdSDK_static_64.a PhysXCommon_static_64.a PhysXFoundation_static_64.a  )
 

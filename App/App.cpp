@@ -161,6 +161,9 @@ int ivc::App::init(){
     initGUIWindow();
     initShadersAndextures();
 
+    m_neuronVisualizer = new NeuronVisualizer(m_neuronWindow,m_neuronShader);
+    m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getCreature());
+
     isInitialized = true;
 
     return 0;
@@ -196,11 +199,12 @@ int ivc::App::update() {
     // insert new creature ------------
 
     auto currentGenNum = m_evolver->getNumberGenerations();
-    if(currentGenNum != m_lastGenNum && currentGenNum % 5 == 0){
+    if(currentGenNum != m_lastGenNum && currentGenNum % 2 == 0){
         auto newCreature = m_evolver->getCurrentBest();
         if(newCreature != nullptr){
             printf("INSERTING NEW CREATURE INTO LIVE SCENE\n");
             m_liveEnvironment->insertNewCreature(newCreature);
+            m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getCreature());
             m_lastGenNum = currentGenNum;
         }
     }
@@ -210,7 +214,7 @@ int ivc::App::update() {
     //----------------------------
 
     drawLiveWindow();
-    drawNeuronWindow();
+    m_neuronVisualizer->draw();
     drawGUIWindow();
     //-------------------------
 
@@ -501,19 +505,4 @@ void ivc::App::initNeuronWindow() {
 
     ShapeHandler::initNeuronShapes();
 
-}
-
-void ivc::App::drawNeuronWindow() {
-    glfwMakeContextCurrent(m_neuronWindow);
-    glClearColor(0, 0, 0, 255);
-    glClear(GL_COLOR_BUFFER_BIT);
-    m_neuronShader->use();
-    m_neuronShader->setVec4("drawColor", COLOR_RED);
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    ShapeHandler::bindNeuronVAO();
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    glfwSwapBuffers(m_neuronWindow);
 }

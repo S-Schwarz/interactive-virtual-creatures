@@ -383,11 +383,11 @@ std::vector<ivc::Neuron *> ivc::PhysicalCreature::getActiveNeurons() {
     return m_activeNeuronVector;
 }
 
-std::vector<ivc::JointSensor *> ivc::PhysicalCreature::getActiveJointSensors() {
+std::vector<std::pair<ivc::JointSensor*,std::vector<unsigned long>>> ivc::PhysicalCreature::getActiveJointSensors() {
     return m_activeSensorVector;
 }
 
-std::vector<ivc::ContactSensor *> ivc::PhysicalCreature::getActiveContactSensors() {
+std::vector<std::pair<ivc::ContactSensor*,std::vector<unsigned long>>> ivc::PhysicalCreature::getActiveContactSensors() {
     return m_activeContactVector;
 }
 
@@ -439,18 +439,28 @@ void ivc::PhysicalCreature::checkNeuronsForActivity() {
 
     for(auto sensor : m_sensorVector){
         auto idVec = sensor->getOutputIDs();
+        std::vector<unsigned long> activeOuts;
         for(auto id : idVec){
             if(activeIDs.find(id) != activeIDs.end())
-                m_activeSensorVector.push_back(sensor);
+                activeOuts.push_back(id);
         }
+        if(activeOuts.size() > 0)
+            m_activeSensorVector.push_back({sensor,activeOuts});
     }
 
     for(auto contact : m_contactVector){
         auto idVec = contact->getOutputIDs();
+        std::vector<unsigned long> activeOuts;
         for(auto id : idVec){
             if(activeIDs.find(id) != activeIDs.end())
-                m_activeContactVector.push_back(contact);
+                activeOuts.push_back(id);
         }
+        if(activeOuts.size() > 0)
+            m_activeContactVector.push_back({contact,activeOuts});
     }
 
+}
+
+std::vector<ivc::Neuron *> ivc::PhysicalCreature::getNeurons() {
+    return m_neuronVector;
 }

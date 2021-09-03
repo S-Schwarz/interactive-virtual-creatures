@@ -25,6 +25,7 @@ namespace ivc{
 
             bool contains(std::string);
             void setState(std::string, bool);
+            std::vector<Gate*> getOutputGates();
     };
 }
 

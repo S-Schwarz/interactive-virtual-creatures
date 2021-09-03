@@ -34,6 +34,7 @@ namespace ivc{
         void setIDs(unsigned long, unsigned long, unsigned long);
         void setIDs(std::vector<unsigned long>);
         std::vector<unsigned long> getOutputIDs();
+        std::vector<Gate*> getOutputGates();
         void mutate(std::mt19937*);
     };
 }

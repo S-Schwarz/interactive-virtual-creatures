@@ -78,3 +78,7 @@ void ivc::LiveEnvironment::resetCreaturePosition() {
 void ivc::LiveEnvironment::setInactiveTime(unsigned int time) {
     inactiveTime = time;
 }
+
+ivc::PhysicalCreature *ivc::LiveEnvironment::getCreature() {
+    return m_scene->getCreature();
+}

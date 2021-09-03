@@ -23,6 +23,8 @@ namespace ivc{
             std::vector<PxArticulationLink*> getBodyParts();
             PxRigidStatic* getFloorPlane();
             void insertNewCreature(RootMorphNode* );
+
+            PhysicalCreature* getCreature();
     };
 }
 

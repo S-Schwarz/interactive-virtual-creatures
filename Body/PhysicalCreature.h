@@ -43,8 +43,8 @@ namespace ivc{
             std::map<unsigned long, Gate*> m_gateMap;
 
             std::vector<Neuron*> m_activeNeuronVector;
-            std::vector<JointSensor*> m_activeSensorVector;
-            std::vector<ContactSensor*> m_activeContactVector;
+            std::vector<std::pair<JointSensor*,std::vector<unsigned long>>> m_activeSensorVector;
+            std::vector<std::pair<ContactSensor*,std::vector<unsigned long>>> m_activeContactVector;
 
             PxArticulationLink* createLink(PxArticulationLink*, PxVec3 , PxVec3 , PxVec3);
             void addContactTriggers(PxArticulationLink*, PxVec3, ContactSensor*);
@@ -67,9 +67,11 @@ namespace ivc{
             PxArticulationCache* getCache();
 
             std::vector<Neuron*> getActiveNeurons();
-            std::vector<JointSensor*> getActiveJointSensors();
-            std::vector<ContactSensor*> getActiveContactSensors();
+            std::vector<std::pair<JointSensor*,std::vector<unsigned long>>> getActiveJointSensors();
+            std::vector<std::pair<ContactSensor*,std::vector<unsigned long>>> getActiveContactSensors();
             std::vector<JointEffector*> getJointEffectors();
+
+            std::vector<Neuron*> getNeurons();
 
     };
 

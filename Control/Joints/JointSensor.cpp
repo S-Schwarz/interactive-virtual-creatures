@@ -74,3 +74,7 @@ void ivc::JointSensor::setIDs(std::vector<unsigned long> idVec) {
     id_output_1 = idVec[1];
     id_output_2 = idVec[2];
 }
+
+std::vector<ivc::Gate *> ivc::JointSensor::getOutputGates() {
+    return {output_0,output_1,output_2};
+}
