@@ -17,7 +17,7 @@ namespace ivc{
     class Evolver {
         private:
             PhysicsBase* m_base = nullptr;
-            RootMorphNode* currentBest = nullptr;
+            RootMorphNode* m_currentBest = nullptr;
             unsigned int m_numberGenerations = 0;
 
             unsigned int m_numThreads = 1;
@@ -25,7 +25,7 @@ namespace ivc{
 
             std::vector<EvoData*> m_dataVec;
 
-            std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> sceneMap;
+            std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> m_sceneMap;
             void evolveNextGeneration();
             void createNextGeneration();
             void createNewGeneration();

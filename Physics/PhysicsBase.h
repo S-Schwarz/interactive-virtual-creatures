@@ -19,7 +19,7 @@ namespace ivc{
             PxFoundation* m_foundation = nullptr;
             PxPhysics* m_physics = nullptr;
             PxMaterial* m_material = nullptr;
-            bool isInitialized = false;
+            bool m_isInitialized = false;
         public:
             int init();
             void destroy();

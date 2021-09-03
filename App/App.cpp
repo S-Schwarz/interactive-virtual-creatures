@@ -174,19 +174,19 @@ int ivc::App::init(){
     initLiveWindow();
     initNeuronWindow();
     initGUIWindow();
-    initShadersAndextures();
+    initShadersAndTextures();
 
     m_neuronVisualizer = new NeuronVisualizer(m_neuronWindow,m_neuronShader);
     m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getCreature());
 
-    isInitialized = true;
+    m_isInitialized = true;
 
     return 0;
 }
 
 int ivc::App::update() {
 
-    if(!isInitialized || m_shouldClose)
+    if(!m_isInitialized || m_shouldClose)
         return -1;
 
     if(glfwWindowShouldClose(m_liveWindow) || glfwWindowShouldClose(m_guiWindow)){
@@ -281,7 +281,7 @@ int ivc::App::drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm
 
 int ivc::App::close() {
 
-    if(!isInitialized)
+    if(!m_isInitialized)
         return -1;
 
     delete m_liveShader;
@@ -327,7 +327,7 @@ void ivc::App::initLiveWindow() {
 
 }
 
-void ivc::App::initShadersAndextures() {
+void ivc::App::initShadersAndTextures() {
 
     glfwMakeContextCurrent(m_liveWindow);
     m_liveShader = new Shader("../Res/shader.vert", "../Res/shader.frag");
@@ -381,15 +381,15 @@ void ivc::App::initGUIWindow() {
 
     // GUI -------------
 
-    guiScreen = new nanogui::Screen();
-    guiScreen->initialize(m_guiWindow, true);
+    m_guiScreen = new nanogui::Screen();
+    m_guiScreen->initialize(m_guiWindow, true);
 
-    m_fitnessGraph = guiScreen->add<nanogui::Graph>("Fitness Graph");
+    m_fitnessGraph = m_guiScreen->add<nanogui::Graph>("Fitness Graph");
     m_fitnessGraph->set_size(nanogui::Vector2i(400,100));
     m_fitnessGraph->set_stroke_color(nanogui::Color(255,0,0,255));
 
-    guiScreen->set_visible(true);
-    guiScreen->perform_layout();
+    m_guiScreen->set_visible(true);
+    m_guiScreen->perform_layout();
 
     //----------------
 
@@ -467,8 +467,8 @@ void ivc::App::drawGUIWindow() {
     glfwMakeContextCurrent(m_guiWindow);
     glClearColor(0, 0, 0, 255);
     glClear(GL_COLOR_BUFFER_BIT);
-    guiScreen->draw_contents();
-    guiScreen->draw_widgets();
+    m_guiScreen->draw_contents();
+    m_guiScreen->draw_widgets();
     glfwSwapBuffers(m_guiWindow);
 }
 
@@ -477,7 +477,7 @@ GLFWwindow *ivc::App::getLiveWindow() {
 }
 
 nanogui::Screen *ivc::App::getGUIScreen() {
-    return guiScreen;
+    return m_guiScreen;
 }
 
 void ivc::App::updateFitnessGraph(std::vector<EvoData*> dataVec) {

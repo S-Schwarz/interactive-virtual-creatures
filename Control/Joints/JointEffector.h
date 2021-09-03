@@ -20,13 +20,13 @@ namespace ivc{
     class JointEffector {
     private:
         PxArticulationJointReducedCoordinate* m_joint = nullptr;
-        Gate *input_0, *input_1, *input_2;
-        unsigned long id_input_0, id_input_1, id_input_2;
-        float weight_0 = 1.0f;
-        float weight_1 = 1.0f;
-        float weight_2 = 1.0f;
-        std::vector<PxVec3> lastValues;
-        unsigned int lastValuesIndex = 0;
+        Gate *m_input_0, *m_input_1, *m_input_2;
+        unsigned long m_id_input_0, m_id_input_1, m_id_input_2;
+        float m_weight_0 = 1.0f;
+        float m_weight_1 = 1.0f;
+        float m_weight_2 = 1.0f;
+        std::vector<PxVec3> m_lastValues;
+        unsigned int m_lastValuesIndex = 0;
 
         void addToHistory(PxVec3);
         PxVec3 getAverageValue();

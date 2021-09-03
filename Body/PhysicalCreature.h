@@ -27,14 +27,14 @@ namespace ivc{
             PxVec3 m_position;
             PxPhysics* m_physics;
             PxMaterial* m_material;
-            std::vector<PxArticulationLink*> bodyParts;
+            std::vector<PxArticulationLink*> m_bodyParts;
             PxArticulationReducedCoordinate* m_articulation = nullptr;
 
             PxArticulationLink* m_rootLink = nullptr;
 
             PxArticulationCache* m_cache = nullptr;
 
-            ContactReporter* reporter;
+            ContactReporter* m_reporter;
 
             std::vector<Neuron*> m_neuronVector;
             std::vector<JointSensor*> m_sensorVector;

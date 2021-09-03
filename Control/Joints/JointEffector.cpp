@@ -5,9 +5,9 @@
 #include "JointEffector.h"
 
 void ivc::JointEffector::step() {
-    float xVel = input_0->getValue() * weight_0;
-    float yVel = input_1->getValue() * weight_1;
-    float zVel = input_2->getValue() * weight_2;
+    float xVel = m_input_0->getValue() * m_weight_0;
+    float yVel = m_input_1->getValue() * m_weight_1;
+    float zVel = m_input_2->getValue() * m_weight_2;
 
     if(xVel > MAX_JOINT_VELOCITY)
         xVel = MAX_JOINT_VELOCITY;
@@ -34,7 +34,7 @@ void ivc::JointEffector::step() {
 }
 
 std::vector<unsigned long> ivc::JointEffector::getGateIDs() {
-    return {id_input_0,id_input_1,id_input_2};
+    return {m_id_input_0, m_id_input_1, m_id_input_2};
 }
 
 int ivc::JointEffector::bindGates(std::vector<Gate *> gates) {
@@ -42,9 +42,9 @@ int ivc::JointEffector::bindGates(std::vector<Gate *> gates) {
     if(gates.size() != 3)
         return -1;
 
-    input_0 = gates[0];
-    input_1 = gates[1];
-    input_2 = gates[2];
+    m_input_0 = gates[0];
+    m_input_1 = gates[1];
+    m_input_2 = gates[2];
 
     return 0;
 }
@@ -55,9 +55,9 @@ void ivc::JointEffector::setJoint(PxArticulationJointReducedCoordinate *joint) {
 
 void ivc::JointEffector::randomize(std::mt19937* gen) {
     std::normal_distribution<> outputDis(MEAN_EFFECTOR_WEIGHT, MEAN_EFFECTOR_WEIGHT * STANDARD_DEVIATION_FACTOR);
-    weight_0 = outputDis(*gen);
-    weight_1 = outputDis(*gen);
-    weight_2 = outputDis(*gen);
+    m_weight_0 = outputDis(*gen);
+    m_weight_1 = outputDis(*gen);
+    m_weight_2 = outputDis(*gen);
 }
 
 void ivc::JointEffector::chooseRandomInputs(std::vector<unsigned long> possibleInputs) {
@@ -68,13 +68,13 @@ void ivc::JointEffector::chooseRandomInputs(std::vector<unsigned long> possibleI
     static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
     std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
-    id_input_0 = possibleInputs[0];
+    m_id_input_0 = possibleInputs[0];
 
     std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
-    id_input_1 = possibleInputs[0];
+    m_id_input_1 = possibleInputs[0];
 
     std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
-    id_input_2 = possibleInputs[0];
+    m_id_input_2 = possibleInputs[0];
 }
 
 void ivc::JointEffector::mutate(std::mt19937 *gen) {
@@ -83,11 +83,11 @@ void ivc::JointEffector::mutate(std::mt19937 *gen) {
 
     //mutateBodyAndNeurons input weights
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
-        weight_0 = Mutator::mutateFloat(gen, weight_0, INFINITY, -INFINITY);
+        m_weight_0 = Mutator::mutateFloat(gen, m_weight_0, INFINITY, -INFINITY);
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
-        weight_1 = Mutator::mutateFloat(gen, weight_1, INFINITY, -INFINITY);
+        m_weight_1 = Mutator::mutateFloat(gen, m_weight_1, INFINITY, -INFINITY);
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
-        weight_2 = Mutator::mutateFloat(gen, weight_2, INFINITY, -INFINITY);
+        m_weight_2 = Mutator::mutateFloat(gen, m_weight_2, INFINITY, -INFINITY);
 }
 
 void ivc::JointEffector::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs) {
@@ -99,34 +99,34 @@ void ivc::JointEffector::mutateConnections(std::mt19937 *gen, std::vector<unsign
 
     static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
-    if(std::find(possibleInputs.begin(), possibleInputs.end(), id_input_0) == possibleInputs.end() || dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+    if(std::find(possibleInputs.begin(), possibleInputs.end(), m_id_input_0) == possibleInputs.end() || dis(*gen) <= MUTATE_CONNECTION_CHANCE){
         std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
-        id_input_0 = possibleInputs[0];
+        m_id_input_0 = possibleInputs[0];
     }
 
-    if(std::find(possibleInputs.begin(), possibleInputs.end(), id_input_1) == possibleInputs.end() || dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+    if(std::find(possibleInputs.begin(), possibleInputs.end(), m_id_input_1) == possibleInputs.end() || dis(*gen) <= MUTATE_CONNECTION_CHANCE){
         std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
-        id_input_1 = possibleInputs[0];
+        m_id_input_1 = possibleInputs[0];
     }
 
-    if(std::find(possibleInputs.begin(), possibleInputs.end(), id_input_2) == possibleInputs.end() || dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+    if(std::find(possibleInputs.begin(), possibleInputs.end(), m_id_input_2) == possibleInputs.end() || dis(*gen) <= MUTATE_CONNECTION_CHANCE){
         std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
-        id_input_2 = possibleInputs[0];
+        m_id_input_2 = possibleInputs[0];
     }
 }
 
 void ivc::JointEffector::addToHistory(PxVec3 newValue) {
 
-    if(lastValues.size() < NUMBER_SAVED_EFFECTOR_VALUES){
-        lastValues.push_back(newValue);
+    if(m_lastValues.size() < NUMBER_SAVED_EFFECTOR_VALUES){
+        m_lastValues.push_back(newValue);
     }else{
 
-        lastValues[lastValuesIndex] = newValue;
+        m_lastValues[m_lastValuesIndex] = newValue;
 
-        if(lastValuesIndex == 9){
-            lastValuesIndex = 0;
+        if(m_lastValuesIndex == 9){
+            m_lastValuesIndex = 0;
         }else{
-            ++lastValuesIndex;
+            ++m_lastValuesIndex;
         }
     }
 
@@ -136,11 +136,11 @@ PxVec3 ivc::JointEffector::getAverageValue() {
 
     PxVec3 averageVec(0,0,0);
 
-    for(auto vec : lastValues){
+    for(auto vec : m_lastValues){
         averageVec += vec;
     }
 
-    averageVec /= lastValues.size();
+    averageVec /= m_lastValues.size();
 
     return averageVec;
 }
@@ -150,12 +150,12 @@ void ivc::JointEffector::setInputs(std::vector<unsigned long> newInputs) {
     if(newInputs.size() != 3)
         return;
 
-    id_input_0 = newInputs[0];
-    id_input_1 = newInputs[1];
-    id_input_2 = newInputs[2];
+    m_id_input_0 = newInputs[0];
+    m_id_input_1 = newInputs[1];
+    m_id_input_2 = newInputs[2];
 
 }
 
 std::vector<unsigned long> ivc::JointEffector::getInputs() {
-    return {id_input_0,id_input_1,id_input_2};
+    return {m_id_input_0, m_id_input_1, m_id_input_2};
 }

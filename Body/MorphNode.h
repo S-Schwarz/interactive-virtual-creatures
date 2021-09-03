@@ -20,7 +20,6 @@ namespace ivc {
         private:
             //connection
             PxVec3 m_orientation = PxVec3(0,0,0);
-            bool m_terminalOnly;
         public:
             ~MorphNode() override;
             BaseNode* copy() override;

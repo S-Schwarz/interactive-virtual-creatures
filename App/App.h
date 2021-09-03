@@ -33,7 +33,7 @@ namespace ivc {
             GLFWwindow* m_liveWindow = nullptr;
             Camera m_camera = Camera(glm::vec3(0.0f, 10.0f, 10.0f));
             bool m_shouldClose = false;
-            bool isInitialized = false;
+            bool m_isInitialized = false;
             bool m_physicsPaused = true;
             bool m_cursorDisabled = false;
 
@@ -43,12 +43,11 @@ namespace ivc {
             NeuronVisualizer* m_neuronVisualizer = nullptr;
 
             GLFWwindow* m_guiWindow = nullptr;
-            nanogui::Screen* guiScreen = nullptr;
+            nanogui::Screen* m_guiScreen = nullptr;
             nanogui::Graph* m_fitnessGraph = nullptr;
 
             GLFWwindow* m_neuronWindow = nullptr;
 
-            void processInput();
             LiveEnvironment* m_liveEnvironment = nullptr;
             Evolver* m_evolver = nullptr;
             std::thread* m_evolutionThread = nullptr;
@@ -68,9 +67,10 @@ namespace ivc {
 
             unsigned int m_blockTexture;
 
+            void processInput();
             int drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe);
             void initLiveWindow();
-            void initShadersAndextures();
+            void initShadersAndTextures();
             void initGUIWindow();
             void initNeuronWindow();
             void drawLiveWindow();

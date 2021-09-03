@@ -21,7 +21,7 @@ int ivc::PhysicsBase::init() {
 
     m_material = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
 
-    isInitialized = true;
+    m_isInitialized = true;
 
     return 0;
 
@@ -36,7 +36,7 @@ PxMaterial *ivc::PhysicsBase::getMaterial() {
 }
 
 void ivc::PhysicsBase::destroy() {
-    if(!isInitialized)
+    if(!m_isInitialized)
         return;
 
     m_physics->release();

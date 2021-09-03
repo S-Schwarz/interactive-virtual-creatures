@@ -27,9 +27,9 @@ int ivc::LiveEnvironment::init(ivc::PhysicsScene *scene) {
 }
 
 int ivc::LiveEnvironment::simulate() {
-    if(inactiveTime > 0){
+    if(m_inactiveTime > 0){
         m_scene->simulate(false);
-        --inactiveTime;
+        --m_inactiveTime;
     }else{
         m_scene->simulate(true);
     }
@@ -76,7 +76,7 @@ void ivc::LiveEnvironment::resetCreaturePosition() {
 }
 
 void ivc::LiveEnvironment::setInactiveTime(unsigned int time) {
-    inactiveTime = time;
+    m_inactiveTime = time;
 }
 
 ivc::PhysicalCreature *ivc::LiveEnvironment::getCreature() {

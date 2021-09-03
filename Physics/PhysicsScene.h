@@ -23,7 +23,7 @@ namespace ivc{
             RootMorphNode* m_rootNode = nullptr;
 
             PxRigidStatic* m_plane = nullptr;
-            bool isInitialized = false;
+            bool m_isInitialized = false;
         public:
             int init(PhysicsBase*,RootMorphNode*);
             void destroy();

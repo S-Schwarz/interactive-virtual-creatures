@@ -100,7 +100,7 @@ void ivc::Evolver::evolveNextGeneration() {
 
     void (*testFuncPtr)(std::vector<ivc::PhysicsScene*>, std::map<ivc::PhysicsScene*,std::pair<ivc::RootMorphNode*, float>>*) = testCreatures;
 
-    printf("Size: %i\n", sceneMap.size());
+    printf("Size: %i\n", m_sceneMap.size());
 
     //fitness test all creatures
     //divide scenes among threads
@@ -111,7 +111,7 @@ void ivc::Evolver::evolveNextGeneration() {
     }
 
     unsigned int iter = 0;
-    for(auto const& pair : sceneMap){
+    for(auto const& pair : m_sceneMap){
         auto scene = pair.first;
         allScenes[iter].push_back(scene);
         if(iter == m_numThreads - 1){
@@ -122,7 +122,7 @@ void ivc::Evolver::evolveNextGeneration() {
     }
 
     for(auto sceneVec : allScenes){
-        allThreads.push_back(std::unique_ptr<std::thread>(new std::thread(testFuncPtr,sceneVec,&sceneMap)));
+        allThreads.push_back(std::unique_ptr<std::thread>(new std::thread(testFuncPtr,sceneVec,&m_sceneMap)));
     }
 
     for (auto&& thread : allThreads) {
@@ -143,7 +143,7 @@ ivc::RootMorphNode* ivc::Evolver::evolveNewCreature() {
         evolveNextGeneration();
     }
 
-    return currentBest;
+    return m_currentBest;
 
 }
 
@@ -157,14 +157,14 @@ void ivc::Evolver::createNextGeneration() {
         newData->calculateScoreData(getAllScores());
         m_dataVec.push_back(newData);
         printf("Best Score: %f\n", newData->getBestScore());
-        currentBest = newData->getBestCreature();
+        m_currentBest = newData->getBestCreature();
     }
 
     if(newData->getBestScore() == 0 || scores.empty()){
         //create completely new generation
         printf("Creating new generation!\n");
         deleteLastGeneration({});
-        sceneMap = {};
+        m_sceneMap = {};
         createNewGeneration();
     }else{
         //create new generation
@@ -172,7 +172,7 @@ void ivc::Evolver::createNextGeneration() {
 
         //replace and delete old generation
         deleteLastGeneration(newData->getParents());
-        sceneMap = nextGenMap;
+        m_sceneMap = nextGenMap;
     }
 
 }
@@ -184,12 +184,12 @@ void ivc::Evolver::createNewGeneration() {
         newRootNode->addNeuralConnections();
         auto newScene = new PhysicsScene();
         newScene->init(m_base,newRootNode);
-        sceneMap[newScene] = {newRootNode, -INFINITY};
+        m_sceneMap[newScene] = {newRootNode, -INFINITY};
     }
 }
 
 void ivc::Evolver::deleteLastGeneration(std::vector<RootMorphNode*> parents) {
-    for(auto const& pair : sceneMap){
+    for(auto const& pair : m_sceneMap){
         pair.first->destroy();
         delete pair.first;
 
@@ -201,8 +201,8 @@ void ivc::Evolver::deleteLastGeneration(std::vector<RootMorphNode*> parents) {
             }
         }
         if(!keep){
-            if(pair.second.first == currentBest)
-                currentBest = nullptr;
+            if(pair.second.first == m_currentBest)
+                m_currentBest = nullptr;
             delete pair.second.first;
         }
 
@@ -253,7 +253,7 @@ void ivc::Evolver::stopEvolution() {
 }
 
 ivc::RootMorphNode *ivc::Evolver::getCurrentBest() {
-    return currentBest;
+    return m_currentBest;
 }
 
 unsigned int ivc::Evolver::getNumberGenerations() {
@@ -262,7 +262,7 @@ unsigned int ivc::Evolver::getNumberGenerations() {
 
 std::vector<std::pair<ivc::RootMorphNode*, float>> ivc::Evolver::getAllScores() {
     std::vector<std::pair<RootMorphNode*, float>> scoreVec;
-    for(auto const& pair : sceneMap){
+    for(auto const& pair : m_sceneMap){
         auto score = pair.second.second;
         if(score != -INFINITY && score != INFINITY){
             scoreVec.push_back(pair.second);

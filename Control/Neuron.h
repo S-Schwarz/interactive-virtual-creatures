@@ -43,7 +43,7 @@ namespace ivc{
         private:
             NEURON_TYPE m_type;
 
-            Gate* output;
+            Gate* m_output;
             unsigned long m_outputID;
             float m_outputWeight = MEAN_NEURON_WEIGHT;
 

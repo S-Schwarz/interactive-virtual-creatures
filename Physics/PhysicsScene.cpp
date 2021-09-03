@@ -23,7 +23,7 @@ int ivc::PhysicsScene::init(PhysicsBase* base, RootMorphNode* rootNode) {
     m_scene->addArticulation(*m_creature->getArticulation());
     m_creature->initCache();
 
-    isInitialized = true;
+    m_isInitialized = true;
 
     return 0;
 }
@@ -41,7 +41,7 @@ int ivc::PhysicsScene::createPlane(PxVec3 normalVec, float distance, PxMaterial 
 }
 
 void ivc::PhysicsScene::destroy() {
-    if(!isInitialized)
+    if(!m_isInitialized)
         return;
 
     delete m_creature;
@@ -53,7 +53,7 @@ void ivc::PhysicsScene::destroy() {
 }
 
 int ivc::PhysicsScene::simulate(bool brainSteps) {
-    if(!isInitialized)
+    if(!m_isInitialized)
         return -1;
 
     m_scene->simulate(SIMULATION_STEP_SIZE);

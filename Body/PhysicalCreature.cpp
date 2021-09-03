@@ -9,7 +9,7 @@ ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, Phy
     m_position = pos;
     m_physics = base->getPhysics();
     m_material = base->getMaterial();
-    reporter = new ContactReporter;
+    m_reporter = new ContactReporter;
 
     m_articulation = m_physics->createArticulationReducedCoordinate();
 
@@ -204,7 +204,7 @@ PxArticulationLink* ivc::PhysicalCreature::createLink(PxArticulationLink* parent
     PxQuat physxQuat = PxQuat(glmQuat.x,glmQuat.y,glmQuat.z,glmQuat.w);
     PxTransform transform(position, physxQuat);
     PxArticulationLink* link = m_articulation->createLink(parent,transform);
-    bodyParts.push_back(link);
+    m_bodyParts.push_back(link);
     link->attachShape(*boxShape);
     PxRigidBodyExt::updateMassAndInertia(*link, CREATURE_DENSITY);
     boxShape->release();
@@ -213,7 +213,7 @@ PxArticulationLink* ivc::PhysicalCreature::createLink(PxArticulationLink* parent
 }
 
 std::vector<PxArticulationLink*> ivc::PhysicalCreature::getBodies() {
-    return bodyParts;
+    return m_bodyParts;
 }
 
 void ivc::PhysicalCreature::performBrainStep() {
@@ -251,12 +251,12 @@ void ivc::PhysicalCreature::performBrainStep() {
 }
 
 PxVec3 ivc::PhysicalCreature::getPosition() {
-    return bodyParts.front()->getGlobalPose().p;
+    return m_bodyParts.front()->getGlobalPose().p;
 }
 
 void ivc::PhysicalCreature::updateContactStates() {
 
-    auto contactMap = reporter->retrieveAndResetMap();
+    auto contactMap = m_reporter->retrieveAndResetMap();
 
     for(auto const& pair : contactMap){
         std::string id_string = pair.first;
@@ -317,7 +317,7 @@ void ivc::PhysicalCreature::addContactTriggers(PxArticulationLink* link, PxVec3 
 }
 
 ContactReporter *ivc::PhysicalCreature::getReporter() {
-    return reporter;
+    return m_reporter;
 }
 
 ivc::PhysicalCreature::~PhysicalCreature() {
@@ -345,7 +345,7 @@ ivc::PhysicalCreature::~PhysicalCreature() {
     delete m_cache;
     m_articulation->release();
 
-    delete reporter;
+    delete m_reporter;
 
 }
 

@@ -11,7 +11,7 @@ namespace ivc{
     class LiveEnvironment {
         private:
             PhysicsScene* m_scene = nullptr;
-            unsigned int inactiveTime = 0;
+            unsigned int m_inactiveTime = 0;
         public:
             int init(PhysicsScene*);
             int simulate();
