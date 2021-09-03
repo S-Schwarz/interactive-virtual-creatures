@@ -26,6 +26,9 @@ namespace ivc{
         std::map<ContactSensor*, glm::vec3> m_contactPosVec;
         std::map<JointEffector*, glm::vec3> m_effectorPosVec;
 
+        unsigned int lineVAO;
+        unsigned int VBO;
+
         float m_yPos = 0;
         float m_ySize = 0;
         float m_xSize = 0;

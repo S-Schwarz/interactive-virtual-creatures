@@ -12,6 +12,21 @@ glm::vec4 COLOR_RED(0.8f, 0.2f, 0.3f, 1.0f);
 glm::vec4 COLOR_PLANE(0.0f, 0.5f, 0.2f, 1.0f);
 glm::vec4 COLOR_CLEAR(0.0f, 0.7f, 0.9f, 1.0f);
 
+void GLAPIENTRY
+MessageCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam )
+{
+    fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+             ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+             type, severity, message );
+
+}
+
 void backgroundEvolution(ivc::Evolver* evo){
     evo->startContinuousEvolution();
 }
@@ -303,6 +318,8 @@ void ivc::App::initLiveWindow() {
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, c_WIDTH, c_HEIGHT);
+    glEnable( GL_DEBUG_OUTPUT );
+    glDebugMessageCallback( MessageCallback, 0 );
 
     glfwSetWindowUserPointer(m_liveWindow, this);
 
@@ -381,7 +398,7 @@ void ivc::App::initGUIWindow() {
 void ivc::App::drawLiveWindow() {
     glfwMakeContextCurrent(m_liveWindow);
     m_projectionMatrix = glm::perspective(glm::radians(45.0f), (float)m_windowWidth / (float)m_windowHeight, 0.1f, 1000.0f);
-
+    m_liveShader->use();
     glm::mat4 view = m_camera.GetViewMatrix();
     m_liveShader->setMat4("view", view);
 
@@ -393,8 +410,6 @@ void ivc::App::drawLiveWindow() {
 
     glClearColor(COLOR_CLEAR.r, COLOR_CLEAR.g, COLOR_CLEAR.b, COLOR_CLEAR.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    m_liveShader->use();
 
     //-------------------------
 

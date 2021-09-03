@@ -8,6 +8,14 @@
 ivc::NeuronVisualizer::NeuronVisualizer(GLFWwindow* w, Shader* s) {
     m_window = w;
     m_shader = s;
+
+    glGenVertexArrays(1, &lineVAO);
+    glBindVertexArray(lineVAO);
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
@@ -136,11 +144,7 @@ void ivc::NeuronVisualizer::draw() {
                 pos.second.x, pos.second.y, pos.second.z
         };
 
-        unsigned int lineVAO;
-        glGenVertexArrays(1, &lineVAO);
         glBindVertexArray(lineVAO);
-        unsigned int VBO;
-        glGenBuffers(1, &VBO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
