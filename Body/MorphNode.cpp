@@ -95,8 +95,6 @@ void ivc::MorphNode::init(BaseNode* parent, std::mt19937* gen, unsigned int dept
 
     m_orientation = PxVec3(0,0,0);  //TODO: randomize(?)
 
-    m_terminalOnly = false; //TODO: randomize(?)
-
     m_dimension = parent->getHalfExtents() * 1.75f;
 
     std::uniform_real_distribution<> dis(0, 1);
