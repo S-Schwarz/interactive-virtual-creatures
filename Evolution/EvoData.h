@@ -12,7 +12,7 @@
 namespace ivc{
     class EvoData {
         private:
-            unsigned int m_generationNumber = -INFINITY;
+            unsigned int m_generationNumber = 0;
 
             RootMorphNode* m_bestCreature = nullptr;
             std::vector<std::pair<RootMorphNode*, unsigned int>> m_parentVec;

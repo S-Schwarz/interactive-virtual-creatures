@@ -91,7 +91,7 @@ namespace ivc{
             virtual NODE_SIDE getOppositeSide(NODE_SIDE);
             virtual void reflectAlongAxis(NODE_SIDE);
             virtual bool shouldBeReflected();
-            virtual bool setReflectionFlag();
+            virtual void setReflectionFlag();
             virtual std::string getParentSideAsString();
     };
 

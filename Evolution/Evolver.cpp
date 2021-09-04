@@ -100,7 +100,7 @@ void ivc::Evolver::evolveNextGeneration() {
 
     void (*testFuncPtr)(std::vector<ivc::PhysicsScene*>, std::map<ivc::PhysicsScene*,std::pair<ivc::RootMorphNode*, float>>*) = testCreatures;
 
-    printf("Size: %i\n", m_sceneMap.size());
+    printf("Size: %lu\n", m_sceneMap.size());
 
     //fitness test all creatures
     //divide scenes among threads

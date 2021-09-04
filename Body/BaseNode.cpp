@@ -408,7 +408,7 @@ bool ivc::BaseNode::shouldBeReflected() {
     return m_reflect;
 }
 
-bool ivc::BaseNode::setReflectionFlag() {
+void ivc::BaseNode::setReflectionFlag() {
     m_reflect = true;
 }
 
@@ -428,6 +428,6 @@ std::string ivc::BaseNode::getParentSideAsString() {
                 return "NEG_Z";
             case NONE:
                 return "NONE";
-
         }
+        return "";
 }
