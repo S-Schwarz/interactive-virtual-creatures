@@ -8,6 +8,10 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 const float STANDARD_DEVIATION_FACTOR = 0.3f;
 const float STANDARD_MUTATION_CHANCE = 0.05f;
 
@@ -82,5 +86,10 @@ const float MUTATE_SINE_CHANCE = STANDARD_MUTATION_CHANCE;
 const float MUTATE_OSCI_CHANCE = STANDARD_MUTATION_CHANCE;
 
 const float MUTATE_SIGN_CHANCE = STANDARD_MUTATION_CHANCE;
+
+const glm::vec4 COLOR_GREEN(0.0f, 0.8f, 0.3f, 1.0f);
+const glm::vec4 COLOR_RED(0.8f, 0.2f, 0.3f, 1.0f);
+const glm::vec4 COLOR_PLANE(0.0f, 0.5f, 0.2f, 1.0f);
+const glm::vec4 COLOR_CLEAR(0.0f, 0.7f, 0.9f, 1.0f);
 
 #endif //INTERACTIVE_VIRTUAL_CREATURES_CONSTANTS_H

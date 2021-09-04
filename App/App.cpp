@@ -6,12 +6,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../Res/stb_image.h"
 
-glm::vec4 COLOR_GREEN(0.0f, 0.8f, 0.3f, 1.0f);
-glm::vec4 COLOR_RED(0.8f, 0.2f, 0.3f, 1.0f);
-
-glm::vec4 COLOR_PLANE(0.0f, 0.5f, 0.2f, 1.0f);
-glm::vec4 COLOR_CLEAR(0.0f, 0.7f, 0.9f, 1.0f);
-
 void GLAPIENTRY
 MessageCallback( GLenum source,
                  GLenum type,
