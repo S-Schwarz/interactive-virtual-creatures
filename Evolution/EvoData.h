@@ -7,30 +7,30 @@
 
 #include <vector>
 #include "../Physics/PhysicsBase.h"
-#include "../Body/RootMorphNode.h"
+#include "../Body/BaseNode.h"
 
 namespace ivc{
     class EvoData {
         private:
             unsigned int m_generationNumber = 0;
 
-            RootMorphNode* m_bestCreature = nullptr;
-            std::vector<std::pair<RootMorphNode*, unsigned int>> m_parentVec;
+            BaseNode* m_bestCreature = nullptr;
+            std::vector<std::pair<BaseNode*, unsigned int>> m_parentVec;
 
             float m_bestScore = 0;
             float m_worstScore = 0;
             float m_averageScore = 0;
         public:
-            void calculateScoreData(std::vector<std::pair<RootMorphNode*, float>>);
+            void calculateScoreData(std::vector<std::pair<BaseNode*, float>>);
             void setGeneration(unsigned int);
 
             unsigned int getGeneration();
             float getBestScore();
             float getWorstScore();
             float getAverageScore();
-            RootMorphNode* getBestCreature();
-            std::vector<std::pair<RootMorphNode*, unsigned int>> getParentVec();
-            std::vector<RootMorphNode*> getParents();
+            BaseNode* getBestCreature();
+            std::vector<std::pair<BaseNode*, unsigned int>> getParentVec();
+            std::vector<BaseNode*> getParents();
     };
 }
 

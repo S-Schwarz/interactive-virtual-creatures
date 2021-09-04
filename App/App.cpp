@@ -155,7 +155,7 @@ int ivc::App::init(){
 
     PhysicsScene* liveScene = new PhysicsScene();
 
-    RootMorphNode* firstCreature = nullptr;
+    BaseNode* firstCreature = nullptr;
     while(firstCreature == nullptr){
         firstCreature = evolver->getCurrentBest();
     }

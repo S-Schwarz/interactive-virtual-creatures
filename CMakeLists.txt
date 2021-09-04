@@ -25,7 +25,7 @@ LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/Res/PhysX/physx/bin/linux.clang/rel
 
 add_executable(interactive_virtual_creatures
         main.cpp Res/glad.c App/App.h App/App.cpp Res/ShapeHandler.h Res/ShapeHandler.cpp
-        Body/RootMorphNode.h Body/RootMorphNode.cpp Body/MorphNode.h Body/MorphNode.cpp Control/NeuronCluster.h Control/NeuronCluster.cpp Constants.h
+        Control/NeuronCluster.h Control/NeuronCluster.cpp Constants.h
         Body/BaseNode.h Body/BaseNode.cpp Body/PhysicalCreature.h Body/PhysicalCreature.cpp Control/Neuron.h Control/Neuron.cpp
         Control/Gate.h Control/Gate.cpp
         Control/Joints/JointSensor.h Control/Joints/JointSensor.cpp Control/Joints/JointEffector.h Control/Joints/JointEffector.cpp Control/IDHandler.h Control/IDHandler.cpp

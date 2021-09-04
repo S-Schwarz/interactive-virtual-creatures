@@ -25,11 +25,11 @@ PxVec3 ivc::BaseNode::getDimensions() {
 }
 
 PxVec3 ivc::BaseNode::getOrientation() {
-    return PxVec3(0,0,0);
+    return m_orientation;
 }
 
 PxVec3 ivc::BaseNode::getParentAnchor() {
-    return PxVec3(0,0,0);
+    return m_parentAnchor;
 }
 
 ivc::BaseNode* ivc::BaseNode::getParentNode() {
@@ -77,16 +77,15 @@ int ivc::BaseNode::setSideAsOccupied(NODE_SIDE side) {
     return -1;
 }
 
-int ivc::BaseNode::getRecursionLimit() {
-    return m_recursionLimit;
-}
-
 PxVec3 ivc::BaseNode::getScale() {
     return m_scale;
 }
 
 ivc::IDHandler *ivc::BaseNode::getIDHandler() {
-    return nullptr;
+    if(m_isRoot)
+        return m_idHandler;
+
+    return m_parentNode->getIDHandler();
 }
 
 std::vector<unsigned long> ivc::BaseNode::getAllAdjacentOutputs() {
@@ -116,7 +115,10 @@ ivc::NeuronCluster *ivc::BaseNode::getLocalNeurons() {
 }
 
 ivc::NeuronCluster *ivc::BaseNode::getBrain() {
-    return nullptr;
+    if(m_isRoot)
+        return m_brain;
+
+    return m_parentNode->getBrain();
 }
 
 std::vector<unsigned long> ivc::BaseNode::getAllChildOutputs() {
@@ -131,7 +133,19 @@ std::vector<unsigned long> ivc::BaseNode::getAllChildOutputs() {
 }
 
 void ivc::BaseNode::addNeuralConnections() {
+    m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
 
+    std::vector<unsigned long> brainInputs = m_localNeurons->getOutputGates();
+    auto childOutputs = getAllChildOutputs();
+    brainInputs.insert(brainInputs.end(), childOutputs.begin(), childOutputs.end());
+    m_brain->setPossibleInputs(brainInputs);
+
+    m_localNeurons->randomizeConnections();
+    m_brain->randomizeConnections();
+
+    for(auto child : m_childNodeVector){
+        child->addNeuralConnections();
+    }
 }
 
 void ivc::BaseNode::mutateBodyAndNeurons() {
@@ -143,6 +157,8 @@ void ivc::BaseNode::mutateBodyAndNeurons() {
     std::uniform_real_distribution<> dis(0, 1);
 
     m_localNeurons->mutateNeurons();
+    if(m_brain)
+        m_brain->mutateNeurons();
 
     //mutateBodyAndNeurons dimensions
     float newX = m_dimension.x;
@@ -172,6 +188,56 @@ void ivc::BaseNode::mutateBodyAndNeurons() {
 
     m_scale = PxVec3(newX,newY,newZ);
 
+    //mutate orientation
+    newX = m_orientation.x;
+    newY = m_orientation.y;
+    newZ = m_orientation.z;
+
+    if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
+        newX = Mutator::mutateFloat(m_generator, m_orientation.x, MAX_ROTATION, -MAX_ROTATION);
+    if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
+        newY = Mutator::mutateFloat(m_generator, m_orientation.y, MAX_ROTATION, -MAX_ROTATION);
+    if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
+        newZ = Mutator::mutateFloat(m_generator, m_orientation.z, MAX_ROTATION, -MAX_ROTATION);
+
+    m_orientation = PxVec3(newX,newY,newZ);
+
+    if(!m_isRoot){
+        //mutateBodyAndNeurons joint
+        if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
+            std::pair<float,float> newLimitX = {Mutator::mutateFloat(m_generator, m_jointLimitX.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitX.second, JOINT_LIMIT, -JOINT_LIMIT)};
+            m_jointLimitX = newLimitX;
+        }
+
+        if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
+            std::pair<float,float> newLimitY = {Mutator::mutateFloat(m_generator, m_jointLimitY.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitY.second, JOINT_LIMIT, -JOINT_LIMIT)};
+            m_jointLimitY = newLimitY;
+        }
+
+        if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
+            std::pair<float,float> newLimitZ = {Mutator::mutateFloat(m_generator, m_jointLimitZ.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitZ.second, JOINT_LIMIT, -JOINT_LIMIT)};
+            m_jointLimitZ = newLimitZ;
+        }
+
+        //mutateBodyAndNeurons parent anchor
+        if(m_parentSide == POS_X || m_parentSide == NEG_X){
+            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
+            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                m_parentAnchor.z = Mutator::mutateFloat(m_generator,m_parentAnchor.z,0.99,0.01);
+        }else if(m_parentSide == POS_Y || m_parentSide == NEG_Y){
+            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
+            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                m_parentAnchor.z = Mutator::mutateFloat(m_generator,m_parentAnchor.z,0.99,0.01);
+        }else{
+            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
+            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
+        }
+    }
+
     for(auto child : m_childNodeVector){
         child->mutateBodyAndNeurons();
     }
@@ -182,6 +248,13 @@ void ivc::BaseNode::mutateNeuralConnections() {
 
     m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
     m_localNeurons->mutateConnections();
+
+    std::vector<unsigned long> brainInputs = m_localNeurons->getOutputGates();
+    auto childOutputs = getAllChildOutputs();
+    brainInputs.insert(brainInputs.end(), childOutputs.begin(), childOutputs.end());
+    m_brain->setPossibleInputs(brainInputs);
+
+    m_brain->mutateConnections();
 
     for(auto child : m_childNodeVector){
         child->mutateNeuralConnections();
@@ -208,6 +281,8 @@ std::mt19937 *ivc::BaseNode::getGenerator() {
 void ivc::BaseNode::setGenerator(std::mt19937 *gen) {
     m_generator = gen;
     m_localNeurons->setGenerator(gen);
+    if(m_brain)
+        m_brain->setGenerator(gen);
     for(auto child : m_childNodeVector){
         child->setGenerator(gen);
     }
@@ -218,6 +293,8 @@ ivc::BaseNode::~BaseNode() {
     //std::cout << __FUNCTION__ << " at " << this << std::endl;
 
     delete m_localNeurons;
+    delete m_brain;
+    delete m_idHandler;
 
     for(auto child : m_childNodeVector){
             delete child;
@@ -263,6 +340,47 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
             }
 
         }
+    }
+
+    // remove child node
+    if(!m_childNodeVector.empty() && dis(*m_generator) <= MUTATE_REMOVE_BODY_CHILD_CHANCE){
+        std::uniform_int_distribution<> remDis(0, m_childNodeVector.size()-1);
+        auto index = remDis(*m_generator);
+        auto childNode = m_childNodeVector[index];
+        auto anchor = childNode->getParentAnchor();
+        delete childNode;
+
+        m_childNodeVector.erase(m_childNodeVector.begin() + index);
+
+        if(anchor.x == 1)
+            m_freeSides.push_back(POS_X);
+        else if(anchor.x == -1)
+            m_freeSides.push_back(NEG_X);
+        else if(anchor.y == 1)
+            m_freeSides.push_back(POS_Y);
+        else if(anchor.y == -1)
+            m_freeSides.push_back(NEG_Y);
+        else if(anchor.z == 1)
+            m_freeSides.push_back(POS_Z);
+        else if(anchor.z == -1)
+            m_freeSides.push_back(NEG_Z);
+
+    }
+
+    //add child node
+    // TODO: change mean values relative to parent (?)
+    if(dis(*m_generator) <= MUTATE_BODY_CONNECTION_CHANCE && !m_freeSides.empty()){
+        BaseNode *newChild = new BaseNode();
+        newChild->init(false, m_generator, this);
+        m_childNodeVector.emplace_back(newChild);
+    }
+
+    //add and remove neurons
+    m_localNeurons->mutateNewNeurons(getIDHandler());
+    m_brain->mutateNewNeurons(getIDHandler());
+
+    for(auto child : m_childNodeVector){
+        child->mutateNewBodyAndNewNeurons();
     }
 
 }
@@ -430,4 +548,120 @@ std::string ivc::BaseNode::getParentSideAsString() {
                 return "NONE";
         }
         return "";
+}
+
+void ivc::BaseNode::setBrain(ivc::NeuronCluster* brain) {
+    m_brain = brain;
+}
+
+ivc::BaseNode *ivc::BaseNode::copy() {
+    auto copiedNode = new BaseNode(*this);
+
+    if(m_idHandler)
+        copiedNode->m_idHandler = new IDHandler(*m_idHandler);
+
+    std::vector<BaseNode*> copiedChildren;
+    for(auto child : m_childNodeVector){
+        auto newChild = child->copy();
+        newChild->setParent(copiedNode);
+        copiedChildren.push_back(newChild);
+    }
+    copiedNode->setChildren(copiedChildren);
+
+    copiedNode->setLocalNeurons(m_localNeurons->copy());
+    if(m_brain)
+        copiedNode->setBrain(m_brain->copy());
+
+    return copiedNode;
+}
+
+void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent) {
+    m_parentNode = parent;
+    m_isRoot = root;
+
+    if(m_isRoot){
+        std::random_device rd;
+        std::mt19937 generator(rd());
+        m_generator = &generator;
+
+        m_idHandler = new IDHandler();
+    }else{
+        m_generator = gen;
+    }
+
+    m_localNeurons = new NeuronCluster(m_generator, false, m_isRoot, getIDHandler());
+    m_brain = new NeuronCluster(m_generator, true, m_isRoot, getIDHandler());
+
+    if(!m_isRoot){
+        m_parentAnchor = getAnchorPosition(m_generator);
+        m_orientation = PxVec3(0,0,0);
+        m_dimension = m_parentNode->getHalfExtents() * 1.75f;
+    }
+
+    std::uniform_real_distribution<> dis(0, 1);
+
+    if(m_isRoot){
+        for(int i = 0; i < MAX_CHILDREN; ++i){
+            if(dis(*m_generator) < CHILD_CHANCE && !m_freeSides.empty()){
+                BaseNode *newChild = new BaseNode();
+                newChild->init(false, m_generator, this);
+                m_childNodeVector.emplace_back(newChild);
+            }
+        }
+    }
+
+
+    mutateBodyAndNeurons();
+
+}
+
+PxVec3 ivc::BaseNode::getAnchorPosition(std::mt19937 *gen) {
+    std::uniform_real_distribution<> dis(0, 1);
+    std::normal_distribution<> positions(0, 0.25);
+
+    auto parentSide = m_parentNode->occupyRandomSide();
+    m_parentSide = parentSide;
+
+    float posX, posY, posZ;
+
+    switch(parentSide){
+        case(POS_X):
+            posX = 1;
+            posY = positions(*gen);
+            posZ = positions(*gen);
+            setSideAsOccupied(NEG_X);
+            break;
+        case(POS_Y):
+            posY = 1;
+            posX = positions(*gen);
+            posZ = positions(*gen);
+            setSideAsOccupied(NEG_Y);
+            break;
+        case(POS_Z):
+            posZ = 1;
+            posX = positions(*gen);
+            posY = positions(*gen);
+            setSideAsOccupied(NEG_Z);
+            break;
+        case(NEG_X):
+            posX = -1;
+            posY = positions(*gen);
+            posZ = positions(*gen);
+            setSideAsOccupied(POS_X);
+            break;
+        case(NEG_Y):
+            posY = -1;
+            posX = positions(*gen);
+            posZ = positions(*gen);
+            setSideAsOccupied(POS_Y);
+            break;
+        case(NEG_Z):
+            posZ = -1;
+            posX = positions(*gen);
+            posY = positions(*gen);
+            setSideAsOccupied(POS_Z);
+            break;
+    }
+
+    return PxVec3(posX,posY,posZ);
 }

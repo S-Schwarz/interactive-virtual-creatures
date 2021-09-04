@@ -6,7 +6,7 @@
 #define INTERACTIVE_VIRTUAL_CREATURES_PHYSICALCREATURE_H
 
 #include "PxPhysicsAPI.h"
-#include "RootMorphNode.h"
+#include "BaseNode.h"
 #include <vector>
 #include <map>
 #include <glm/glm.hpp>
@@ -54,7 +54,7 @@ namespace ivc{
             void checkNeuronsForActivity();
         public:
             ~PhysicalCreature();
-            PhysicalCreature(RootMorphNode*, PxVec3, PhysicsBase*);
+            PhysicalCreature(BaseNode*, PxVec3, PhysicsBase*);
             std::vector<PxArticulationLink*> getBodies();
             void updateContactStates();
             void performBrainStep();

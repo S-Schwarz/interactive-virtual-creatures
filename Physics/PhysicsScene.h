@@ -8,7 +8,7 @@
 #include "PxPhysicsAPI.h"
 #include "PhysicsBase.h"
 #include "../Body/PhysicalCreature.h"
-#include "../Body/RootMorphNode.h"
+#include "../Body/BaseNode.h"
 #include "../Constants.h"
 
 using namespace physx;
@@ -20,12 +20,12 @@ namespace ivc{
             PxScene* m_scene = nullptr;
             PhysicalCreature* m_creature = nullptr;
 
-            RootMorphNode* m_rootNode = nullptr;
+            BaseNode* m_rootNode = nullptr;
 
             PxRigidStatic* m_plane = nullptr;
             bool m_isInitialized = false;
         public:
-            int init(PhysicsBase*,RootMorphNode*);
+            int init(PhysicsBase*,BaseNode*);
             void destroy();
             int simulate(bool);
 
@@ -34,7 +34,7 @@ namespace ivc{
             PxVec3 getCreaturePos();
             std::vector<PxArticulationLink*> getBodyParts();
 
-            void insertNewCreature(RootMorphNode*);
+            void insertNewCreature(BaseNode*);
             void alignChildren(std::vector<PxArticulationLink*>, std::vector<PxArticulationLink*>, PxArticulationCache*, PxArticulationCache*);
 
             void resetCreaturePosition();

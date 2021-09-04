@@ -4,7 +4,7 @@
 
 #include "EvoData.h"
 
-void ivc::EvoData::calculateScoreData(std::vector<std::pair<RootMorphNode*, float>> scoreVec) {
+void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> scoreVec) {
 
     float bestScore = -INFINITY;
     float worstScore = INFINITY;
@@ -24,7 +24,7 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<RootMorphNode*, floa
     m_averageScore = scoreSum / scoreVec.size();
 
     //normalize scores
-    std::vector<std::pair<RootMorphNode*, float>> normalizedScores;
+    std::vector<std::pair<BaseNode*, float>> normalizedScores;
     for(auto pair : scoreVec){
         auto score = pair.second;
         if(bestScore == worstScore){
@@ -35,7 +35,7 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<RootMorphNode*, floa
     }
 
     //choose best creatures
-    std::vector<std::pair<RootMorphNode*,float>> bestVec;
+    std::vector<std::pair<BaseNode*,float>> bestVec;
     for(auto pair : normalizedScores){
         auto score = pair.second;
         if(score > EVOLUTION_MIN_SCORE){
@@ -56,7 +56,7 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<RootMorphNode*, floa
     m_bestCreature = bestVec.front().first;
 
     //choose amount of children per root
-    std::vector<std::pair<RootMorphNode*,unsigned int>> amountVec;
+    std::vector<std::pair<BaseNode*,unsigned int>> amountVec;
     float total = 0;
     for(auto pair : bestVec){
         total += pair.second;
@@ -92,16 +92,16 @@ float ivc::EvoData::getAverageScore() {
     return m_averageScore;
 }
 
-ivc::RootMorphNode *ivc::EvoData::getBestCreature() {
+ivc::BaseNode *ivc::EvoData::getBestCreature() {
     return m_bestCreature;
 }
 
-std::vector<std::pair<ivc::RootMorphNode*, unsigned int>> ivc::EvoData::getParentVec() {
+std::vector<std::pair<ivc::BaseNode*, unsigned int>> ivc::EvoData::getParentVec() {
     return m_parentVec;
 }
 
-std::vector<ivc::RootMorphNode*> ivc::EvoData::getParents() {
-    std::vector<RootMorphNode*> parents;
+std::vector<ivc::BaseNode*> ivc::EvoData::getParents() {
+    std::vector<BaseNode*> parents;
     for(auto pair : m_parentVec){
         parents.push_back(pair.first);
     }

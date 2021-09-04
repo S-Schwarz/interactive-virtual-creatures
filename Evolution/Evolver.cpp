@@ -3,6 +3,7 @@
 //
 
 #include "Evolver.h"
+#include "../Body/BaseNode.h"
 
 int ivc::Evolver::init(ivc::PhysicsBase *base) {
 
@@ -18,7 +19,7 @@ int ivc::Evolver::init(ivc::PhysicsBase *base) {
     return 0;
 }
 
-void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::PhysicsScene*, std::pair<ivc::RootMorphNode*, float>> *mapPtr){
+void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::PhysicsScene*, std::pair<ivc::BaseNode*, float>> *mapPtr){
 
     for(auto scene : sceneVec){
         //simulate and score
@@ -98,7 +99,7 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 
 void ivc::Evolver::evolveNextGeneration() {
 
-    void (*testFuncPtr)(std::vector<ivc::PhysicsScene*>, std::map<ivc::PhysicsScene*,std::pair<ivc::RootMorphNode*, float>>*) = testCreatures;
+    void (*testFuncPtr)(std::vector<ivc::PhysicsScene*>, std::map<ivc::PhysicsScene*,std::pair<ivc::BaseNode*, float>>*) = testCreatures;
 
     printf("Size: %lu\n", m_sceneMap.size());
 
@@ -135,7 +136,7 @@ void ivc::Evolver::evolveNextGeneration() {
 
 }
 
-ivc::RootMorphNode* ivc::Evolver::evolveNewCreature() {
+ivc::BaseNode* ivc::Evolver::evolveNewCreature() {
 
     for(int i = 0; i < NUMBER_OF_GENERATIONS; ++i){
         printf("---------------------------\n");
@@ -179,8 +180,8 @@ void ivc::Evolver::createNextGeneration() {
 
 void ivc::Evolver::createNewGeneration() {
     for(int i = 0; i < CREATURES_PER_GENERATION; ++i){
-        auto newRootNode = new RootMorphNode();
-        newRootNode->init();
+        auto newRootNode = new BaseNode();
+        newRootNode->init(true, nullptr, nullptr);
         newRootNode->addNeuralConnections();
         auto newScene = new PhysicsScene();
         newScene->init(m_base,newRootNode);
@@ -188,7 +189,7 @@ void ivc::Evolver::createNewGeneration() {
     }
 }
 
-void ivc::Evolver::deleteLastGeneration(std::vector<RootMorphNode*> parents) {
+void ivc::Evolver::deleteLastGeneration(std::vector<BaseNode*> parents) {
     for(auto const& pair : m_sceneMap){
         pair.first->destroy();
         delete pair.first;
@@ -209,17 +210,17 @@ void ivc::Evolver::deleteLastGeneration(std::vector<RootMorphNode*> parents) {
     }
 }
 
-std::map<ivc::PhysicsScene *, std::pair<ivc::RootMorphNode *, float>>
-ivc::Evolver::createNewGenerationFromParents(std::vector<std::pair<RootMorphNode *, unsigned int>> amountPerParent) {
+std::map<ivc::PhysicsScene *, std::pair<ivc::BaseNode *, float>>
+ivc::Evolver::createNewGenerationFromParents(std::vector<std::pair<BaseNode *, unsigned int>> amountPerParent) {
 
-    std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> nextGenMap;
+    std::map<PhysicsScene*, std::pair<BaseNode*, float>> nextGenMap;
 
     for(auto pair : amountPerParent){
         auto newScene = new PhysicsScene();
         newScene->init(m_base,pair.first);
         nextGenMap[newScene] = {pair.first, -INFINITY};
         for(int i = 0; i < pair.second; ++i){
-            auto newRoot = dynamic_cast<RootMorphNode*>(pair.first->copy());
+            auto newRoot = dynamic_cast<BaseNode*>(pair.first->copy());
             std::random_device rd;
             std::mt19937 generator(rd());
             newRoot->setGenerator(&generator);
@@ -252,7 +253,7 @@ void ivc::Evolver::stopEvolution() {
     m_pauseEvolution = true;
 }
 
-ivc::RootMorphNode *ivc::Evolver::getCurrentBest() {
+ivc::BaseNode*ivc::Evolver::getCurrentBest() {
     return m_currentBest;
 }
 
@@ -260,8 +261,8 @@ unsigned int ivc::Evolver::getNumberGenerations() {
     return m_numberGenerations;
 }
 
-std::vector<std::pair<ivc::RootMorphNode*, float>> ivc::Evolver::getAllScores() {
-    std::vector<std::pair<RootMorphNode*, float>> scoreVec;
+std::vector<std::pair<ivc::BaseNode*, float>> ivc::Evolver::getAllScores() {
+    std::vector<std::pair<BaseNode*, float>> scoreVec;
     for(auto const& pair : m_sceneMap){
         auto score = pair.second.second;
         if(score != -INFINITY && score != INFINITY){

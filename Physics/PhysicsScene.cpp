@@ -4,7 +4,7 @@
 
 #include "PhysicsScene.h"
 
-int ivc::PhysicsScene::init(PhysicsBase* base, RootMorphNode* rootNode) {
+int ivc::PhysicsScene::init(PhysicsBase* base, BaseNode* rootNode) {
 
     m_base = base;
     m_rootNode = rootNode;
@@ -84,7 +84,7 @@ std::vector<PxArticulationLink *> ivc::PhysicsScene::getBodyParts() {
     return m_creature->getBodies();
 }
 
-void ivc::PhysicsScene::insertNewCreature(ivc::RootMorphNode* newNode) {
+void ivc::PhysicsScene::insertNewCreature(ivc::BaseNode* newNode) {
 
     m_rootNode = newNode;
     //auto lastPos = m_creature->getPosition();

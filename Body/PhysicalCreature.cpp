@@ -4,7 +4,7 @@
 
 #include "PhysicalCreature.h"
 
-ivc::PhysicalCreature::PhysicalCreature(RootMorphNode* rootNode, PxVec3 pos, PhysicsBase* base) {
+ivc::PhysicalCreature::PhysicalCreature(BaseNode* rootNode, PxVec3 pos, PhysicsBase* base) {
 
     m_position = pos;
     m_physics = base->getPhysics();

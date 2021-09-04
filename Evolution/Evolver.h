@@ -6,7 +6,7 @@
 #define INTERACTIVE_VIRTUAL_CREATURES_EVOLVER_H
 
 #include "../Physics/PhysicsBase.h"
-#include "../Body/RootMorphNode.h"
+#include "../Body/BaseNode.h"
 #include "../Physics/PhysicsScene.h"
 #include "EvoData.h"
 #include <vector>
@@ -17,7 +17,7 @@ namespace ivc{
     class Evolver {
         private:
             PhysicsBase* m_base = nullptr;
-            RootMorphNode* m_currentBest = nullptr;
+            BaseNode* m_currentBest = nullptr;
             unsigned int m_numberGenerations = 0;
 
             unsigned int m_numThreads = 1;
@@ -25,19 +25,19 @@ namespace ivc{
 
             std::vector<EvoData*> m_dataVec;
 
-            std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> m_sceneMap;
+            std::map<PhysicsScene*, std::pair<BaseNode*, float>> m_sceneMap;
             void evolveNextGeneration();
             void createNextGeneration();
             void createNewGeneration();
-            std::map<PhysicsScene*, std::pair<RootMorphNode*, float>> createNewGenerationFromParents(std::vector<std::pair<RootMorphNode*,unsigned int>>);
-            void deleteLastGeneration(std::vector<RootMorphNode*>);
-            std::vector<std::pair<RootMorphNode*, float>> getAllScores();
+            std::map<PhysicsScene*, std::pair<BaseNode*, float>> createNewGenerationFromParents(std::vector<std::pair<BaseNode*,unsigned int>>);
+            void deleteLastGeneration(std::vector<BaseNode*>);
+            std::vector<std::pair<BaseNode*, float>> getAllScores();
         public:
             int init(PhysicsBase*);
-            RootMorphNode* evolveNewCreature();
+            BaseNode* evolveNewCreature();
             void startContinuousEvolution();
             void stopEvolution();
-            RootMorphNode* getCurrentBest();
+            BaseNode* getCurrentBest();
             unsigned int getNumberGenerations();
             std::vector<EvoData*> getEvoDataVec();
 
