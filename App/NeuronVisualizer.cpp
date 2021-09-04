@@ -25,6 +25,8 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
     m_contactPosMap = {};
     m_effectorPosMap = {};
 
+    m_gatePtrMap = c->getGateMap();
+
     m_creature = c;
 
     auto neuronVec = m_creature->getActiveNeurons();
@@ -144,6 +146,11 @@ void ivc::NeuronVisualizer::draw() {
                 pos.second.x, pos.second.y, pos.second.z
         };
 
+        //modify line look by value
+        auto val = m_gatePtrMap[gate]->getValue() * 10;
+        auto size = val > 10 ? 10 : val;
+        glLineWidth(size);
+
         glBindVertexArray(m_lineVAO);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
@@ -153,6 +160,7 @@ void ivc::NeuronVisualizer::draw() {
         glDrawArrays(GL_LINES, 0, 2);
     }
 
+    glLineWidth(1);
     ShapeHandler::bindNeuronVAO();
 
     m_shader->setVec4("drawColor", glm::vec4(0,0,180,255));

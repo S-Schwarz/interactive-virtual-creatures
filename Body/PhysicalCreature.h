@@ -70,6 +70,7 @@ namespace ivc{
             std::vector<std::pair<JointSensor*,std::vector<unsigned long>>> getActiveJointSensors();
             std::vector<std::pair<ContactSensor*,std::vector<unsigned long>>> getActiveContactSensors();
             std::vector<JointEffector*> getJointEffectors();
+            std::map<unsigned long, Gate*> getGateMap();
 
             std::vector<Neuron*> getNeurons();
 

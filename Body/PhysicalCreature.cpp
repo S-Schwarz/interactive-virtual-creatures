@@ -464,3 +464,7 @@ void ivc::PhysicalCreature::checkNeuronsForActivity() {
 std::vector<ivc::Neuron *> ivc::PhysicalCreature::getNeurons() {
     return m_neuronVector;
 }
+
+std::map<unsigned long, ivc::Gate *> ivc::PhysicalCreature::getGateMap() {
+    return m_gateMap;
+}
