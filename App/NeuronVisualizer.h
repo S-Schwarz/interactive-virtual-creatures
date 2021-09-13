@@ -12,11 +12,25 @@
 
 #include <map>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 namespace ivc{
+    struct Character {
+        unsigned int TextureID;  // ID handle of the glyph texture
+        glm::ivec2   Size;       // Size of glyph
+        glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
+        unsigned int Advance;    // Offset to advance to next glyph
+    };
+
     class NeuronVisualizer {
     private:
+        std::map<char, Character> Characters;
+
         GLFWwindow* m_window = nullptr;
         Shader* m_shader = nullptr;
+        Shader* m_textShader = nullptr;
+        unsigned int text_VAO, text_VBO;
 
         PhysicalCreature* m_creature = nullptr;
 
@@ -33,6 +47,8 @@ namespace ivc{
         float m_yPos = 0;
         float m_ySize = 0;
         float m_xSize = 0;
+
+        void drawText(Neuron*,glm::mat4);
     public:
         NeuronVisualizer(GLFWwindow*, Shader*);
         void updateVisualizer(PhysicalCreature*);

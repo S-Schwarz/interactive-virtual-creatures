@@ -339,3 +339,7 @@ void ivc::Neuron::setInputs(std::vector<unsigned long> newInputs) {
 
     m_inputIDs = newInputs;
 }
+
+ivc::NEURON_TYPE ivc::Neuron::getType() {
+    return m_type;
+}

@@ -90,6 +90,8 @@ namespace ivc{
             std::vector<unsigned long> getInputs();
             void setInputs(std::vector<unsigned long>);
 
+            NEURON_TYPE getType();
+
             //no inputs
             void sine_osci();
             //one input
