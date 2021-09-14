@@ -23,6 +23,7 @@
 #include "../Constants.h"
 #include "../Evolution/Evolver.h"
 #include "NeuronVisualizer.h"
+#include "GUIWindow.h"
 
 #include <nanogui/nanogui.h>
 
@@ -42,11 +43,9 @@ namespace ivc {
 
             NeuronVisualizer* m_neuronVisualizer = nullptr;
 
-            GLFWwindow* m_guiWindow = nullptr;
-            nanogui::Screen* m_guiScreen = nullptr;
-            nanogui::Graph* m_fitnessGraph = nullptr;
-
             GLFWwindow* m_neuronWindow = nullptr;
+
+            GUIWindow* m_guiWindow = nullptr;
 
             LiveEnvironment* m_liveEnvironment = nullptr;
             Evolver* m_evolver = nullptr;
@@ -74,8 +73,6 @@ namespace ivc {
             void initGUIWindow();
             void initNeuronWindow();
             void drawLiveWindow();
-            void drawGUIWindow();
-            void updateFitnessGraph(std::vector<EvoData*>);
         public:
             bool shouldClose();
 
@@ -89,7 +86,6 @@ namespace ivc {
             void setLastMousePos(double,double);
             void setWindowSize(int w, int h);
             GLFWwindow* getLiveWindow();
-            nanogui::Screen* getGUIScreen();
     };
 
 }

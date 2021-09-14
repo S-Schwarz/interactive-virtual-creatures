@@ -23,9 +23,9 @@ const float MAX_ALLOWED_HEIGHT = 25;
 
 //simulation
 const float SIMULATION_STEP_SIZE = 0.01f;
-const int CREATURES_PER_GENERATION = 500;
+const int CREATURES_PER_GENERATION = 200;
 const int NUMBER_OF_GENERATIONS = 100;
-const int STEPS_PER_GENERATION = 1500;
+const int STEPS_PER_GENERATION = 2500;
 
 const int FALL_DOWN_STEPS = 1000;
 const float ROOT_STARTING_HEIGHT = 10;
@@ -35,7 +35,6 @@ const float CREATURE_DENSITY = 10.0f;
 const float MEAN_PART_SIZE = 3.0f;
 const int MAX_CHILDREN = 2;
 const float CHILD_CHANCE = 0.75f;
-const float CHILD_CHANCE_DECREASE = 0.5f;
 
 const float MIN_PART_SIZE = 1.0f;
 const float MIN_SCALE = 0.1f;
@@ -58,8 +57,6 @@ const float SPRING_DAMPING = 1.0f;
 const float JOINT_LIMIT = M_PI/2;
 const float MAX_JOINT_VELOCITY = 4.0f;
 
-const float MEAN_SENSOR_WEIGHT = 1.0f;
-const float MEAN_EFFECTOR_WEIGHT = 1.0f;
 const int NUMBER_SAVED_EFFECTOR_VALUES = 10;
 
 const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.25f;
@@ -69,9 +66,6 @@ const float MUTATE_JOINT_CHANCE = STANDARD_MUTATION_CHANCE;
 //neurons
 const int MEAN_LOCAL_NEURONS = 4;
 const int MEAN_BRAIN_NEURONS = 8;
-const float MEAN_NEURON_WEIGHT = 1.0f;
-const float MEAN_NEURON_CONSTANT = 1.0f;
-const float MEAN_NEURON_THRESHOLD = 0.0f;
 
 const int BRAINSTEPS_PER_SIMSTEP = 2;
 

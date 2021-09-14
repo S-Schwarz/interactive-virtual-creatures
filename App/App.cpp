@@ -33,8 +33,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     auto appPtr = (ivc::App*) glfwGetWindowUserPointer(window);
     if(window == appPtr->getLiveWindow())
         appPtr->setWindowSize(width,height);
-    else
-        appPtr->getGUIScreen()->resize_callback_event(width,height);
 }
 
 void ivc::App::setWindowSize(int w, int h) {
@@ -84,11 +82,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
     glfwMakeContextCurrent(window);
 
     auto appPtr = (ivc::App*)glfwGetWindowUserPointer(window);
-
-    if(appPtr->getLiveWindow() != window){
-        appPtr->getGUIScreen()->cursor_pos_callback_event(xpos, ypos);
-        return;
-    }
 
     double lastX = appPtr->getLastMousePos().first;
     double lastY = appPtr->getLastMousePos().second;
@@ -183,7 +176,7 @@ int ivc::App::update() {
     if(!m_isInitialized || m_shouldClose)
         return -1;
 
-    if(glfwWindowShouldClose(m_liveWindow) || glfwWindowShouldClose(m_guiWindow)){
+    if(glfwWindowShouldClose(m_liveWindow)){
         m_shouldClose = true;
         return -1;
     }
@@ -219,12 +212,12 @@ int ivc::App::update() {
     }
 
     // ---------------------------
-    updateFitnessGraph(m_evolver->getEvoDataVec());
+    m_guiWindow->updateFitnessGraph(m_evolver->getEvoDataVec());
     //----------------------------
 
     drawLiveWindow();
     m_neuronVisualizer->draw();
-    drawGUIWindow();
+    m_guiWindow->draw();
     //-------------------------
 
     glfwPollEvents();
@@ -354,38 +347,7 @@ void ivc::App::initShadersAndTextures() {
 
 void ivc::App::initGUIWindow() {
 
-    // Create Window
-    m_guiWindow = glfwCreateWindow(c_WIDTH, c_HEIGHT, "Interactive Virtual Creatures", nullptr, nullptr);
-    if (m_guiWindow == nullptr)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        throw std::bad_exception();
-    }
-    glfwMakeContextCurrent(m_guiWindow);
-    glfwSetFramebufferSizeCallback(m_guiWindow, framebuffer_size_callback);
-    glfwSetCursorPosCallback(m_guiWindow, mouse_callback);
-    glfwSetMouseButtonCallback(m_guiWindow,
-                               [](GLFWwindow *window, int button, int action, int modifiers) {
-                                   auto appPtr = (ivc::App*) glfwGetWindowUserPointer(window);
-                                   appPtr->getGUIScreen()->mouse_button_callback_event(button, action, modifiers);
-                               }
-    );
-    glfwSetWindowUserPointer(m_guiWindow, this);
-
-    // GUI -------------
-
-    m_guiScreen = new nanogui::Screen();
-    m_guiScreen->initialize(m_guiWindow, true);
-
-    m_fitnessGraph = m_guiScreen->add<nanogui::Graph>("Fitness Graph");
-    m_fitnessGraph->set_size(nanogui::Vector2i(400,100));
-    m_fitnessGraph->set_stroke_color(nanogui::Color(255,0,0,255));
-
-    m_guiScreen->set_visible(true);
-    m_guiScreen->perform_layout();
-
-    //----------------
+    m_guiWindow = new GUIWindow(c_WIDTH,c_HEIGHT);
 
 }
 
@@ -457,43 +419,8 @@ void ivc::App::drawLiveWindow() {
     glfwSwapBuffers(m_liveWindow);
 }
 
-void ivc::App::drawGUIWindow() {
-    glfwMakeContextCurrent(m_guiWindow);
-    glClearColor(0, 0, 0, 255);
-    glClear(GL_COLOR_BUFFER_BIT);
-    m_guiScreen->draw_contents();
-    m_guiScreen->draw_widgets();
-    glfwSwapBuffers(m_guiWindow);
-}
-
 GLFWwindow *ivc::App::getLiveWindow() {
     return m_liveWindow;
-}
-
-nanogui::Screen *ivc::App::getGUIScreen() {
-    return m_guiScreen;
-}
-
-void ivc::App::updateFitnessGraph(std::vector<EvoData*> dataVec) {
-
-    float bestScore = -INFINITY;
-    float worstScore = INFINITY;
-
-    for(auto data : dataVec){
-        if(data->getBestScore() > bestScore)
-            bestScore = data->getBestScore();
-        if(data->getBestScore() < worstScore)
-            worstScore = data->getBestScore();
-    }
-
-    std::vector<float> valueVec;
-    for(auto data : dataVec){
-        auto normalized = (data->getBestScore()-worstScore)/(bestScore-worstScore);
-        valueVec.push_back(normalized);
-    }
-
-    m_fitnessGraph->set_values(valueVec);
-
 }
 
 void ivc::App::initNeuronWindow() {
