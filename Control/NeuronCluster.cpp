@@ -33,7 +33,6 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, I
         m_contact->setIDs(contactIDs);
         if(!isRoot){
             m_sensor = new JointSensor();
-            m_sensor->randomize(gen);
             auto sensorID_0 = idHandler->getNewID();
             m_outputGates.push_back(sensorID_0);
             auto sensorID_1 = idHandler->getNewID();
@@ -43,7 +42,6 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, I
             m_sensor->setIDs(sensorID_0,sensorID_1,sensorID_2);
 
             m_effector = new JointEffector();
-            m_effector->randomize(gen);
         }
     }
 

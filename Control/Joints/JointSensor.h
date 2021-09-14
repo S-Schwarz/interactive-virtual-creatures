@@ -26,7 +26,6 @@ namespace ivc{
         float m_weight_2 = 1.0f;
     public:
         void setOutputGates(std::vector<Gate*>);
-        void randomize(std::mt19937*);
         void step();
         void swap();
         void setCache(PxArticulationCache*);

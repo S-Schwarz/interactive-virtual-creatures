@@ -36,13 +36,6 @@ std::vector<unsigned long> ivc::JointSensor::getOutputIDs() {
     return {m_id_output_0, m_id_output_1, m_id_output_2};
 }
 
-void ivc::JointSensor::randomize(std::mt19937* gen) {
-    std::normal_distribution<> outputDis(MEAN_SENSOR_WEIGHT, MEAN_SENSOR_WEIGHT * STANDARD_DEVIATION_FACTOR);
-    m_weight_0 = outputDis(*gen);
-    m_weight_1 = outputDis(*gen);
-    m_weight_2 = outputDis(*gen);
-}
-
 void ivc::JointSensor::setOutputGates(std::vector<Gate *> gates) {
 
     if(gates.size() != 3)

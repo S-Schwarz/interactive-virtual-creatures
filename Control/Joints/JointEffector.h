@@ -31,7 +31,6 @@ namespace ivc{
         void addToHistory(PxVec3);
         PxVec3 getAverageValue();
     public:
-        void randomize(std::mt19937*);
         void step();
         void setJoint(PxArticulationJointReducedCoordinate*);
         std::vector<unsigned long> getGateIDs();

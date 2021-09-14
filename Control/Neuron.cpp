@@ -183,7 +183,7 @@ ivc::Neuron::Neuron(std::mt19937* gen) {
 
     for(int i = 0; i < m_numberInputs; ++i){
         m_inputIDs.push_back(-1);
-        m_inputWeights.push_back(MEAN_NEURON_WEIGHT);
+        m_inputWeights.push_back(1.0f);
     }
 
     mutate(gen, true);

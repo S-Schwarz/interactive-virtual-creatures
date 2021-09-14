@@ -5,24 +5,24 @@
 #include "JointEffector.h"
 
 void ivc::JointEffector::step() {
-    float xVel = m_input_0->getValue() * m_weight_0;
-    float yVel = m_input_1->getValue() * m_weight_1;
-    float zVel = m_input_2->getValue() * m_weight_2;
+    float xVel = m_input_0->getValue() * m_weight_0 * MAX_JOINT_VELOCITY;
+    float yVel = m_input_1->getValue() * m_weight_1 * MAX_JOINT_VELOCITY;
+    float zVel = m_input_2->getValue() * m_weight_2 * MAX_JOINT_VELOCITY;
 
     if(xVel > MAX_JOINT_VELOCITY)
-        xVel = MAX_JOINT_VELOCITY;
+        printf("FUCK IN EFFECTOR\n");
     else if(xVel < -MAX_JOINT_VELOCITY)
-        xVel = -MAX_JOINT_VELOCITY;
+        printf("FUCK IN EFFECTOR\n");
 
     if(yVel > MAX_JOINT_VELOCITY)
-        yVel = MAX_JOINT_VELOCITY;
+        printf("FUCK IN EFFECTOR\n");
     else if(yVel < -MAX_JOINT_VELOCITY)
-        yVel = -MAX_JOINT_VELOCITY;
+        printf("FUCK IN EFFECTOR\n");
 
     if(zVel > MAX_JOINT_VELOCITY)
-        zVel = MAX_JOINT_VELOCITY;
+        printf("FUCK IN EFFECTOR\n");
     else if(zVel < -MAX_JOINT_VELOCITY)
-        zVel = -MAX_JOINT_VELOCITY;
+        printf("FUCK IN EFFECTOR\n");
 
     addToHistory(PxVec3(xVel,yVel,zVel));
 
@@ -51,13 +51,6 @@ int ivc::JointEffector::bindGates(std::vector<Gate *> gates) {
 
 void ivc::JointEffector::setJoint(PxArticulationJointReducedCoordinate *joint) {
     m_joint = joint;
-}
-
-void ivc::JointEffector::randomize(std::mt19937* gen) {
-    std::normal_distribution<> outputDis(MEAN_EFFECTOR_WEIGHT, MEAN_EFFECTOR_WEIGHT * STANDARD_DEVIATION_FACTOR);
-    m_weight_0 = outputDis(*gen);
-    m_weight_1 = outputDis(*gen);
-    m_weight_2 = outputDis(*gen);
 }
 
 void ivc::JointEffector::chooseRandomInputs(std::vector<unsigned long> possibleInputs) {

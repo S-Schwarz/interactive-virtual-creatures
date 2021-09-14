@@ -2,9 +2,12 @@
 // Created by st on 7/12/21.
 //
 
+#include <cstdio>
 #include "Gate.h"
 
 void ivc::Gate::setValue(float val) {
+    if(val > 1 || val < -1)
+        printf("FUCK IN GATE\n");
     m_newValue = val;
 }
 
