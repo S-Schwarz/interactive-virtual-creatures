@@ -205,7 +205,7 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
 
 void ivc::NeuronVisualizer::draw() {
     glfwMakeContextCurrent(m_window);
-    glClearColor(0, 0, 0, 255);
+    glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     m_shader->use();
 
@@ -213,7 +213,6 @@ void ivc::NeuronVisualizer::draw() {
 
     glm::vec3 scale;
 
-    m_shader->setVec4("drawColor", glm::vec4(255,255,255,255));
     for(auto const& [gate,pos] : m_gatePosMap){
         glm::mat4 model = glm::mat4(1.0f);
         m_shader->setMat4("model", model);
@@ -224,9 +223,13 @@ void ivc::NeuronVisualizer::draw() {
         };
 
         //modify line look by value
-        auto val = abs(m_gatePtrMap[gate]->getValue() * 10);
-        auto size = val > 10 ? 10 : val;
-        glLineWidth(size);
+        auto val = m_gatePtrMap[gate]->getValue();
+        if(val >= 0)
+            m_shader->setVec4("drawColor", glm::vec4(0,1.0f,0,std::max(val,0.2f)));
+        else
+            m_shader->setVec4("drawColor", glm::vec4(1.0f,0,0,std::max(abs(val),0.2f)));
+
+        glLineWidth(5);
 
         glBindVertexArray(m_lineVAO);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
@@ -240,7 +243,7 @@ void ivc::NeuronVisualizer::draw() {
     glLineWidth(1);
     ShapeHandler::bindNeuronVAO();
 
-    m_shader->setVec4("drawColor", glm::vec4(0,0,180,255));
+    m_shader->setVec4("drawColor", glm::vec4(0,0,0.5f,1.0f));
     for(auto const& [neuron,pos] : m_neuronPosMap){
         m_shader->use();
         ShapeHandler::bindNeuronVAO();
@@ -258,7 +261,7 @@ void ivc::NeuronVisualizer::draw() {
 
     m_shader->use();
     ShapeHandler::bindNeuronVAO();
-    m_shader->setVec4("drawColor", glm::vec4(0,180,0,255));
+    m_shader->setVec4("drawColor", glm::vec4(0,0.5f,0,1.0f));
     for(auto const& [sensor,pos] : m_sensorPosMap){
         scale = glm::vec3(m_xSize,m_ySize,1);
 
@@ -270,7 +273,7 @@ void ivc::NeuronVisualizer::draw() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    m_shader->setVec4("drawColor", glm::vec4(180,0,0,255));
+    m_shader->setVec4("drawColor", glm::vec4(0.5f,0,0,1.0f));
     for(auto const& [contact,pos] : m_contactPosMap){
         scale = glm::vec3(m_xSize,m_ySize,1);
 
@@ -282,7 +285,7 @@ void ivc::NeuronVisualizer::draw() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    m_shader->setVec4("drawColor", glm::vec4(180,0,200,255));
+    m_shader->setVec4("drawColor", glm::vec4(0.5f,0,0.5f,1.0f));
     for(auto const& [effector,pos] : m_effectorPosMap){
         scale = glm::vec3(m_xSize,m_ySize,1);
 
