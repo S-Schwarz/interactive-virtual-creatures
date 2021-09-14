@@ -129,8 +129,12 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
     for(auto neuron : neuronVec){
         auto position = glm::vec3(0,(1 - m_yPos) - m_yPos * 2 * i,0);
         m_neuronPosMap[neuron] = position;
+        position += glm::vec3(-m_xSize ,0,0);
         auto inVec = neuron->getInputs();
+        auto yOffset = glm::vec3(0,(-m_ySize*2)/(inVec.size()+1),0);
+        position += glm::vec3(0,m_ySize,0);
         for(auto in : inVec){
+            position += yOffset;
             m_gatePosMap[in] = {position,glm::vec3(INFINITY)};
         }
         ++i;
@@ -153,8 +157,12 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
     for(auto effector : effectorVec){
         auto position = glm::vec3(1-(1.f/3.f),(1 - m_yPos) - m_yPos * 2 * i,0);
         m_effectorPosMap[effector] = position;
+        position += glm::vec3(-m_xSize ,0,0);
         auto inVec = effector->getInputs();
+        auto yOffset = glm::vec3(0,(-m_ySize*2)/(inVec.size()+1),0);
+        position += glm::vec3(0,m_ySize,0);
         for(auto in : inVec){
+            position += yOffset;
             m_gatePosMap[in] = {position,glm::vec3(INFINITY)};
         }
         ++i;
@@ -168,7 +176,8 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
             if (found)
                 break;
             if (neuron->getOutputID() == id) {
-                m_gatePosMap[id] = {value.first, pos};
+                auto position = pos + glm::vec3(m_xSize,0,0);
+                m_gatePosMap[id] = {value.first, position};
                 found = true;
             }
         }
@@ -176,9 +185,13 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
         for (auto const&[sensor, pos]: m_sensorPosMap) {
             if (found)
                 break;
-            for (auto sensor_id: sensor->getOutputIDs()) {
+            auto outVec = sensor->getOutputIDs();
+            auto position = pos + glm::vec3(m_xSize ,m_ySize,0);
+            auto yOffset = glm::vec3(0,(-m_ySize*2)/(outVec.size()+1),0);
+            for (auto sensor_id: outVec) {
+                position += yOffset;
                 if (sensor_id == id) {
-                    m_gatePosMap[id] = {value.first, pos};
+                    m_gatePosMap[id] = {value.first, position};
                     found = true;
                     break;
                 }
@@ -188,9 +201,13 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
         for (auto const&[contact, pos]: m_contactPosMap) {
             if (found)
                 break;
-            for (auto contact_id: contact->getOutputIDs()) {
+            auto outVec = contact->getOutputIDs();
+            auto position = pos + glm::vec3(m_xSize ,m_ySize,0);
+            auto yOffset = glm::vec3(0,(-m_ySize*2)/(outVec.size()+1),0);
+            for (auto contact_id: outVec) {
+                position += yOffset;
                 if (contact_id == id) {
-                    m_gatePosMap[id] = {value.first, pos};
+                    m_gatePosMap[id] = {value.first, position};
                     found = true;
                     break;
                 }
