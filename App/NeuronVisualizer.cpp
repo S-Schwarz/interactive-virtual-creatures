@@ -224,7 +224,7 @@ void ivc::NeuronVisualizer::draw() {
         };
 
         //modify line look by value
-        auto val = m_gatePtrMap[gate]->getValue() * 10;
+        auto val = abs(m_gatePtrMap[gate]->getValue() * 10);
         auto size = val > 10 ? 10 : val;
         glLineWidth(size);
 
