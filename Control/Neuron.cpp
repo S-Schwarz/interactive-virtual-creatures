@@ -116,7 +116,7 @@ void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation) {
 
     //mutate outputWeight
     if(forceMutation || dis(*gen) <= MUTATE_OUTPUT_WEIGHT_CHANCE)
-        m_outputWeight = Mutator::mutateFloat(gen, m_outputWeight, INFINITY, -INFINITY);
+        m_outputWeight = Mutator::mutateFloat(gen, m_outputWeight, 1.0f, -1.0f);
 
     //mutate constant
     if(forceMutation || dis(*gen) <= MUTATE_CONSTANT_CHANCE)
@@ -125,7 +125,7 @@ void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation) {
     //mutate input weights
     for(int i = 0; i < m_numberInputs; ++i){
         if(forceMutation || dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
-            m_inputWeights[i] = Mutator::mutateFloat(gen,m_inputWeights[i], INFINITY, -INFINITY);
+            m_inputWeights[i] = Mutator::mutateFloat(gen,m_inputWeights[i], 1.0f, -1.0f);
     }
 
     //mutate sine params

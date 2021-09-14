@@ -83,11 +83,11 @@ void ivc::JointEffector::mutate(std::mt19937 *gen) {
 
     //mutateBodyAndNeurons input weights
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
-        m_weight_0 = Mutator::mutateFloat(gen, m_weight_0, INFINITY, -INFINITY);
+        m_weight_0 = Mutator::mutateFloat(gen, m_weight_0, 1.0f, -1.0f);
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
-        m_weight_1 = Mutator::mutateFloat(gen, m_weight_1, INFINITY, -INFINITY);
+        m_weight_1 = Mutator::mutateFloat(gen, m_weight_1, 1.0f, -1.0f);
     if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
-        m_weight_2 = Mutator::mutateFloat(gen, m_weight_2, INFINITY, -INFINITY);
+        m_weight_2 = Mutator::mutateFloat(gen, m_weight_2, 1.0f, -1.0f);
 }
 
 void ivc::JointEffector::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs) {
