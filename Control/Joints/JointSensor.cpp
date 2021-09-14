@@ -6,9 +6,18 @@
 
 void ivc::JointSensor::step() {
     auto index = m_link->getLinkIndex();
-    m_output_0->setValue(m_cache->jointPosition[index] * m_weight_0);
-    m_output_1->setValue(m_cache->jointPosition[index + 1] * m_weight_1);
-    m_output_2->setValue(m_cache->jointPosition[index + 2] * m_weight_2);
+
+    float jointPosX = m_cache->jointPosition[index];
+    float jointPosY = m_cache->jointPosition[index + 1];
+    float jointPosZ = m_cache->jointPosition[index + 2];
+
+    jointPosX = Mutator::normalize(jointPosX, -PxTwoPi, PxTwoPi);
+    jointPosY = Mutator::normalize(jointPosY, -PxTwoPi, PxTwoPi);
+    jointPosZ = Mutator::normalize(jointPosZ, -PxTwoPi, PxTwoPi);
+
+    m_output_0->setValue(jointPosX * m_weight_0);
+    m_output_1->setValue(jointPosY * m_weight_1);
+    m_output_2->setValue(jointPosZ * m_weight_2);
 }
 
 void ivc::JointSensor::swap() {

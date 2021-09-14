@@ -36,6 +36,10 @@ namespace ivc{
 
                 return newValue;
             }
+
+            static float normalize(float old, float min, float max){
+            return (old - min) / (max - min);
+        }
     };
 }
 
