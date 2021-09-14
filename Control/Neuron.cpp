@@ -120,7 +120,7 @@ void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation) {
 
     //mutate constant
     if(forceMutation || dis(*gen) <= MUTATE_CONSTANT_CHANCE)
-        m_constant = Mutator::mutateFloat(gen, m_constant, INFINITY, -INFINITY);
+        m_constant = Mutator::mutateFloat(gen, m_constant, 1.0f, -1.0f);
 
     //mutate input weights
     for(int i = 0; i < m_numberInputs; ++i){
@@ -230,6 +230,7 @@ void ivc::Neuron::abs() {
 void ivc::Neuron::sin() {
     float val = m_inputWeights[0] * m_inputGates[0]->getValue();
     float result = m_sin_amplitude * std::sin(m_sin_period * (val + m_sin_phase)) + m_sin_vertical;
+    result = std::clamp(result, -1.0f, 1.0f);
     m_output->setValue(result);
 }
 
@@ -237,38 +238,53 @@ void ivc::Neuron::sine_osci_one_in() {
     float val = m_inputWeights[0] * m_inputGates[0]->getValue();
     float result = m_sin_amplitude * std::sin(m_sin_period * (val + m_osci_offset)) + m_sin_vertical;
     m_osci_offset += m_osci_stepSize;
+    result = std::clamp(result, -1.0f, 1.0f);
     m_output->setValue(result);
 }
 
 void ivc::Neuron::sum() {
-    m_output->setValue(m_outputWeight * (m_inputWeights[0] * m_inputGates[0]->getValue() + m_inputWeights[1] * m_inputGates[1]->getValue()));
+    float val_0 = m_inputWeights[0] * m_inputGates[0]->getValue();
+    float val_1 = m_inputWeights[1] * m_inputGates[1]->getValue();
+    float result = std::clamp(m_outputWeight * val_0 + val_1, -1.0f, 1.0f);
+    m_output->setValue(result);
 }
 
 void ivc::Neuron::min() {
     float val_0 = m_inputWeights[0] * m_inputGates[0]->getValue();
     float val_1 = m_inputWeights[1] * m_inputGates[1]->getValue();
 
-    if(val_0 < val_1)
-        m_output->setValue(m_outputWeight * val_0);
-    else
-        m_output->setValue(m_outputWeight * val_1);
+    float result = 0;
+    if(val_0 < val_1){
+        result = std::clamp(m_outputWeight * val_0, -1.0f, 1.0f);
+        m_output->setValue(result);
+    }else{
+        result = std::clamp(m_outputWeight * val_1, -1.0f, 1.0f);
+        m_output->setValue(result);
+    }
+
 }
 
 void ivc::Neuron::max() {
     float val_0 = m_inputWeights[0] * m_inputGates[0]->getValue();
     float val_1 = m_inputWeights[1] * m_inputGates[1]->getValue();
 
-    if(val_0 > val_1)
-        m_output->setValue(m_outputWeight * val_0);
-    else
-        m_output->setValue(m_outputWeight * val_1);
+    float result = 0;
+    if(val_0 > val_1){
+        result = std::clamp(m_outputWeight * val_0, -1.0f, 1.0f);
+        m_output->setValue(result);
+    }else{
+        result = std::clamp(m_outputWeight * val_1, -1.0f, 1.0f);
+        m_output->setValue(result);
+    }
 }
 
 void ivc::Neuron::product() {
     float val_0 = m_inputWeights[0] * m_inputGates[0]->getValue();
     float val_1 = m_inputWeights[1] * m_inputGates[1]->getValue();
+    float result = m_outputWeight * val_0 * val_1;
+    result = std::clamp(result, -1.0f, 1.0f);
 
-    m_output->setValue(m_outputWeight * val_0 * val_1);
+    m_output->setValue(result);
 }
 
 void ivc::Neuron::divide() {
@@ -278,7 +294,10 @@ void ivc::Neuron::divide() {
     if(val_1 == 0)
         val_1 = 0.00001;
 
-    m_output->setValue(m_outputWeight * (val_0 / val_1));
+    float result = m_outputWeight * (val_0 / val_1);
+    result = std::clamp(result, -1.0f, 1.0f);
+
+    m_output->setValue(result);
 }
 
 void ivc::Neuron::sum_threshold() {
@@ -307,6 +326,7 @@ void ivc::Neuron::greater_than() {
 
 void ivc::Neuron::sine_osci() {
     float result = m_sin_amplitude * std::sin(m_sin_period * (m_osci_offset)) + m_sin_vertical;
+    result = std::clamp(result, -1.0f, 1.0f);
     m_osci_offset += m_osci_stepSize;
     m_output->setValue(result);
 }
