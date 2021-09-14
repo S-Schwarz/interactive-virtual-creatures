@@ -9,21 +9,6 @@ void ivc::JointEffector::step() {
     float yVel = m_input_1->getValue() * m_weight_1 * MAX_JOINT_VELOCITY;
     float zVel = m_input_2->getValue() * m_weight_2 * MAX_JOINT_VELOCITY;
 
-    if(xVel > MAX_JOINT_VELOCITY)
-        printf("FUCK IN EFFECTOR\n");
-    else if(xVel < -MAX_JOINT_VELOCITY)
-        printf("FUCK IN EFFECTOR\n");
-
-    if(yVel > MAX_JOINT_VELOCITY)
-        printf("FUCK IN EFFECTOR\n");
-    else if(yVel < -MAX_JOINT_VELOCITY)
-        printf("FUCK IN EFFECTOR\n");
-
-    if(zVel > MAX_JOINT_VELOCITY)
-        printf("FUCK IN EFFECTOR\n");
-    else if(zVel < -MAX_JOINT_VELOCITY)
-        printf("FUCK IN EFFECTOR\n");
-
     addToHistory(PxVec3(xVel,yVel,zVel));
 
     auto average = getAverageValue();
