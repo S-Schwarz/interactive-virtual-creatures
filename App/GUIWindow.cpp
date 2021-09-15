@@ -10,7 +10,12 @@ void gui_framebuffer_size_callback(GLFWwindow* window, int width, int height){
     glViewport(0, 0, width, height);
 
     auto winPtr = (ivc::GUIWindow*) glfwGetWindowUserPointer(window);
-    winPtr->getScreen()->resize_callback_event(width,height);
+    auto screen = winPtr->getScreen();
+    if(screen){
+        screen->resize_callback_event(width,height);
+        winPtr->resize();
+    }
+
 }
 
 void gui_mouse_callback(GLFWwindow* window, double xpos, double ypos){
@@ -46,8 +51,11 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_guiScreen->initialize(m_guiWindow, true);
 
     m_fitnessGraph = m_guiScreen->add<nanogui::Graph>("Fitness Graph");
-    m_fitnessGraph->set_size(nanogui::Vector2i(400,100));
     m_fitnessGraph->set_stroke_color(nanogui::Color(255,0,0,255));
+
+    m_updateButton = m_guiScreen->add<nanogui::Button>("Update");
+    m_updateButton->set_callback([this]{this->update();});
+    m_updateButton->set_tooltip("Update the configuration");
 
     m_guiScreen->set_visible(true);
     m_guiScreen->perform_layout();
@@ -86,4 +94,27 @@ void ivc::GUIWindow::updateFitnessGraph(std::vector<EvoData*> dataVec) {
     }
 
     m_fitnessGraph->set_values(valueVec);
+}
+
+void ivc::GUIWindow::update() {
+    printf("TEST\n");
+}
+
+void ivc::GUIWindow::resize() {
+
+    auto screenWidth = m_guiScreen->width();
+    auto screenHeight = m_guiScreen->height();
+
+    auto graphSize = nanogui::Vector2i(screenWidth,screenHeight/4);
+    auto graphPos = nanogui::Vector2i(0,screenHeight - screenHeight/4);
+    m_fitnessGraph->set_fixed_size(graphSize);
+    m_fitnessGraph->set_position(graphPos);
+
+    auto updateButtonSize = nanogui::Vector2i(screenWidth/2, screenHeight/16);
+    auto updateButtonPos = nanogui::Vector2i(screenWidth/2 - updateButtonSize.x()/2, graphPos.y() - (int)(updateButtonSize.y() * 1.5));
+    m_updateButton->set_fixed_size(updateButtonSize);
+    m_updateButton->set_position(updateButtonPos);
+
+    m_guiScreen->perform_layout();
+
 }

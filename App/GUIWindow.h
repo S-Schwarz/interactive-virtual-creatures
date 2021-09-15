@@ -15,8 +15,12 @@ namespace ivc{
             GLFWwindow* m_guiWindow = nullptr;
             nanogui::Screen* m_guiScreen = nullptr;
             nanogui::Graph* m_fitnessGraph = nullptr;
+            nanogui::Button* m_updateButton = nullptr;
+
+            void update();
         public:
             GUIWindow(int,int);
+            void resize();
             void draw();
             nanogui::Screen* getScreen();
             void updateFitnessGraph(std::vector<EvoData*>);
