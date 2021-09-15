@@ -5,11 +5,12 @@
 #ifndef INTERACTIVE_VIRTUAL_CREATURES_EVOCONFIG_H
 #define INTERACTIVE_VIRTUAL_CREATURES_EVOCONFIG_H
 
+#include "../Constants.h"
+
 namespace ivc{
     class EvoConfig {
-    private:
-
     public:
+        int m_creaturesPerGeneration = CREATURES_PER_GENERATION;
 
     };
 }

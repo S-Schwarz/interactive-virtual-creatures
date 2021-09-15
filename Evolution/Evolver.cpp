@@ -156,7 +156,7 @@ void ivc::Evolver::createNextGeneration() {
     auto scores = getAllScores();
 
     if(!scores.empty()){
-        newData->calculateScoreData(getAllScores());
+        newData->calculateScoreData(getAllScores(), m_config->m_creaturesPerGeneration);
         m_dataVec.push_back(newData);
         printf("Best Score: %f\n", newData->getBestScore());
         m_currentBest = newData->getBestCreature();
@@ -180,7 +180,7 @@ void ivc::Evolver::createNextGeneration() {
 }
 
 void ivc::Evolver::createNewGeneration() {
-    for(int i = 0; i < CREATURES_PER_GENERATION; ++i){
+    for(int i = 0; i < m_config->m_creaturesPerGeneration; ++i){
         auto newRootNode = new BaseNode();
         newRootNode->init(true, nullptr, nullptr);
         newRootNode->addNeuralConnections();

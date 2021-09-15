@@ -4,7 +4,7 @@
 
 #include "EvoData.h"
 
-void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> scoreVec) {
+void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> scoreVec, int cpg) {
 
     float bestScore = -INFINITY;
     float worstScore = INFINITY;
@@ -61,7 +61,7 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> s
     for(auto pair : bestVec){
         total += pair.second;
     }
-    float partSize = CREATURES_PER_GENERATION / total;
+    float partSize = cpg / total;
 
     for(auto pair : bestVec){
         auto amountChildren = floor(pair.second * partSize);
