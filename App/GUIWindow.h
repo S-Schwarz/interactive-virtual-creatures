@@ -8,6 +8,7 @@
 #include <GLFW/glfw3.h>
 #include <nanogui/nanogui.h>
 #include "../Evolution/EvoData.h"
+#include "../Evolution/EvoConfig.h"
 
 namespace ivc{
     class GUIWindow {
@@ -17,6 +18,8 @@ namespace ivc{
             nanogui::Graph* m_fitnessGraph = nullptr;
             nanogui::Button* m_updateButton = nullptr;
 
+            EvoConfig* m_config = nullptr;
+
             void update();
         public:
             GUIWindow(int,int);
@@ -24,6 +27,7 @@ namespace ivc{
             void draw();
             nanogui::Screen* getScreen();
             void updateFitnessGraph(std::vector<EvoData*>);
+            void setConfig(EvoConfig*);
     };
 }
 

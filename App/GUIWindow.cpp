@@ -118,3 +118,7 @@ void ivc::GUIWindow::resize() {
     m_guiScreen->perform_layout();
 
 }
+
+void ivc::GUIWindow::setConfig(ivc::EvoConfig* config) {
+    m_config = config;
+}

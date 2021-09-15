@@ -9,6 +9,7 @@
 #include "../Body/BaseNode.h"
 #include "../Physics/PhysicsScene.h"
 #include "EvoData.h"
+#include "EvoConfig.h"
 #include <vector>
 #include <map>
 #include <thread>
@@ -23,6 +24,8 @@ namespace ivc{
             unsigned int m_numThreads = 1;
             bool m_pauseEvolution = false;
 
+            EvoConfig* m_config = nullptr;
+
             std::vector<EvoData*> m_dataVec;
 
             std::map<PhysicsScene*, std::pair<BaseNode*, float>> m_sceneMap;
@@ -33,7 +36,7 @@ namespace ivc{
             void deleteLastGeneration(std::vector<BaseNode*>);
             std::vector<std::pair<BaseNode*, float>> getAllScores();
         public:
-            int init(PhysicsBase*);
+            int init(PhysicsBase*, EvoConfig*);
             BaseNode* evolveNewCreature();
             void startContinuousEvolution();
             void stopEvolution();

@@ -5,9 +5,10 @@
 #include "Evolver.h"
 #include "../Body/BaseNode.h"
 
-int ivc::Evolver::init(ivc::PhysicsBase *base) {
+int ivc::Evolver::init(ivc::PhysicsBase *base, EvoConfig* config) {
 
     m_base = base;
+    m_config = config;
 
     //find number of available threads
     m_numThreads = std::thread::hardware_concurrency();

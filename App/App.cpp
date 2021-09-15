@@ -140,9 +140,11 @@ int ivc::App::init(){
     PhysicsBase* physicsBase = new PhysicsBase();
     physicsBase->init();
 
+    auto evoConfig = new EvoConfig();
+
     Evolver* evolver = new Evolver();
     m_evolver = evolver;
-    evolver->init(physicsBase);
+    evolver->init(physicsBase, evoConfig);
 
     m_evolutionThread = new std::thread(backgroundEvolution, evolver);
 
@@ -161,6 +163,7 @@ int ivc::App::init(){
     initLiveWindow();
     initNeuronWindow();
     initGUIWindow();
+    m_guiWindow->setConfig(evoConfig);
     initShadersAndTextures();
 
     m_neuronVisualizer = new NeuronVisualizer(m_neuronWindow,m_neuronShader);
