@@ -17,6 +17,7 @@ namespace ivc{
             nanogui::Screen* m_guiScreen = nullptr;
             nanogui::Graph* m_fitnessGraph = nullptr;
             nanogui::Button* m_updateButton = nullptr;
+            nanogui::IntBox<unsigned int>* m_cpgBox = nullptr;
 
             EvoConfig* m_config = nullptr;
 
@@ -28,6 +29,8 @@ namespace ivc{
             nanogui::Screen* getScreen();
             void updateFitnessGraph(std::vector<EvoData*>);
             void setConfig(EvoConfig*);
+            nanogui::IntBox<unsigned int>* getCPGBox();
+            void handleKeyInput(int,int);
     };
 }
 

@@ -25,6 +25,14 @@ void gui_mouse_callback(GLFWwindow* window, double xpos, double ypos){
     winPtr->getScreen()->cursor_pos_callback_event(xpos, ypos);
 }
 
+void gui_key_event_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+    glfwMakeContextCurrent(window);
+
+    auto winPtr = (ivc::GUIWindow*)glfwGetWindowUserPointer(window);
+    winPtr->handleKeyInput(key,action);
+
+}
+
 ivc::GUIWindow::GUIWindow(int width, int height) {
     // Create Window
     m_guiWindow = glfwCreateWindow(width, height, "Interactive Virtual Creatures", nullptr, nullptr);
@@ -43,6 +51,7 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
                                    winPtr->getScreen()->mouse_button_callback_event(button, action, modifiers);
                                }
     );
+    glfwSetKeyCallback(m_guiWindow, gui_key_event_callback);
     glfwSetWindowUserPointer(m_guiWindow, this);
 
     // GUI -------------
@@ -56,6 +65,11 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_updateButton = m_guiScreen->add<nanogui::Button>("Update");
     m_updateButton->set_callback([this]{this->update();});
     m_updateButton->set_tooltip("Update the configuration");
+
+    m_cpgBox = m_guiScreen->add<nanogui::IntBox<unsigned int>>();
+    m_cpgBox->set_editable(false);
+    m_cpgBox->set_value(CREATURES_PER_GENERATION);
+    m_cpgBox->set_min_max_values(1,1000);
 
     m_guiScreen->set_visible(true);
     m_guiScreen->perform_layout();
@@ -97,7 +111,7 @@ void ivc::GUIWindow::updateFitnessGraph(std::vector<EvoData*> dataVec) {
 }
 
 void ivc::GUIWindow::update() {
-    printf("TEST\n");
+    m_config->m_creaturesPerGeneration = m_cpgBox->value();
 }
 
 void ivc::GUIWindow::resize() {
@@ -115,10 +129,38 @@ void ivc::GUIWindow::resize() {
     m_updateButton->set_fixed_size(updateButtonSize);
     m_updateButton->set_position(updateButtonPos);
 
+    auto cpgBoxSize = nanogui::Vector2i(screenWidth/2, screenHeight/16);
+    auto cpgBoxPos = nanogui::Vector2i(screenWidth/2 - cpgBoxSize.x()/2, updateButtonPos.y() - (int)(cpgBoxSize.y() * 1.5));
+    m_cpgBox->set_fixed_size(cpgBoxSize);
+    m_cpgBox->set_position(cpgBoxPos);
+
     m_guiScreen->perform_layout();
 
 }
 
 void ivc::GUIWindow::setConfig(ivc::EvoConfig* config) {
     m_config = config;
+}
+
+nanogui::IntBox<unsigned int> *ivc::GUIWindow::getCPGBox() {
+    return m_cpgBox;
+}
+
+void ivc::GUIWindow::handleKeyInput(int key, int action) {
+
+    if(m_cpgBox->focused()){
+        if(key == GLFW_KEY_UP && action == GLFW_PRESS){
+            if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
+                m_cpgBox->set_value(m_cpgBox->value()+10);
+            else
+                m_cpgBox->set_value(m_cpgBox->value()+1);
+        }
+        if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
+            if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
+                m_cpgBox->set_value(m_cpgBox->value()-10);
+            else
+                m_cpgBox->set_value(m_cpgBox->value()-1);
+        }
+    }
+
 }
