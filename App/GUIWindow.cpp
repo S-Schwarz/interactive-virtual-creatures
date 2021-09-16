@@ -71,6 +71,11 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_cpgBox->set_value(CREATURES_PER_GENERATION);
     m_cpgBox->set_min_max_values(1,1000);
 
+    m_spgBox = m_guiScreen->add<nanogui::IntBox<unsigned int>>();
+    m_spgBox->set_editable(false);
+    m_spgBox->set_value(STEPS_PER_GENERATION);
+    m_spgBox->set_min_max_values(1000,5000);
+
     m_guiScreen->set_visible(true);
     m_guiScreen->perform_layout();
 
@@ -134,6 +139,11 @@ void ivc::GUIWindow::resize() {
     m_cpgBox->set_fixed_size(cpgBoxSize);
     m_cpgBox->set_position(cpgBoxPos);
 
+    auto spgBoxSize = nanogui::Vector2i(screenWidth/2, screenHeight/16);
+    auto spgBoxPos = nanogui::Vector2i(screenWidth/2 - spgBoxSize.x()/2, cpgBoxPos.y() - (int)(spgBoxSize.y() * 1.5));
+    m_spgBox->set_fixed_size(spgBoxSize);
+    m_spgBox->set_position(spgBoxPos);
+
     m_guiScreen->perform_layout();
 
 }
@@ -160,6 +170,21 @@ void ivc::GUIWindow::handleKeyInput(int key, int action) {
                 m_cpgBox->set_value(m_cpgBox->value()-10);
             else
                 m_cpgBox->set_value(m_cpgBox->value()-1);
+        }
+    }
+
+    if(m_spgBox->focused()){
+        if(key == GLFW_KEY_UP && action == GLFW_PRESS){
+            if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
+                m_spgBox->set_value(m_spgBox->value()+10);
+            else
+                m_spgBox->set_value(m_spgBox->value()+1);
+        }
+        if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
+            if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
+                m_spgBox->set_value(m_spgBox->value()-10);
+            else
+                m_spgBox->set_value(m_spgBox->value()-1);
         }
     }
 

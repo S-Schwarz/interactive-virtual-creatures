@@ -11,6 +11,7 @@ namespace ivc{
     class EvoConfig {
     public:
         int m_creaturesPerGeneration = CREATURES_PER_GENERATION;
+        int m_stepsPerGeneration = STEPS_PER_GENERATION;
 
     };
 }

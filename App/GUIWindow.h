@@ -18,6 +18,7 @@ namespace ivc{
             nanogui::Graph* m_fitnessGraph = nullptr;
             nanogui::Button* m_updateButton = nullptr;
             nanogui::IntBox<unsigned int>* m_cpgBox = nullptr;
+            nanogui::IntBox<unsigned int>* m_spgBox = nullptr;
 
             EvoConfig* m_config = nullptr;
 
