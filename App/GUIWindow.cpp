@@ -103,6 +103,10 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_sidewaysBox->set_min_max_values(0.0f, 10.0f);
     m_sidewaysBox->set_value(0.1f);
 
+    auto forceDiversityLabel = m_fitnessConfigWidget->add<nanogui::Label>("Force diversity");
+
+    m_ForceDiversityCheckbox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
+
     m_guiScreen->set_visible(true);
     resize();
 
@@ -147,6 +151,7 @@ void ivc::GUIWindow::update() {
     m_config->m_stepsPerGeneration = m_spgBox->value();
     m_config->m_useSidewaysMP = m_sidewaysCheckbox->checked();
     m_config->m_sidewaysMultiplier = m_sidewaysBox->value();
+    m_config->m_forceDiversity = m_ForceDiversityCheckbox->checked();
 }
 
 void ivc::GUIWindow::resize() {

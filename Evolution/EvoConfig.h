@@ -15,6 +15,7 @@ namespace ivc{
 
         bool m_useSidewaysMP = false;
         float m_sidewaysMultiplier = 0.0f;
+        bool m_forceDiversity = false;
 
     };
 }

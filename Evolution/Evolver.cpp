@@ -158,7 +158,7 @@ void ivc::Evolver::createNextGeneration() {
     auto scores = getAllScores();
 
     if(!scores.empty()){
-        newData->calculateScoreData(getAllScores(), m_config->m_creaturesPerGeneration);
+        newData->calculateScoreData(getAllScores(), m_config->m_creaturesPerGeneration, m_config->m_forceDiversity);
         m_dataVec.push_back(newData);
         printf("Best Score: %f\n", newData->getBestScore());
         m_currentBest = newData->getBestCreature();

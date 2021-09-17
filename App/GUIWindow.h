@@ -25,6 +25,7 @@ namespace ivc{
             nanogui::Widget* m_fitnessConfigWidget = nullptr;
             nanogui::CheckBox* m_sidewaysCheckbox = nullptr;
             nanogui::FloatBox<float>* m_sidewaysBox = nullptr;
+            nanogui::CheckBox* m_ForceDiversityCheckbox = nullptr;
 
             EvoConfig* m_config = nullptr;
 

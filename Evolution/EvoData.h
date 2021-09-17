@@ -21,7 +21,7 @@ namespace ivc{
             float m_worstScore = 0;
             float m_averageScore = 0;
         public:
-            void calculateScoreData(std::vector<std::pair<BaseNode*, float>>, int);
+            void calculateScoreData(std::vector<std::pair<BaseNode*, float>>, int, bool);
             void setGeneration(unsigned int);
 
             unsigned int getGeneration();

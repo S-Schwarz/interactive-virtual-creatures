@@ -4,7 +4,7 @@
 
 #include "EvoData.h"
 
-void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> scoreVec, int cpg) {
+void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> scoreVec, int cpg, bool forceDiversity) {
 
     float bestScore = -INFINITY;
     float worstScore = INFINITY;
@@ -51,6 +51,26 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> s
     //cap number of parents
     if(bestVec.size() > EVOLUTION_MAX_PARENTS){
         bestVec.resize(EVOLUTION_MAX_PARENTS);
+    }
+
+    //choose and add by morphologic diversity
+    std::map<unsigned int, std::pair<BaseNode*,float>> diverseMap;
+    for(auto pair : normalizedScores){
+        auto numNodes = pair.first->getNumberOfParts();
+        if(diverseMap.find(numNodes) == diverseMap.end()){
+            diverseMap[numNodes] = pair;
+        }else{
+            auto score = pair.second;
+            if(score > diverseMap[numNodes].second){
+                diverseMap[numNodes] = pair;
+            }
+        }
+    }
+
+    for (auto const& [key, val] : diverseMap){
+        if(std::find(bestVec.begin(), bestVec.end(), val) == bestVec.end()){
+            bestVec.push_back(val);
+        }
     }
 
     m_bestCreature = bestVec.front().first;
