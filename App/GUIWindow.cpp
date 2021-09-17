@@ -66,18 +66,33 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_updateButton->set_callback([this]{this->update();});
     m_updateButton->set_tooltip("Update the configuration");
 
-    m_cpgBox = m_guiScreen->add<nanogui::IntBox<unsigned int>>();
+    m_evoConstantsWidget = m_guiScreen->add<nanogui::Widget>();
+    m_evoConstantsWidget->set_tooltip("TEST");
+
+    auto layout =
+            new nanogui::GridLayout(nanogui::Orientation::Horizontal, 2,
+                                    nanogui::Alignment::Middle, 0, 0);
+    layout->set_col_alignment(
+            { nanogui::Alignment::Maximum, nanogui::Alignment::Fill });
+
+    m_evoConstantsWidget->set_layout(layout);
+
+    auto cpgLabel = m_evoConstantsWidget->add<nanogui::Label>("CPG");
+
+    m_cpgBox = m_evoConstantsWidget->add<nanogui::IntBox<unsigned int>>();
     m_cpgBox->set_editable(false);
     m_cpgBox->set_value(CREATURES_PER_GENERATION);
     m_cpgBox->set_min_max_values(1,1000);
 
-    m_spgBox = m_guiScreen->add<nanogui::IntBox<unsigned int>>();
+    auto spgLabel = m_evoConstantsWidget->add<nanogui::Label>("SPG");
+
+    m_spgBox = m_evoConstantsWidget->add<nanogui::IntBox<unsigned int>>();
     m_spgBox->set_editable(false);
     m_spgBox->set_value(STEPS_PER_GENERATION);
     m_spgBox->set_min_max_values(1000,5000);
 
     m_guiScreen->set_visible(true);
-    m_guiScreen->perform_layout();
+    resize();
 
     //----------------
 }
@@ -134,15 +149,10 @@ void ivc::GUIWindow::resize() {
     m_updateButton->set_fixed_size(updateButtonSize);
     m_updateButton->set_position(updateButtonPos);
 
-    auto cpgBoxSize = nanogui::Vector2i(screenWidth/2, screenHeight/16);
-    auto cpgBoxPos = nanogui::Vector2i(screenWidth/2 - cpgBoxSize.x()/2, updateButtonPos.y() - (int)(cpgBoxSize.y() * 1.5));
-    m_cpgBox->set_fixed_size(cpgBoxSize);
-    m_cpgBox->set_position(cpgBoxPos);
-
-    auto spgBoxSize = nanogui::Vector2i(screenWidth/2, screenHeight/16);
-    auto spgBoxPos = nanogui::Vector2i(screenWidth/2 - spgBoxSize.x()/2, cpgBoxPos.y() - (int)(spgBoxSize.y() * 1.5));
-    m_spgBox->set_fixed_size(spgBoxSize);
-    m_spgBox->set_position(spgBoxPos);
+    auto constantsWidgetSize = nanogui::Vector2i(screenWidth/4, screenHeight/8);
+    auto constantsWidgetPos = nanogui::Vector2i(0, 0);
+    m_evoConstantsWidget->set_fixed_size(constantsWidgetSize);
+    m_evoConstantsWidget->set_position(constantsWidgetPos);
 
     m_guiScreen->perform_layout();
 
