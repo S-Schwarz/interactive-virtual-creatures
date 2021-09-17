@@ -22,11 +22,15 @@ namespace ivc{
             nanogui::IntBox<unsigned int>* m_cpgBox = nullptr;
             nanogui::IntBox<unsigned int>* m_spgBox = nullptr;
 
+            nanogui::Widget* m_fitnessConfigWidget = nullptr;
+            nanogui::CheckBox* m_sidewaysCheckbox = nullptr;
+            nanogui::FloatBox<float>* m_sidewaysBox = nullptr;
 
             EvoConfig* m_config = nullptr;
 
             void update();
             void updateIntBox(nanogui::IntBox<unsigned int>*, int, int, int);
+            void updateFloatBox(nanogui::FloatBox<float>*, int, int, float);
         public:
             GUIWindow(int,int);
             void resize();

@@ -66,15 +66,14 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_updateButton->set_callback([this]{this->update();});
     m_updateButton->set_tooltip("Update the configuration");
 
-    m_evoConstantsWidget = m_guiScreen->add<nanogui::Widget>();
-    m_evoConstantsWidget->set_tooltip("TEST");
-
     auto layout =
             new nanogui::GridLayout(nanogui::Orientation::Horizontal, 2,
                                     nanogui::Alignment::Middle, 0, 0);
     layout->set_col_alignment(
             { nanogui::Alignment::Maximum, nanogui::Alignment::Fill });
 
+    m_evoConstantsWidget = m_guiScreen->add<nanogui::Widget>();
+    m_evoConstantsWidget->set_tooltip("TEST");
     m_evoConstantsWidget->set_layout(layout);
 
     auto cpgLabel = m_evoConstantsWidget->add<nanogui::Label>("CPG");
@@ -90,6 +89,19 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_spgBox->set_editable(false);
     m_spgBox->set_value(STEPS_PER_GENERATION);
     m_spgBox->set_min_max_values(1000,5000);
+
+    m_fitnessConfigWidget = m_guiScreen->add<nanogui::Widget>();
+    m_fitnessConfigWidget->set_layout(layout);
+
+    auto sideWaysLabel = m_fitnessConfigWidget->add<nanogui::Label>("Punish sideways movement");
+
+    m_sidewaysCheckbox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
+
+    auto sideWaysMultiLabel = m_fitnessConfigWidget->add<nanogui::Label>("Multiplier");
+
+    m_sidewaysBox = m_fitnessConfigWidget->add<nanogui::FloatBox<float>>();
+    m_sidewaysBox->set_min_max_values(0.0f, 10.0f);
+    m_sidewaysBox->set_value(0.1f);
 
     m_guiScreen->set_visible(true);
     resize();
@@ -132,6 +144,9 @@ void ivc::GUIWindow::updateFitnessGraph(std::vector<EvoData*> dataVec) {
 
 void ivc::GUIWindow::update() {
     m_config->m_creaturesPerGeneration = m_cpgBox->value();
+    m_config->m_stepsPerGeneration = m_spgBox->value();
+    m_config->m_useSidewaysMP = m_sidewaysCheckbox->checked();
+    m_config->m_sidewaysMultiplier = m_sidewaysBox->value();
 }
 
 void ivc::GUIWindow::resize() {
@@ -154,6 +169,11 @@ void ivc::GUIWindow::resize() {
     m_evoConstantsWidget->set_fixed_size(constantsWidgetSize);
     m_evoConstantsWidget->set_position(constantsWidgetPos);
 
+    auto fitnessWidgetSize = nanogui::Vector2i(screenWidth/4, screenHeight/8);
+    auto fitnessWidgetPos = nanogui::Vector2i(constantsWidgetPos.x() + constantsWidgetSize.x(), 0);
+    m_fitnessConfigWidget->set_fixed_size(fitnessWidgetSize);
+    m_fitnessConfigWidget->set_position(fitnessWidgetPos);
+
     m_guiScreen->perform_layout();
 
 }
@@ -170,10 +190,28 @@ void ivc::GUIWindow::handleKeyInput(int key, int action) {
 
     updateIntBox(m_cpgBox,key,action,10);
     updateIntBox(m_spgBox,key,action,10);
+    updateFloatBox(m_sidewaysBox,key,action,0.05f);
 
 }
 
 void ivc::GUIWindow::updateIntBox(nanogui::IntBox<unsigned int>* box, int key, int action, int baseIncrement) {
+    if(box->focused()){
+        if(key == GLFW_KEY_UP && action == GLFW_PRESS){
+            if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
+                box->set_value(box->value()+baseIncrement*10);
+            else
+                box->set_value(box->value()+baseIncrement);
+        }
+        if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
+            if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
+                box->set_value(box->value()-baseIncrement*10);
+            else
+                box->set_value(box->value()-baseIncrement);
+        }
+    }
+}
+
+void ivc::GUIWindow::updateFloatBox(nanogui::FloatBox<float>* box, int key, int action, float baseIncrement) {
     if(box->focused()){
         if(key == GLFW_KEY_UP && action == GLFW_PRESS){
             if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))

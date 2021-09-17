@@ -20,7 +20,7 @@ int ivc::Evolver::init(ivc::PhysicsBase *base, EvoConfig* config) {
     return 0;
 }
 
-void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::PhysicsScene*, std::pair<ivc::BaseNode*, float>> *mapPtr, int stepsPG){
+void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::PhysicsScene*, std::pair<ivc::BaseNode*, float>> *mapPtr, int stepsPG, float sideMP){
 
     for(auto scene : sceneVec){
         //simulate and score
@@ -89,7 +89,7 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 
         auto endPos = scene->getCreaturePos();
         auto distanceTravelled = startPos.z - endPos.z;
-        auto swervingX = 0.2f * abs(startPos.x - endPos.x);
+        auto swervingX = sideMP * abs(startPos.x - endPos.x);
         fitness = (distanceTravelled - swervingX);
 
         //write result
@@ -100,7 +100,7 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 
 void ivc::Evolver::evolveNextGeneration() {
 
-    void (*testFuncPtr)(std::vector<ivc::PhysicsScene*>, std::map<ivc::PhysicsScene*,std::pair<ivc::BaseNode*, float>>*, int) = testCreatures;
+    void (*testFuncPtr)(std::vector<ivc::PhysicsScene*>, std::map<ivc::PhysicsScene*,std::pair<ivc::BaseNode*, float>>*, int, float) = testCreatures;
 
     printf("Size: %lu\n", m_sceneMap.size());
 
@@ -123,8 +123,10 @@ void ivc::Evolver::evolveNextGeneration() {
         }
     }
 
+    auto sideMP = m_config->m_useSidewaysMP ? m_config->m_sidewaysMultiplier : 0.0f;
+
     for(auto sceneVec : allScenes){
-        allThreads.push_back(std::unique_ptr<std::thread>(new std::thread(testFuncPtr,sceneVec,&m_sceneMap,m_config->m_stepsPerGeneration)));
+        allThreads.push_back(std::unique_ptr<std::thread>(new std::thread(testFuncPtr,sceneVec,&m_sceneMap,m_config->m_stepsPerGeneration, sideMP)));
     }
 
     for (auto&& thread : allThreads) {
