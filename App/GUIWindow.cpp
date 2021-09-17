@@ -161,30 +161,30 @@ void ivc::GUIWindow::handleKeyInput(int key, int action) {
     if(m_cpgBox->focused()){
         if(key == GLFW_KEY_UP && action == GLFW_PRESS){
             if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
-                m_cpgBox->set_value(m_cpgBox->value()+10);
+                m_cpgBox->set_value(m_cpgBox->value()+100);
             else
-                m_cpgBox->set_value(m_cpgBox->value()+1);
+                m_cpgBox->set_value(m_cpgBox->value()+10);
         }
         if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
             if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
-                m_cpgBox->set_value(m_cpgBox->value()-10);
+                m_cpgBox->set_value(m_cpgBox->value()-100);
             else
-                m_cpgBox->set_value(m_cpgBox->value()-1);
+                m_cpgBox->set_value(m_cpgBox->value()-10);
         }
     }
 
     if(m_spgBox->focused()){
         if(key == GLFW_KEY_UP && action == GLFW_PRESS){
             if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
-                m_spgBox->set_value(m_spgBox->value()+10);
+                m_spgBox->set_value(m_spgBox->value()+100);
             else
-                m_spgBox->set_value(m_spgBox->value()+1);
+                m_spgBox->set_value(m_spgBox->value()+10);
         }
         if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
             if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
-                m_spgBox->set_value(m_spgBox->value()-10);
+                m_spgBox->set_value(m_spgBox->value()-100);
             else
-                m_spgBox->set_value(m_spgBox->value()-1);
+                m_spgBox->set_value(m_spgBox->value()-10);
         }
     }
 
