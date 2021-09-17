@@ -23,6 +23,7 @@ namespace ivc{
             EvoConfig* m_config = nullptr;
 
             void update();
+            void updateIntBox(nanogui::IntBox<unsigned int>*, int, int, int);
         public:
             GUIWindow(int,int);
             void resize();

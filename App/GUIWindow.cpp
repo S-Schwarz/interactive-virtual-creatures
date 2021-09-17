@@ -158,34 +158,24 @@ nanogui::IntBox<unsigned int> *ivc::GUIWindow::getCPGBox() {
 
 void ivc::GUIWindow::handleKeyInput(int key, int action) {
 
-    if(m_cpgBox->focused()){
+    updateIntBox(m_cpgBox,key,action,10);
+    updateIntBox(m_spgBox,key,action,10);
+
+}
+
+void ivc::GUIWindow::updateIntBox(nanogui::IntBox<unsigned int>* box, int key, int action, int baseIncrement) {
+    if(box->focused()){
         if(key == GLFW_KEY_UP && action == GLFW_PRESS){
             if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
-                m_cpgBox->set_value(m_cpgBox->value()+100);
+                box->set_value(box->value()+baseIncrement*10);
             else
-                m_cpgBox->set_value(m_cpgBox->value()+10);
+                box->set_value(box->value()+baseIncrement);
         }
         if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
             if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
-                m_cpgBox->set_value(m_cpgBox->value()-100);
+                box->set_value(box->value()-baseIncrement*10);
             else
-                m_cpgBox->set_value(m_cpgBox->value()-10);
+                box->set_value(box->value()-baseIncrement);
         }
     }
-
-    if(m_spgBox->focused()){
-        if(key == GLFW_KEY_UP && action == GLFW_PRESS){
-            if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
-                m_spgBox->set_value(m_spgBox->value()+100);
-            else
-                m_spgBox->set_value(m_spgBox->value()+10);
-        }
-        if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
-            if(glfwGetKey(m_guiWindow, GLFW_KEY_LEFT_SHIFT))
-                m_spgBox->set_value(m_spgBox->value()-100);
-            else
-                m_spgBox->set_value(m_spgBox->value()-10);
-        }
-    }
-
 }
