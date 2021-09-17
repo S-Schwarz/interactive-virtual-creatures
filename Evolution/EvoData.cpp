@@ -84,7 +84,7 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> s
     float partSize = cpg / total;
 
     for(auto pair : bestVec){
-        auto amountChildren = floor(pair.second * partSize);
+        auto amountChildren = std::max(1.0f, floor(pair.second * partSize));
         amountVec.push_back({pair.first, amountChildren});
     }
 
