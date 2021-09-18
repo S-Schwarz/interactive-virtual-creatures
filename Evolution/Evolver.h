@@ -28,13 +28,16 @@ namespace ivc{
 
             std::vector<EvoData*> m_dataVec;
 
-            std::map<PhysicsScene*, std::pair<BaseNode*, float>> m_sceneMap;
+            std::map<PhysicsScene*, std::pair<BaseNode*, std::pair<PxVec3, PxVec3>>> m_sceneMap;
+            std::map<BaseNode*, float> m_fitnessMap;
+
             void evolveNextGeneration();
             void createNextGeneration();
             void createNewGeneration();
-            std::map<PhysicsScene*, std::pair<BaseNode*, float>> createNewGenerationFromParents(std::vector<std::pair<BaseNode*,unsigned int>>);
+            std::map<PhysicsScene*, std::pair<BaseNode*, std::pair<PxVec3, PxVec3>>> createNewGenerationFromParents(std::vector<std::pair<BaseNode*,unsigned int>>);
             void deleteLastGeneration(std::vector<BaseNode*>);
             std::vector<std::pair<BaseNode*, float>> getAllScores();
+            void calcFitnessFromSceneMap();
         public:
             int init(PhysicsBase*, EvoConfig*);
             BaseNode* evolveNewCreature();
