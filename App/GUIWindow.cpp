@@ -62,6 +62,8 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_fitnessGraph = m_guiScreen->add<nanogui::Graph>("Fitness Graph");
     m_fitnessGraph->set_stroke_color(nanogui::Color(255,0,0,255));
 
+    m_fitnessFunctionLabel = m_guiScreen->add<nanogui::Label>("Fitness function: ");
+
     m_updateButton = m_guiScreen->add<nanogui::Button>("Update");
     m_updateButton->set_callback([this]{this->update();});
     m_updateButton->set_tooltip("Update the configuration");
@@ -94,17 +96,14 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_fitnessConfigWidget->set_layout(layout);
 
     auto sideWaysLabel = m_fitnessConfigWidget->add<nanogui::Label>("Punish sideways movement");
-
     m_sidewaysCheckbox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
 
     auto sideWaysMultiLabel = m_fitnessConfigWidget->add<nanogui::Label>("Multiplier");
-
     m_sidewaysBox = m_fitnessConfigWidget->add<nanogui::FloatBox<float>>();
     m_sidewaysBox->set_min_max_values(0.0f, 10.0f);
     m_sidewaysBox->set_value(0.1f);
 
     auto forceDiversityLabel = m_fitnessConfigWidget->add<nanogui::Label>("Force diversity");
-
     m_ForceDiversityCheckbox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
 
     m_guiScreen->set_visible(true);
@@ -152,6 +151,18 @@ void ivc::GUIWindow::update() {
     m_config->m_useSidewaysMP = m_sidewaysCheckbox->checked();
     m_config->m_sidewaysMultiplier = m_sidewaysBox->value();
     m_config->m_forceDiversity = m_ForceDiversityCheckbox->checked();
+
+    std::string fitnessFunc = "Fitness function: ";
+    fitnessFunc += "delta_z";
+    if(m_sidewaysCheckbox->checked()){
+        fitnessFunc += " - delta_x * ";
+        fitnessFunc += std::to_string(m_sidewaysBox->value());
+        while(fitnessFunc.back() == '0')
+            fitnessFunc.pop_back();
+    }
+
+    m_fitnessFunctionLabel->set_caption(fitnessFunc);
+
 }
 
 void ivc::GUIWindow::resize() {
@@ -164,8 +175,14 @@ void ivc::GUIWindow::resize() {
     m_fitnessGraph->set_fixed_size(graphSize);
     m_fitnessGraph->set_position(graphPos);
 
+    auto funcLabelSize = nanogui::Vector2i(screenWidth/2, screenHeight/16);
+    auto funcLabelPos = nanogui::Vector2i(screenWidth/2 - funcLabelSize.x()/2, graphPos.y() - (int)(funcLabelSize.y() * 1.5));
+    m_fitnessFunctionLabel->set_fixed_size(funcLabelSize);
+    m_fitnessFunctionLabel->set_position(funcLabelPos);
+    m_fitnessFunctionLabel->set_font_size(funcLabelSize.y() / 2);
+
     auto updateButtonSize = nanogui::Vector2i(screenWidth/2, screenHeight/16);
-    auto updateButtonPos = nanogui::Vector2i(screenWidth/2 - updateButtonSize.x()/2, graphPos.y() - (int)(updateButtonSize.y() * 1.5));
+    auto updateButtonPos = nanogui::Vector2i(screenWidth/2 - updateButtonSize.x()/2, funcLabelPos.y() - (int)(updateButtonSize.y() * 1.5));
     m_updateButton->set_fixed_size(updateButtonSize);
     m_updateButton->set_position(updateButtonPos);
 
