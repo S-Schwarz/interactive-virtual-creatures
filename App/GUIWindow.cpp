@@ -106,6 +106,22 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     auto forceDiversityLabel = m_fitnessConfigWidget->add<nanogui::Label>("Force diversity");
     m_ForceDiversityCheckbox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
 
+    m_noveltyConfigWidget = m_guiScreen->add<nanogui::Widget>();
+    m_noveltyConfigWidget->set_layout(layout);
+
+    auto noveltyLabel = m_noveltyConfigWidget->add<nanogui::Label>("Use novelty search");
+    m_noveltyCheckbox = m_noveltyConfigWidget->add<nanogui::CheckBox>("");
+
+    auto noveltyNeighborsLabel = m_noveltyConfigWidget->add<nanogui::Label>("# neighbors");
+    m_neighborsBox = m_noveltyConfigWidget->add<nanogui::IntBox<unsigned int>>();
+    m_neighborsBox->set_min_max_values(1, 100);
+    m_neighborsBox->set_value(10);
+
+    auto noveltyIntervalLabel = m_noveltyConfigWidget->add<nanogui::Label>("sample interval");
+    m_noveltyIntevallBox = m_noveltyConfigWidget->add<nanogui::IntBox<unsigned int>>();
+    m_noveltyIntevallBox->set_min_max_values(1, 1000);
+    m_noveltyIntevallBox->set_value(100);
+
     m_guiScreen->set_visible(true);
     resize();
 
@@ -151,17 +167,25 @@ void ivc::GUIWindow::update() {
     m_config->m_useSidewaysMP = m_sidewaysCheckbox->checked();
     m_config->m_sidewaysMultiplier = m_sidewaysBox->value();
     m_config->m_forceDiversity = m_ForceDiversityCheckbox->checked();
+    m_config->m_useNoveltySearch = m_noveltyCheckbox->checked();
+    m_config->m_noveltyNearestNeighbors = m_neighborsBox->value();
+    m_config->m_noveltyInterval = m_noveltyIntevallBox->value();
 
-    std::string fitnessFunc = "Fitness function: ";
-    fitnessFunc += "delta_z";
-    if(m_sidewaysCheckbox->checked()){
-        fitnessFunc += " - delta_x * ";
-        fitnessFunc += std::to_string(m_sidewaysBox->value());
-        while(fitnessFunc.back() == '0')
-            fitnessFunc.pop_back();
+    if(!m_config->m_useNoveltySearch){
+        std::string fitnessFunc = "Fitness function: ";
+        fitnessFunc += "delta_z";
+        if(m_sidewaysCheckbox->checked()){
+            fitnessFunc += " - delta_x * ";
+            fitnessFunc += std::to_string(m_sidewaysBox->value());
+            while(fitnessFunc.back() == '0')
+                fitnessFunc.pop_back();
+        }
+
+        m_fitnessFunctionLabel->set_caption(fitnessFunc);
+    }else{
+        m_fitnessFunctionLabel->set_caption("using novelty search");
     }
 
-    m_fitnessFunctionLabel->set_caption(fitnessFunc);
 
 }
 
@@ -196,6 +220,11 @@ void ivc::GUIWindow::resize() {
     m_fitnessConfigWidget->set_fixed_size(fitnessWidgetSize);
     m_fitnessConfigWidget->set_position(fitnessWidgetPos);
 
+    auto noveltyWidgetSize = nanogui::Vector2i(screenWidth/4, screenHeight/8);
+    auto noveltyWidgetPos = nanogui::Vector2i(fitnessWidgetPos.x() + fitnessWidgetSize.x(), 0);
+    m_noveltyConfigWidget->set_fixed_size(noveltyWidgetSize);
+    m_noveltyConfigWidget->set_position(noveltyWidgetPos);
+
     m_guiScreen->perform_layout();
 
 }
@@ -213,6 +242,8 @@ void ivc::GUIWindow::handleKeyInput(int key, int action) {
     updateIntBox(m_cpgBox,key,action,10);
     updateIntBox(m_spgBox,key,action,10);
     updateFloatBox(m_sidewaysBox,key,action,0.05f);
+    updateIntBox(m_neighborsBox,key,action,1);
+    updateIntBox(m_noveltyIntevallBox,key,action,10);
 
 }
 

@@ -30,6 +30,9 @@ namespace ivc{
 
             std::map<PhysicsScene*, std::pair<BaseNode*, std::pair<PxVec3, PxVec3>>> m_sceneMap;
             std::map<BaseNode*, float> m_fitnessMap;
+            std::map<BaseNode*, float> m_noveltyMap;
+            std::map<BaseNode*, std::vector<PxVec3>> m_currentGenNoveltyArchive;
+            std::vector<std::vector<PxVec3>> m_noveltyArchive;
 
             void evolveNextGeneration();
             void createNextGeneration();
@@ -37,7 +40,7 @@ namespace ivc{
             std::map<PhysicsScene*, std::pair<BaseNode*, std::pair<PxVec3, PxVec3>>> createNewGenerationFromParents(std::vector<std::pair<BaseNode*,unsigned int>>);
             void deleteLastGeneration(std::vector<BaseNode*>);
             std::vector<std::pair<BaseNode*, float>> getAllScores();
-            void calcFitnessFromSceneMap();
+            void calcFitness();
         public:
             int init(PhysicsBase*, EvoConfig*);
             BaseNode* evolveNewCreature();

@@ -27,6 +27,11 @@ namespace ivc{
             nanogui::FloatBox<float>* m_sidewaysBox = nullptr;
             nanogui::CheckBox* m_ForceDiversityCheckbox = nullptr;
 
+            nanogui::Widget* m_noveltyConfigWidget = nullptr;
+            nanogui::CheckBox* m_noveltyCheckbox = nullptr;
+            nanogui::IntBox<unsigned int>* m_neighborsBox = nullptr;
+            nanogui::IntBox<unsigned int>* m_noveltyIntevallBox = nullptr;
+
             nanogui::Label* m_fitnessFunctionLabel = nullptr;
 
             EvoConfig* m_config = nullptr;

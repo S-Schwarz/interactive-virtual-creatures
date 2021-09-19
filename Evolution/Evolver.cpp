@@ -20,7 +20,7 @@ int ivc::Evolver::init(ivc::PhysicsBase *base, EvoConfig* config) {
     return 0;
 }
 
-void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::PhysicsScene*, std::pair<ivc::BaseNode*, std::pair<PxVec3, PxVec3>>> *mapPtr, int stepsPG){
+void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::PhysicsScene*, std::pair<ivc::BaseNode*, std::pair<PxVec3, PxVec3>>> *mapPtr, std::map<ivc::BaseNode*, std::vector<PxVec3>>* noveltyArchive, int stepsPG, int noveltyInterval){
 
     for(auto scene : sceneVec){
         //simulate and score
@@ -60,6 +60,9 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
         //check for max height
         float maxHeight = 0;
 
+        //create novelty vec
+        std::vector<PxVec3> noveltyVec;
+
         //start moving
         for(int i = 0; i < stepsPG; ++i){
             scene->simulate(true);
@@ -78,6 +81,14 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
                 deltaPos = currentPos;
             }
 
+            if( i % noveltyInterval == 0){
+                float dX = std::pow((currentPos.x - startPos.x), 2) * ( (currentPos.x - startPos.x) < 0 ? -1 : 1 );
+                float dY = std::pow((currentPos.y - startPos.y), 2) * ( (currentPos.y - startPos.y) < 0 ? -1 : 1 );
+                float dZ = std::pow((currentPos.z - startPos.z), 2) * ( (currentPos.z - startPos.z) < 0 ? -1 : 1 );
+
+                noveltyVec.push_back(PxVec3(dX,dY,dZ));
+            }
+
 
         }
 
@@ -86,15 +97,22 @@ void testCreatures(std::vector<ivc::PhysicsScene*> sceneVec, std::map<ivc::Physi
 
         auto endPos = scene->getCreaturePos();
 
+        int goalLength = std::floor(stepsPG / noveltyInterval) + 1;
+        auto lastDelta = noveltyVec.back();
+        while(noveltyVec.size() < goalLength){
+            noveltyVec.push_back(lastDelta);
+        }
+
         //write result
         (*mapPtr)[scene] = {(*mapPtr)[scene].first,{startPos,endPos}};
+        (*noveltyArchive)[(*mapPtr)[scene].first] = noveltyVec;
     }
 
 }
 
 void ivc::Evolver::evolveNextGeneration() {
 
-    void (*testFuncPtr)(std::vector<ivc::PhysicsScene*>, std::map<ivc::PhysicsScene*,std::pair<ivc::BaseNode*, std::pair<PxVec3, PxVec3>>>*, int) = testCreatures;
+    void (*testFuncPtr)(std::vector<ivc::PhysicsScene*>, std::map<ivc::PhysicsScene*,std::pair<ivc::BaseNode*, std::pair<PxVec3, PxVec3>>>*,std::map<BaseNode*, std::vector<PxVec3>>*, int, int) = testCreatures;
 
     printf("Size: %lu\n", m_sceneMap.size());
 
@@ -117,8 +135,10 @@ void ivc::Evolver::evolveNextGeneration() {
         }
     }
 
+    int noveltyInterval = 100;
+
     for(auto sceneVec : allScenes){
-        allThreads.push_back(std::unique_ptr<std::thread>(new std::thread(testFuncPtr,sceneVec,&m_sceneMap,m_config->m_stepsPerGeneration)));
+        allThreads.push_back(std::unique_ptr<std::thread>(new std::thread(testFuncPtr,sceneVec,&m_sceneMap, &m_currentGenNoveltyArchive, m_config->m_stepsPerGeneration, noveltyInterval)));
     }
 
     for (auto&& thread : allThreads) {
@@ -127,7 +147,7 @@ void ivc::Evolver::evolveNextGeneration() {
 
     allThreads.clear();
 
-    calcFitnessFromSceneMap();
+    calcFitness();
     createNextGeneration();
 
 }
@@ -273,10 +293,10 @@ std::vector<ivc::EvoData*> ivc::Evolver::getEvoDataVec() {
     return m_dataVec;
 }
 
-void ivc::Evolver::calcFitnessFromSceneMap() {
+void ivc::Evolver::calcFitness() {
 
+    // normal fitness function
     auto sideMP = m_config->m_useSidewaysMP ? m_config->m_sidewaysMultiplier : 0.0f;
-
     for(auto const& [key, val] : m_sceneMap){
         auto baseNode = val.first;
         auto startPos = val.second.first;
@@ -288,5 +308,64 @@ void ivc::Evolver::calcFitnessFromSceneMap() {
 
         m_fitnessMap[baseNode] = fitness;
     }
+
+    // novelty fitness
+    // copy current gen into overall archive
+    for(auto const& [baseNode, noveltyVec] : m_currentGenNoveltyArchive){
+        m_noveltyArchive.push_back(noveltyVec);
+    }
+    // assign novelty score to current gen
+    for(auto const& [baseNode, noveltyVec] : m_currentGenNoveltyArchive){
+        std::vector<float> nearestNeighborsDifferenceVec;
+        // skip itself
+        bool skipped = false;
+        for(auto noveltyVecNeighbor : m_noveltyArchive){
+            if(!skipped && noveltyVecNeighbor == noveltyVec){
+                skipped = true;
+                continue;
+            }
+            float diff = 0;
+
+            for(int i = 0; i < noveltyVec.size(); ++i){
+                auto posVec = noveltyVec[i];
+                auto posVecNeighbor = noveltyVecNeighbor[i];
+
+                float diff_i = 0;
+                diff_i += std::pow((posVec.x - posVecNeighbor.x),2);
+                diff_i += std::pow((posVec.y - posVecNeighbor.y),2);
+                diff_i += std::pow((posVec.z - posVecNeighbor.z),2);
+
+                diff += std::sqrt(diff_i);
+            }
+
+            if(nearestNeighborsDifferenceVec.size() < m_config->m_noveltyNearestNeighbors){
+                nearestNeighborsDifferenceVec.push_back(diff);
+            }else{
+                for(int k = 0; k < nearestNeighborsDifferenceVec.size(); ++k){
+                    if(nearestNeighborsDifferenceVec[k] > diff){
+                        nearestNeighborsDifferenceVec[k] = diff;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // calc average distance
+        float sumDiff = 0;
+        for(auto diff : nearestNeighborsDifferenceVec){
+            sumDiff += diff;
+        }
+
+        float averageDistance = sumDiff / nearestNeighborsDifferenceVec.size();
+
+        m_noveltyMap[baseNode] = averageDistance;
+
+    }
+
+    m_currentGenNoveltyArchive = {};
+
+
+
+
 
 }

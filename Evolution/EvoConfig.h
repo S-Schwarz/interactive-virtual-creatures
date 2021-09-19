@@ -17,6 +17,10 @@ namespace ivc{
         float m_sidewaysMultiplier = 0.0f;
         bool m_forceDiversity = false;
 
+        bool m_useNoveltySearch = false;
+        int m_noveltyInterval = 100;
+        int m_noveltyNearestNeighbors = 10;
+
     };
 }
 
