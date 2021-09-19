@@ -281,10 +281,7 @@ unsigned int ivc::Evolver::getNumberGenerations() {
 std::vector<std::pair<ivc::BaseNode*, float>> ivc::Evolver::getAllScores() {
     std::vector<std::pair<BaseNode*, float>> scoreVec;
     for(auto const& [key, val] : m_fitnessMap){
-        auto score = val;
-        if(score != -INFINITY && score != INFINITY){
-            scoreVec.push_back({key, val});
-        }
+        scoreVec.push_back({key, val});
     }
     return scoreVec;
 }
@@ -361,10 +358,17 @@ void ivc::Evolver::calcFitness() {
         m_noveltyMap[baseNode] = averageDistance;
 
     }
-
     m_currentGenNoveltyArchive = {};
 
+    //remove unfit creatures
+    for(auto const& [key, val] : m_sceneMap) {
+        auto baseNode = val.first;
 
+        if (m_fitnessMap[baseNode] == INFINITY || m_fitnessMap[baseNode] == -INFINITY) {
+            m_fitnessMap.erase(baseNode);
+            m_noveltyMap.erase(baseNode);
+        }
+    }
 
 
 
