@@ -260,8 +260,12 @@ ivc::Evolver::createNewGenerationFromParents(std::vector<std::pair<BaseNode *, u
 
 void ivc::Evolver::startContinuousEvolution() {
 
+    while(m_config->m_paused){
+
+    }
+
     int i = 0;
-    while(!m_pauseEvolution){
+    while(!m_config->m_paused){
         printf("---------------------------\n");
         printf("GENERATION #%i:\n", ++i);
         evolveNextGeneration();
@@ -271,7 +275,7 @@ void ivc::Evolver::startContinuousEvolution() {
 }
 
 void ivc::Evolver::stopEvolution() {
-    m_pauseEvolution = true;
+    m_config->m_paused = true;
 }
 
 ivc::BaseNode*ivc::Evolver::getCurrentBest() {

@@ -66,6 +66,9 @@ namespace ivc {
 
             unsigned int m_blockTexture;
 
+            bool liveEnvInitialized = false;
+            PhysicsBase* m_physicsBase = nullptr;
+
             void processInput();
             int drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe);
             void initLiveWindow();

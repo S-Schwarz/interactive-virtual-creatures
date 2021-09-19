@@ -74,6 +74,9 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_updateButton->set_callback([this]{this->update();});
     m_updateButton->set_tooltip("Update the configuration");
 
+    m_startButton = m_guiScreen->add<nanogui::Button>("Start");
+    m_startButton->set_callback([this]{this->m_config->m_paused = false;});
+
     auto topLayout =
             new nanogui::GridLayout(nanogui::Orientation::Horizontal, 3,
                                     nanogui::Alignment::Middle, 0, 0);
@@ -252,10 +255,15 @@ void ivc::GUIWindow::resize() {
     m_fitnessFunctionLabel->set_position(funcLabelPos);
     m_fitnessFunctionLabel->set_font_size(funcLabelSize.y() / 2);
 
-    auto updateButtonSize = nanogui::Vector2i(screenWidth/2, screenHeight/16);
-    auto updateButtonPos = nanogui::Vector2i(screenWidth/2 - updateButtonSize.x()/2, funcLabelPos.y() - (int)(updateButtonSize.y() * 1.5));
+    auto updateButtonSize = nanogui::Vector2i(screenWidth/4, screenHeight/16);
+    auto updateButtonPos = nanogui::Vector2i(screenWidth/4, funcLabelPos.y() - (int)(updateButtonSize.y() * 1.5));
     m_updateButton->set_fixed_size(updateButtonSize);
     m_updateButton->set_position(updateButtonPos);
+
+    auto startButtonSize = nanogui::Vector2i(screenWidth/4, screenHeight/16);
+    auto startButtonPos = nanogui::Vector2i(updateButtonPos.x() + updateButtonSize.x(), funcLabelPos.y() - (int)(startButtonSize.y() * 1.5));
+    m_startButton->set_fixed_size(startButtonSize);
+    m_startButton->set_position(startButtonPos);
 
     auto configurationWidgetSize = nanogui::Vector2i(screenWidth, screenHeight/2);
     auto configurationWidgetPos = nanogui::Vector2i(0, 0);

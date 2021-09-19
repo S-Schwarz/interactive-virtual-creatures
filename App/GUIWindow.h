@@ -21,6 +21,7 @@ namespace ivc{
             nanogui::Graph* m_noveltyGraph = nullptr;
 
             nanogui::Button* m_updateButton = nullptr;
+            nanogui::Button* m_startButton = nullptr;
 
             nanogui::Widget* m_configurationWidget = nullptr;
 

@@ -22,7 +22,6 @@ namespace ivc{
             unsigned int m_numberGenerations = 0;
 
             unsigned int m_numThreads = 1;
-            bool m_pauseEvolution = false;
 
             EvoConfig* m_config = nullptr;
 

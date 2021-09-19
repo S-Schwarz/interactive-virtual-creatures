@@ -22,6 +22,8 @@ namespace ivc{
         int m_noveltyNearestNeighbors = 10;
         bool m_onlyUseEndPos = false;
 
+        bool m_paused = true;
+
     };
 }
 

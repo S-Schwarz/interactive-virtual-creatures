@@ -137,28 +137,18 @@ int ivc::App::init(){
 
     //--------------
 
-    PhysicsBase* physicsBase = new PhysicsBase();
-    physicsBase->init();
+    m_physicsBase = new PhysicsBase();
+    m_physicsBase->init();
 
     auto evoConfig = new EvoConfig();
 
     Evolver* evolver = new Evolver();
     m_evolver = evolver;
-    evolver->init(physicsBase, evoConfig);
+    evolver->init(m_physicsBase, evoConfig);
 
     m_evolutionThread = new std::thread(backgroundEvolution, evolver);
 
-    PhysicsScene* liveScene = new PhysicsScene();
-
-    BaseNode* firstCreature = nullptr;
-    while(firstCreature == nullptr){
-        firstCreature = evolver->getCurrentBest();
-    }
-
-    liveScene->init(physicsBase,firstCreature);
-
     m_liveEnvironment = new LiveEnvironment();
-    m_liveEnvironment->init(liveScene);
 
     initLiveWindow();
     initNeuronWindow();
@@ -167,7 +157,6 @@ int ivc::App::init(){
     initShadersAndTextures();
 
     m_neuronVisualizer = new NeuronVisualizer(m_neuronWindow,m_neuronShader);
-    m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getCreature());
 
     m_isInitialized = true;
 
@@ -192,7 +181,7 @@ int ivc::App::update() {
 
     // Physics simulation ---------
 
-    if(!m_physicsPaused){
+    if(liveEnvInitialized || !m_physicsPaused){
         m_accumulator += m_deltaTime;
 
         while (m_accumulator >= SIMULATION_STEP_SIZE){
@@ -202,24 +191,33 @@ int ivc::App::update() {
     }
 
     // insert new creature ------------
+    if(liveEnvInitialized){
+        auto currentGenNum = m_evolver->getNumberGenerations();
+        if(currentGenNum != m_lastGenNum && currentGenNum % 2 == 0){
+            auto newCreature = m_evolver->getCurrentBest();
+            if(newCreature != nullptr){
+                printf("INSERTING NEW CREATURE INTO LIVE SCENE\n");
+                m_liveEnvironment->insertNewCreature(newCreature);
+                m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getCreature());
+                m_lastGenNum = currentGenNum;
+            }
+        }
+        m_guiWindow->updateGraphs(m_evolver->getEvoDataVec());
 
-    auto currentGenNum = m_evolver->getNumberGenerations();
-    if(currentGenNum != m_lastGenNum && currentGenNum % 2 == 0){
-        auto newCreature = m_evolver->getCurrentBest();
-        if(newCreature != nullptr){
-            printf("INSERTING NEW CREATURE INTO LIVE SCENE\n");
-            m_liveEnvironment->insertNewCreature(newCreature);
+        drawLiveWindow();
+        m_neuronVisualizer->draw();
+    }else{
+        auto currentCreature = m_evolver->getCurrentBest();
+        if(currentCreature != nullptr){
+            auto liveScene = new PhysicsScene();
+            liveScene->init(m_physicsBase, currentCreature);
+            m_liveEnvironment->init(liveScene);
             m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getCreature());
-            m_lastGenNum = currentGenNum;
+            liveEnvInitialized = true;
         }
     }
 
-    // ---------------------------
-    m_guiWindow->updateGraphs(m_evolver->getEvoDataVec());
     //----------------------------
-
-    drawLiveWindow();
-    m_neuronVisualizer->draw();
     m_guiWindow->draw();
     //-------------------------
 
