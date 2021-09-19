@@ -39,7 +39,8 @@ namespace ivc{
             void createNewGeneration();
             std::map<PhysicsScene*, std::pair<BaseNode*, std::pair<PxVec3, PxVec3>>> createNewGenerationFromParents(std::vector<std::pair<BaseNode*,unsigned int>>);
             void deleteLastGeneration(std::vector<BaseNode*>);
-            std::vector<std::pair<BaseNode*, float>> getAllScores();
+            std::vector<std::pair<BaseNode*, float>> getAllFitnessScores();
+            std::vector<std::pair<BaseNode*, float>> getAllNoveltyScores();
             void calcFitness();
         public:
             int init(PhysicsBase*, EvoConfig*);

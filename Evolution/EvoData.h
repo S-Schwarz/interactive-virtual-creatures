@@ -17,11 +17,15 @@ namespace ivc{
             BaseNode* m_bestCreature = nullptr;
             std::vector<std::pair<BaseNode*, unsigned int>> m_parentVec;
 
-            float m_bestScore = 0;
-            float m_worstScore = 0;
-            float m_averageScore = 0;
+            float m_bestFitnessScore = 0;
+            float m_worstFitnessScore = 0;
+            float m_averageFitnessScore = 0;
+
+            float m_bestNoveltyScore = 0;
+            float m_worstNoveltyScore = 0;
+            float m_averageNoveltyScore = 0;
         public:
-            void calculateScoreData(std::vector<std::pair<BaseNode*, float>>, int, bool);
+            void calculateScoreData(std::vector<std::pair<BaseNode*, float>>, int, bool, std::vector<std::pair<BaseNode*, float>>, bool);
             void setGeneration(unsigned int);
 
             unsigned int getGeneration();

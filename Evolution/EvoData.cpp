@@ -4,35 +4,60 @@
 
 #include "EvoData.h"
 
-void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> scoreVec, int cpg, bool forceDiversity) {
+void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> scoreVec, int cpg, bool forceDiversity, std::vector<std::pair<BaseNode*, float>> noveltyVec, bool useNovelty) {
 
-    float bestScore = -INFINITY;
-    float worstScore = INFINITY;
+    // fitness calc
+    m_bestFitnessScore = -INFINITY;
+    m_worstFitnessScore = INFINITY;
     float scoreSum = 0;
 
     for(auto pair : scoreVec){
         auto score = pair.second;
-        if(score > bestScore)
-            bestScore = score;
-        if(score < worstScore)
-            worstScore = score;
+        if(score > m_bestFitnessScore)
+            m_bestFitnessScore = score;
+        if(score < m_worstFitnessScore)
+            m_worstFitnessScore = score;
         scoreSum += score;
     }
+    m_averageFitnessScore = scoreSum / scoreVec.size();
 
-    m_bestScore = bestScore;
-    m_worstScore = worstScore;
-    m_averageScore = scoreSum / scoreVec.size();
+    // novelty calc
+    m_bestNoveltyScore = -INFINITY;
+    m_worstNoveltyScore = INFINITY;
+    float noveltySum = 0;
+
+    for(auto pair : noveltyVec){
+        auto score = pair.second;
+        if(score > m_bestNoveltyScore)
+            m_bestNoveltyScore = score;
+        if(score < m_worstNoveltyScore)
+            m_worstNoveltyScore = score;
+        noveltySum += score;
+    }
+    m_averageNoveltyScore = noveltySum / noveltyVec.size();
 
     //normalize scores
     std::vector<std::pair<BaseNode*, float>> normalizedScores;
-    for(auto pair : scoreVec){
-        auto score = pair.second;
-        if(bestScore == worstScore){
-            normalizedScores.push_back({pair.first,1.0f});
-        }else{
-            normalizedScores.push_back({pair.first,(score-worstScore)/(bestScore-worstScore)});
+    if(!useNovelty){
+        for(auto pair : scoreVec){
+            auto score = pair.second;
+            if(m_bestFitnessScore == m_worstFitnessScore){
+                normalizedScores.push_back({pair.first,1.0f});
+            }else{
+                normalizedScores.push_back({pair.first, Mutator::normalize(score, m_worstFitnessScore, m_bestFitnessScore)});
+            }
+        }
+    }else{
+        for(auto pair : noveltyVec){
+            auto score = pair.second;
+            if(m_bestNoveltyScore == m_worstNoveltyScore){
+                normalizedScores.push_back({pair.first,1.0f});
+            }else{
+                normalizedScores.push_back({pair.first, Mutator::normalize(score, m_worstNoveltyScore, m_bestNoveltyScore)});
+            }
         }
     }
+
 
     //choose best creatures
     std::vector<std::pair<BaseNode*,float>> bestVec;
@@ -53,7 +78,7 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> s
         bestVec.resize(EVOLUTION_MAX_PARENTS);
     }
 
-    if(forceDiversity){
+    if(!useNovelty && forceDiversity){
         //choose and add by morphologic diversity
         std::map<unsigned int, std::pair<BaseNode*,float>> diverseMap;
         for(auto pair : normalizedScores){
@@ -103,15 +128,15 @@ unsigned int ivc::EvoData::getGeneration() {
 }
 
 float ivc::EvoData::getBestScore() {
-    return m_bestScore;
+    return m_bestFitnessScore;
 }
 
 float ivc::EvoData::getWorstScore() {
-    return m_worstScore;
+    return m_worstFitnessScore;
 }
 
 float ivc::EvoData::getAverageScore() {
-    return m_averageScore;
+    return m_averageFitnessScore;
 }
 
 ivc::BaseNode *ivc::EvoData::getBestCreature() {

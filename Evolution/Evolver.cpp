@@ -168,16 +168,17 @@ void ivc::Evolver::createNextGeneration() {
 
     auto newData = new EvoData();
     newData->setGeneration(m_numberGenerations);
-    auto scores = getAllScores();
+    auto fitnessScores = getAllFitnessScores();
+    auto noveltyScores = getAllNoveltyScores();
 
-    if(!scores.empty()){
-        newData->calculateScoreData(getAllScores(), m_config->m_creaturesPerGeneration, m_config->m_forceDiversity);
+    if(!fitnessScores.empty()){
+        newData->calculateScoreData(fitnessScores, m_config->m_creaturesPerGeneration, m_config->m_forceDiversity, noveltyScores, m_config->m_useNoveltySearch);
         m_dataVec.push_back(newData);
         printf("Best Score: %f\n", newData->getBestScore());
         m_currentBest = newData->getBestCreature();
     }
 
-    if(newData->getBestScore() == 0 || scores.empty()){
+    if(newData->getBestScore() == 0 || fitnessScores.empty()){
         //create completely new generation
         printf("Creating new generation!\n");
         deleteLastGeneration({});
@@ -225,6 +226,7 @@ void ivc::Evolver::deleteLastGeneration(std::vector<BaseNode*> parents) {
 
     }
     m_fitnessMap = {};
+    m_noveltyMap = {};
 }
 
 std::map<ivc::PhysicsScene *, std::pair<ivc::BaseNode *, std::pair<PxVec3, PxVec3>>>
@@ -278,7 +280,7 @@ unsigned int ivc::Evolver::getNumberGenerations() {
     return m_numberGenerations;
 }
 
-std::vector<std::pair<ivc::BaseNode*, float>> ivc::Evolver::getAllScores() {
+std::vector<std::pair<ivc::BaseNode*, float>> ivc::Evolver::getAllFitnessScores() {
     std::vector<std::pair<BaseNode*, float>> scoreVec;
     for(auto const& [key, val] : m_fitnessMap){
         scoreVec.push_back({key, val});
@@ -291,6 +293,11 @@ std::vector<ivc::EvoData*> ivc::Evolver::getEvoDataVec() {
 }
 
 void ivc::Evolver::calcFitness() {
+
+    // copy current gen into overall archive
+    for(auto const& [baseNode, noveltyVec] : m_currentGenNoveltyArchive){
+        m_noveltyArchive.push_back(noveltyVec);
+    }
 
     // normal fitness function
     auto sideMP = m_config->m_useSidewaysMP ? m_config->m_sidewaysMultiplier : 0.0f;
@@ -306,11 +313,15 @@ void ivc::Evolver::calcFitness() {
         m_fitnessMap[baseNode] = fitness;
     }
 
-    // novelty fitness
-    // copy current gen into overall archive
-    for(auto const& [baseNode, noveltyVec] : m_currentGenNoveltyArchive){
-        m_noveltyArchive.push_back(noveltyVec);
+    //remove unfit creatures
+    for(auto const& [key, val] : m_sceneMap) {
+        auto baseNode = val.first;
+
+        if (m_fitnessMap[baseNode] == INFINITY || m_fitnessMap[baseNode] == -INFINITY) {
+            m_fitnessMap.erase(baseNode);
+        }
     }
+    // novelty fitness
     // assign novelty score to current gen
     for(auto const& [baseNode, noveltyVec] : m_currentGenNoveltyArchive){
         std::vector<float> nearestNeighborsDifferenceVec;
@@ -358,29 +369,15 @@ void ivc::Evolver::calcFitness() {
         m_noveltyMap[baseNode] = averageDistance;
 
     }
+
     m_currentGenNoveltyArchive = {};
 
-    //remove unfit creatures
-    for(auto const& [key, val] : m_sceneMap) {
-        auto baseNode = val.first;
+}
 
-        if (m_fitnessMap[baseNode] == INFINITY || m_fitnessMap[baseNode] == -INFINITY) {
-            m_fitnessMap.erase(baseNode);
-            m_noveltyMap.erase(baseNode);
-        }
+std::vector<std::pair<ivc::BaseNode *, float>> ivc::Evolver::getAllNoveltyScores() {
+    std::vector<std::pair<BaseNode*, float>> noveltyVec;
+    for(auto const& [key, val] : m_noveltyMap){
+        noveltyVec.push_back({key, val});
     }
-
-    // normalize novelty scores
-    float largestNovelty = -INFINITY;
-    float smallestNovelty = INFINITY;
-    for(auto const& [baseNode, noveltyScore] : m_noveltyMap){
-        if(noveltyScore < smallestNovelty)
-            smallestNovelty = noveltyScore;
-        if(noveltyScore > largestNovelty)
-            largestNovelty = noveltyScore;
-    }
-    for(auto const& [baseNode, noveltyScore] : m_noveltyMap){
-        m_noveltyMap[baseNode] = Mutator::normalize(noveltyScore, smallestNovelty, largestNovelty);
-    }
-
+    return noveltyVec;
 }
