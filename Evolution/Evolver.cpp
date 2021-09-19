@@ -176,7 +176,7 @@ void ivc::Evolver::createNextGeneration() {
     if(!fitnessScores.empty()){
         newData->calculateScoreData(fitnessScores, m_config->m_creaturesPerGeneration, m_config->m_forceDiversity, noveltyScores, m_config->m_useNoveltySearch);
         m_dataVec.push_back(newData);
-        printf("Best Score: %f\n", newData->getBestFitnessScore());
+        printf("Largest Distance: %f\n", newData->getLargestDistance());
         m_currentBest = newData->getBestCreature();
     }
 
