@@ -135,7 +135,7 @@ void ivc::Evolver::evolveNextGeneration() {
         }
     }
 
-    int noveltyInterval = 100;
+    int noveltyInterval = m_config->m_noveltyInterval;
 
     for(auto sceneVec : allScenes){
         allThreads.push_back(std::unique_ptr<std::thread>(new std::thread(testFuncPtr,sceneVec,&m_sceneMap, &m_currentGenNoveltyArchive, m_config->m_stepsPerGeneration, noveltyInterval)));
