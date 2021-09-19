@@ -370,6 +370,17 @@ void ivc::Evolver::calcFitness() {
         }
     }
 
-
+    // normalize novelty scores
+    float largestNovelty = -INFINITY;
+    float smallestNovelty = INFINITY;
+    for(auto const& [baseNode, noveltyScore] : m_noveltyMap){
+        if(noveltyScore < smallestNovelty)
+            smallestNovelty = noveltyScore;
+        if(noveltyScore > largestNovelty)
+            largestNovelty = noveltyScore;
+    }
+    for(auto const& [baseNode, noveltyScore] : m_noveltyMap){
+        m_noveltyMap[baseNode] = Mutator::normalize(noveltyScore, smallestNovelty, largestNovelty);
+    }
 
 }
