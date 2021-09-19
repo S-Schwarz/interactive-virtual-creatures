@@ -22,6 +22,8 @@ namespace ivc{
 
             nanogui::Button* m_updateButton = nullptr;
 
+            nanogui::Widget* m_configurationWidget = nullptr;
+
             nanogui::Widget* m_evoConstantsWidget = nullptr;
             nanogui::IntBox<unsigned int>* m_cpgBox = nullptr;
             nanogui::IntBox<unsigned int>* m_spgBox = nullptr;

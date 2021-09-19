@@ -74,14 +74,22 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_updateButton->set_callback([this]{this->update();});
     m_updateButton->set_tooltip("Update the configuration");
 
+    auto topLayout =
+            new nanogui::GridLayout(nanogui::Orientation::Horizontal, 3,
+                                    nanogui::Alignment::Middle, 0, 0);
+    topLayout->set_col_alignment(
+            { nanogui::Alignment::Maximum, nanogui::Alignment::Fill });
+
+    m_configurationWidget = m_guiScreen->add<nanogui::Widget>();
+    m_configurationWidget->set_layout(topLayout);
+
     auto layout =
             new nanogui::GridLayout(nanogui::Orientation::Horizontal, 2,
                                     nanogui::Alignment::Middle, 0, 0);
     layout->set_col_alignment(
             { nanogui::Alignment::Maximum, nanogui::Alignment::Fill });
 
-    m_evoConstantsWidget = m_guiScreen->add<nanogui::Widget>();
-    m_evoConstantsWidget->set_tooltip("TEST");
+    m_evoConstantsWidget = m_configurationWidget->add<nanogui::Widget>();
     m_evoConstantsWidget->set_layout(layout);
 
     auto cpgLabel = m_evoConstantsWidget->add<nanogui::Label>("CPG");
@@ -98,7 +106,7 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_spgBox->set_value(STEPS_PER_GENERATION);
     m_spgBox->set_min_max_values(1000,5000);
 
-    m_fitnessConfigWidget = m_guiScreen->add<nanogui::Widget>();
+    m_fitnessConfigWidget = m_configurationWidget->add<nanogui::Widget>();
     m_fitnessConfigWidget->set_layout(layout);
 
     auto sideWaysLabel = m_fitnessConfigWidget->add<nanogui::Label>("Punish sideways movement");
@@ -112,7 +120,7 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     auto forceDiversityLabel = m_fitnessConfigWidget->add<nanogui::Label>("Force diversity");
     m_ForceDiversityCheckbox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
 
-    m_noveltyConfigWidget = m_guiScreen->add<nanogui::Widget>();
+    m_noveltyConfigWidget = m_configurationWidget->add<nanogui::Widget>();
     m_noveltyConfigWidget->set_layout(layout);
 
     auto noveltyLabel = m_noveltyConfigWidget->add<nanogui::Label>("Use novelty search");
@@ -249,20 +257,10 @@ void ivc::GUIWindow::resize() {
     m_updateButton->set_fixed_size(updateButtonSize);
     m_updateButton->set_position(updateButtonPos);
 
-    auto constantsWidgetSize = nanogui::Vector2i(screenWidth/4, screenHeight/8);
-    auto constantsWidgetPos = nanogui::Vector2i(0, 0);
-    m_evoConstantsWidget->set_fixed_size(constantsWidgetSize);
-    m_evoConstantsWidget->set_position(constantsWidgetPos);
-
-    auto fitnessWidgetSize = nanogui::Vector2i(screenWidth/4, screenHeight/8);
-    auto fitnessWidgetPos = nanogui::Vector2i(constantsWidgetPos.x() + constantsWidgetSize.x(), 0);
-    m_fitnessConfigWidget->set_fixed_size(fitnessWidgetSize);
-    m_fitnessConfigWidget->set_position(fitnessWidgetPos);
-
-    auto noveltyWidgetSize = nanogui::Vector2i(screenWidth/4, screenHeight/8);
-    auto noveltyWidgetPos = nanogui::Vector2i(fitnessWidgetPos.x() + fitnessWidgetSize.x(), 0);
-    m_noveltyConfigWidget->set_fixed_size(noveltyWidgetSize);
-    m_noveltyConfigWidget->set_position(noveltyWidgetPos);
+    auto configurationWidgetSize = nanogui::Vector2i(screenWidth, screenHeight/2);
+    auto configurationWidgetPos = nanogui::Vector2i(0, 0);
+    m_configurationWidget->set_fixed_size(configurationWidgetSize);
+    m_configurationWidget->set_position(configurationWidgetPos);
 
     m_guiScreen->perform_layout();
 
