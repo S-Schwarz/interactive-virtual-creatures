@@ -174,11 +174,11 @@ void ivc::Evolver::createNextGeneration() {
     if(!fitnessScores.empty()){
         newData->calculateScoreData(fitnessScores, m_config->m_creaturesPerGeneration, m_config->m_forceDiversity, noveltyScores, m_config->m_useNoveltySearch);
         m_dataVec.push_back(newData);
-        printf("Best Score: %f\n", newData->getBestScore());
+        printf("Best Score: %f\n", newData->getBestFitnessScore());
         m_currentBest = newData->getBestCreature();
     }
 
-    if(newData->getBestScore() == 0 || fitnessScores.empty()){
+    if(newData->getBestFitnessScore() == 0 || fitnessScores.empty()){
         //create completely new generation
         printf("Creating new generation!\n");
         deleteLastGeneration({});

@@ -127,15 +127,15 @@ unsigned int ivc::EvoData::getGeneration() {
     return  m_generationNumber;
 }
 
-float ivc::EvoData::getBestScore() {
+float ivc::EvoData::getBestFitnessScore() {
     return m_bestFitnessScore;
 }
 
-float ivc::EvoData::getWorstScore() {
+float ivc::EvoData::getWorstFitnessScore() {
     return m_worstFitnessScore;
 }
 
-float ivc::EvoData::getAverageScore() {
+float ivc::EvoData::getAverageFitnessScore() {
     return m_averageFitnessScore;
 }
 
@@ -153,4 +153,16 @@ std::vector<ivc::BaseNode*> ivc::EvoData::getParents() {
         parents.push_back(pair.first);
     }
     return parents;
+}
+
+float ivc::EvoData::getBestNoveltyScore() {
+    return m_bestNoveltyScore;
+}
+
+float ivc::EvoData::getWorstNoveltyScore() {
+    return m_worstNoveltyScore;
+}
+
+float ivc::EvoData::getAverageNoveltyScore() {
+    return m_averageNoveltyScore;
 }

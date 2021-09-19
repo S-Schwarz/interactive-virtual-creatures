@@ -146,15 +146,15 @@ void ivc::GUIWindow::updateFitnessGraph(std::vector<EvoData*> dataVec) {
     float worstScore = INFINITY;
 
     for(auto data : dataVec){
-        if(data->getBestScore() > bestScore)
-            bestScore = data->getBestScore();
-        if(data->getBestScore() < worstScore)
-            worstScore = data->getBestScore();
+        if(data->getBestFitnessScore() > bestScore)
+            bestScore = data->getBestFitnessScore();
+        if(data->getBestFitnessScore() < worstScore)
+            worstScore = data->getBestFitnessScore();
     }
 
     std::vector<float> valueVec;
     for(auto data : dataVec){
-        auto normalized = (data->getBestScore()-worstScore)/(bestScore-worstScore);
+        auto normalized = (data->getBestFitnessScore() - worstScore) / (bestScore - worstScore);
         valueVec.push_back(normalized);
     }
 

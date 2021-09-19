@@ -29,9 +29,12 @@ namespace ivc{
             void setGeneration(unsigned int);
 
             unsigned int getGeneration();
-            float getBestScore();
-            float getWorstScore();
-            float getAverageScore();
+            float getBestFitnessScore();
+            float getWorstFitnessScore();
+            float getAverageFitnessScore();
+            float getBestNoveltyScore();
+            float getWorstNoveltyScore();
+            float getAverageNoveltyScore();
             BaseNode* getBestCreature();
             std::vector<std::pair<BaseNode*, unsigned int>> getParentVec();
             std::vector<BaseNode*> getParents();
