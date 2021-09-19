@@ -345,7 +345,6 @@ void ivc::Evolver::calcFitness() {
 
                 float diff_i = 0;
                 diff_i += std::pow((posVec.x - posVecNeighbor.x),2);
-                diff_i += std::pow((posVec.y - posVecNeighbor.y),2);
                 diff_i += std::pow((posVec.z - posVecNeighbor.z),2);
 
                 diff += std::sqrt(diff_i);
