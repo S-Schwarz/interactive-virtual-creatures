@@ -166,3 +166,11 @@ float ivc::EvoData::getWorstNoveltyScore() {
 float ivc::EvoData::getAverageNoveltyScore() {
     return m_averageNoveltyScore;
 }
+
+void ivc::EvoData::setLargestDistance(float distance) {
+    m_largestDistanceTravelled = distance;
+}
+
+float ivc::EvoData::getLargestDistance() {
+    return m_largestDistanceTravelled;
+}

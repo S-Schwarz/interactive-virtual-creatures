@@ -24,11 +24,15 @@ namespace ivc{
             float m_bestNoveltyScore = 0;
             float m_worstNoveltyScore = 0;
             float m_averageNoveltyScore = 0;
+
+            float m_largestDistanceTravelled = 0;
         public:
             void calculateScoreData(std::vector<std::pair<BaseNode*, float>>, int, bool, std::vector<std::pair<BaseNode*, float>>, bool);
             void setGeneration(unsigned int);
+            void setLargestDistance(float);
 
             unsigned int getGeneration();
+            float getLargestDistance();
             float getBestFitnessScore();
             float getWorstFitnessScore();
             float getAverageFitnessScore();

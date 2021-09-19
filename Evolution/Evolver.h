@@ -34,6 +34,8 @@ namespace ivc{
             std::map<BaseNode*, std::vector<PxVec3>> m_currentGenNoveltyArchive;
             std::vector<std::vector<PxVec3>> m_noveltyArchive;
 
+            float m_largestDistanceTravelled = -INFINITY;
+
             void evolveNextGeneration();
             void createNextGeneration();
             void createNewGeneration();
