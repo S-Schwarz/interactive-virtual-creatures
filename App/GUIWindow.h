@@ -33,6 +33,7 @@ namespace ivc{
 
             nanogui::Widget* m_noveltyConfigWidget = nullptr;
             nanogui::CheckBox* m_noveltyCheckbox = nullptr;
+            nanogui::CheckBox* m_noveltyArchiveCheckbox = nullptr;
             nanogui::IntBox<unsigned int>* m_neighborsBox = nullptr;
             nanogui::IntBox<unsigned int>* m_noveltyIntevallBox = nullptr;
 

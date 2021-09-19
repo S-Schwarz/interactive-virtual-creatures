@@ -339,15 +339,22 @@ void ivc::Evolver::calcFitness() {
             }
             float diff = 0;
 
-            for(int i = 0; i < noveltyVec.size(); ++i){
-                auto posVec = noveltyVec[i];
-                auto posVecNeighbor = noveltyVecNeighbor[i];
+            if(m_config->m_onlyUseEndPos){
+                float diff_back = 0;
+                diff_back += std::sqrt(std::pow((noveltyVec.back().x - noveltyVecNeighbor.back().x),2));
+                diff_back += std::sqrt(std::pow((noveltyVec.back().z - noveltyVecNeighbor.back().z),2));
+                diff = std::sqrt(diff_back);
+            }else{
+                for(int i = 0; i < noveltyVec.size(); ++i){
+                    auto posVec = noveltyVec[i];
+                    auto posVecNeighbor = noveltyVecNeighbor[i];
 
-                float diff_i = 0;
-                diff_i += std::pow((posVec.x - posVecNeighbor.x),2);
-                diff_i += std::pow((posVec.z - posVecNeighbor.z),2);
+                    float diff_i = 0;
+                    diff_i += std::pow((posVec.x - posVecNeighbor.x),2);
+                    diff_i += std::pow((posVec.z - posVecNeighbor.z),2);
 
-                diff += std::sqrt(diff_i);
+                    diff += std::sqrt(diff_i);
+                }
             }
 
             if(nearestNeighborsDifferenceVec.size() < m_config->m_noveltyNearestNeighbors){

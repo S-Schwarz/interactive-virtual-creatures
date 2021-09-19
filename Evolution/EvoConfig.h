@@ -20,6 +20,7 @@ namespace ivc{
         bool m_useNoveltySearch = false;
         int m_noveltyInterval = 100;
         int m_noveltyNearestNeighbors = 10;
+        bool m_onlyUseEndPos = false;
 
     };
 }
