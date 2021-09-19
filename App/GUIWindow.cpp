@@ -59,8 +59,14 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_guiScreen = new nanogui::Screen();
     m_guiScreen->initialize(m_guiWindow, true);
 
+    m_distanceGraph = m_guiScreen->add<nanogui::Graph>("Distance Graph");
+    m_distanceGraph->set_stroke_color(nanogui::Color(255,0,0,255));
+
     m_fitnessGraph = m_guiScreen->add<nanogui::Graph>("Fitness Graph");
     m_fitnessGraph->set_stroke_color(nanogui::Color(255,0,0,255));
+
+    m_noveltyGraph = m_guiScreen->add<nanogui::Graph>("Novelty Graph");
+    m_noveltyGraph->set_stroke_color(nanogui::Color(255,0,0,255));
 
     m_fitnessFunctionLabel = m_guiScreen->add<nanogui::Label>("Fitness function: ");
 
@@ -141,24 +147,43 @@ nanogui::Screen* ivc::GUIWindow::getScreen() {
     return m_guiScreen;
 }
 
-void ivc::GUIWindow::updateFitnessGraph(std::vector<EvoData*> dataVec) {
-    float bestScore = -INFINITY;
-    float worstScore = INFINITY;
-
+void ivc::GUIWindow::updateGraphs(std::vector<EvoData*> dataVec) {
+    float bestLargestDistance = -INFINITY;
+    float worstLargestDistance = INFINITY;
+    float bestFitnessScore = -INFINITY;
+    float worstFitnessScore = INFINITY;
+    float bestNoveltyScore = -INFINITY;
+    float worstNoveltyScore = INFINITY;
     for(auto data : dataVec){
-        if(data->getBestFitnessScore() > bestScore)
-            bestScore = data->getBestFitnessScore();
-        if(data->getBestFitnessScore() < worstScore)
-            worstScore = data->getBestFitnessScore();
-    }
+        if(data->getLargestDistance() > bestLargestDistance)
+            bestLargestDistance = data->getLargestDistance();
+        if(data->getLargestDistance() < worstLargestDistance)
+            worstLargestDistance = data->getLargestDistance();
 
-    std::vector<float> valueVec;
+        if(data->getBestFitnessScore() > bestFitnessScore)
+            bestFitnessScore = data->getBestFitnessScore();
+        if(data->getBestFitnessScore() < worstFitnessScore)
+            worstFitnessScore = data->getBestFitnessScore();
+
+        if(data->getBestNoveltyScore() > bestNoveltyScore)
+            bestNoveltyScore = data->getBestNoveltyScore();
+        if(data->getBestNoveltyScore() < worstNoveltyScore)
+            worstNoveltyScore = data->getBestNoveltyScore();
+    }
+    std::vector<float> distanceValueVec;
+    std::vector<float> fitnessValueVec;
+    std::vector<float> noveltyValueVec;
     for(auto data : dataVec){
-        auto normalized = (data->getBestFitnessScore() - worstScore) / (bestScore - worstScore);
-        valueVec.push_back(normalized);
+        auto normalized = Mutator::normalize(data->getLargestDistance(), worstLargestDistance, bestLargestDistance);
+        distanceValueVec.push_back(normalized);
+        normalized = Mutator::normalize(data->getBestFitnessScore(), worstFitnessScore, bestFitnessScore);
+        fitnessValueVec.push_back(normalized);
+        normalized = Mutator::normalize(data->getBestNoveltyScore(), worstNoveltyScore, bestNoveltyScore);
+        noveltyValueVec.push_back(normalized);
     }
-
-    m_fitnessGraph->set_values(valueVec);
+    m_distanceGraph->set_values(distanceValueVec);
+    m_fitnessGraph->set_values(fitnessValueVec);
+    m_noveltyGraph->set_values(noveltyValueVec);
 }
 
 void ivc::GUIWindow::update() {
@@ -194,13 +219,23 @@ void ivc::GUIWindow::resize() {
     auto screenWidth = m_guiScreen->width();
     auto screenHeight = m_guiScreen->height();
 
-    auto graphSize = nanogui::Vector2i(screenWidth,screenHeight/4);
-    auto graphPos = nanogui::Vector2i(0,screenHeight - screenHeight/4);
-    m_fitnessGraph->set_fixed_size(graphSize);
-    m_fitnessGraph->set_position(graphPos);
+    auto distanceGraphSize = nanogui::Vector2i(screenWidth / 3,screenHeight/4);
+    auto distanceGraphPos = nanogui::Vector2i(0,screenHeight - screenHeight/4);
+    m_distanceGraph->set_fixed_size(distanceGraphSize);
+    m_distanceGraph->set_position(distanceGraphPos);
+
+    auto fitnessGraphSize = nanogui::Vector2i(screenWidth / 3,screenHeight/4);
+    auto fitnessGraphPos = nanogui::Vector2i(distanceGraphPos.x() + distanceGraphSize.x(), screenHeight - screenHeight/4);
+    m_fitnessGraph->set_fixed_size(fitnessGraphSize);
+    m_fitnessGraph->set_position(fitnessGraphPos);
+
+    auto noveltyGraphSize = nanogui::Vector2i(screenWidth / 3,screenHeight/4);
+    auto noveltyGraphPos = nanogui::Vector2i(fitnessGraphPos.x() + fitnessGraphSize.x(),screenHeight - screenHeight/4);
+    m_noveltyGraph->set_fixed_size(noveltyGraphSize);
+    m_noveltyGraph->set_position(noveltyGraphPos);
 
     auto funcLabelSize = nanogui::Vector2i(screenWidth/2, screenHeight/16);
-    auto funcLabelPos = nanogui::Vector2i(screenWidth/2 - funcLabelSize.x()/2, graphPos.y() - (int)(funcLabelSize.y() * 1.5));
+    auto funcLabelPos = nanogui::Vector2i(screenWidth/2 - funcLabelSize.x()/2, fitnessGraphPos.y() - (int)(funcLabelSize.y() * 1.5));
     m_fitnessFunctionLabel->set_fixed_size(funcLabelSize);
     m_fitnessFunctionLabel->set_position(funcLabelPos);
     m_fitnessFunctionLabel->set_font_size(funcLabelSize.y() / 2);

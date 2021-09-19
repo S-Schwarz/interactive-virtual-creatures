@@ -15,7 +15,11 @@ namespace ivc{
         private:
             GLFWwindow* m_guiWindow = nullptr;
             nanogui::Screen* m_guiScreen = nullptr;
+
+            nanogui::Graph* m_distanceGraph = nullptr;
             nanogui::Graph* m_fitnessGraph = nullptr;
+            nanogui::Graph* m_noveltyGraph = nullptr;
+
             nanogui::Button* m_updateButton = nullptr;
 
             nanogui::Widget* m_evoConstantsWidget = nullptr;
@@ -44,7 +48,7 @@ namespace ivc{
             void resize();
             void draw();
             nanogui::Screen* getScreen();
-            void updateFitnessGraph(std::vector<EvoData*>);
+            void updateGraphs(std::vector<EvoData*>);
             void setConfig(EvoConfig*);
             nanogui::IntBox<unsigned int>* getCPGBox();
             void handleKeyInput(int,int);

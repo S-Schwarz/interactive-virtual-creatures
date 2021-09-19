@@ -215,7 +215,7 @@ int ivc::App::update() {
     }
 
     // ---------------------------
-    m_guiWindow->updateFitnessGraph(m_evolver->getEvoDataVec());
+    m_guiWindow->updateGraphs(m_evolver->getEvoDataVec());
     //----------------------------
 
     drawLiveWindow();
