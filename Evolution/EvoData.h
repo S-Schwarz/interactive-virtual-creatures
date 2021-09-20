@@ -39,6 +39,7 @@ namespace ivc{
             float getBestNoveltyScore();
             float getWorstNoveltyScore();
             float getAverageNoveltyScore();
+            void setBestCreature(BaseNode*);
             BaseNode* getBestCreature();
             std::vector<std::pair<BaseNode*, unsigned int>> getParentVec();
             std::vector<BaseNode*> getParents();

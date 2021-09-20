@@ -169,6 +169,7 @@ void ivc::Evolver::createNextGeneration() {
     auto newData = new EvoData();
     newData->setGeneration(m_numberGenerations);
     newData->setLargestDistance(m_largestDistanceTravelled);
+    newData->setBestCreature(m_currentBest);
     m_largestDistanceTravelled = -INFINITY;
     auto fitnessScores = getAllFitnessScores();
     auto noveltyScores = getAllNoveltyScores();
@@ -314,8 +315,10 @@ void ivc::Evolver::calcFitness() {
         auto endPos = val.second.second;
 
         auto distanceTravelled = startPos.z - endPos.z;
-        if(distanceTravelled > m_largestDistanceTravelled)
+        if(distanceTravelled > m_largestDistanceTravelled){
             m_largestDistanceTravelled = distanceTravelled;
+            m_currentBest = baseNode;
+        }
         auto swervingX = sideMP * abs(startPos.x - endPos.x);
         float fitness = (distanceTravelled - swervingX);
 

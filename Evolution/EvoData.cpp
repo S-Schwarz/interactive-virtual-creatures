@@ -100,8 +100,6 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> s
         }
     }
 
-    m_bestCreature = bestVec.front().first;
-
     //choose amount of children per root
     std::vector<std::pair<BaseNode*,unsigned int>> amountVec;
     float total = 0;
@@ -173,4 +171,8 @@ void ivc::EvoData::setLargestDistance(float distance) {
 
 float ivc::EvoData::getLargestDistance() {
     return m_largestDistanceTravelled;
+}
+
+void ivc::EvoData::setBestCreature(ivc::BaseNode *node) {
+    m_bestCreature = node;
 }
