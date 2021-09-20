@@ -348,8 +348,10 @@ void ivc::Evolver::calcFitness() {
 
             if(m_config->m_onlyUseEndPos){
                 float diff_back = 0;
-                diff_back += std::sqrt(std::pow((noveltyVec.back().x - noveltyVecNeighbor.back().x),2));
-                diff_back += std::sqrt(std::pow((noveltyVec.back().z - noveltyVecNeighbor.back().z),2));
+                if(m_config->m_useXAxis)
+                    diff_back += std::sqrt(std::pow((noveltyVec.back().x - noveltyVecNeighbor.back().x),2));
+                if(m_config->m_useZAxis)
+                    diff_back += std::sqrt(std::pow((noveltyVec.back().z - noveltyVecNeighbor.back().z),2));
                 diff = std::sqrt(diff_back);
             }else{
                 for(int i = 0; i < noveltyVec.size(); ++i){
@@ -357,8 +359,10 @@ void ivc::Evolver::calcFitness() {
                     auto posVecNeighbor = noveltyVecNeighbor[i];
 
                     float diff_i = 0;
-                    diff_i += std::pow((posVec.x - posVecNeighbor.x),2);
-                    diff_i += std::pow((posVec.z - posVecNeighbor.z),2);
+                    if(m_config->m_useXAxis)
+                        diff_i += std::pow((posVec.x - posVecNeighbor.x),2);
+                    if(m_config->m_useZAxis)
+                        diff_i += std::pow((posVec.z - posVecNeighbor.z),2);
 
                     diff += std::sqrt(diff_i);
                 }

@@ -39,6 +39,8 @@ namespace ivc{
             nanogui::CheckBox* m_noveltyArchiveCheckbox = nullptr;
             nanogui::IntBox<unsigned int>* m_neighborsBox = nullptr;
             nanogui::IntBox<unsigned int>* m_noveltyIntevallBox = nullptr;
+            nanogui::CheckBox* m_useXAxisCheckbox = nullptr;
+            nanogui::CheckBox* m_useZAxisCheckbox = nullptr;
 
             nanogui::Label* m_fitnessFunctionLabel = nullptr;
 

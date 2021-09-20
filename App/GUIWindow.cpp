@@ -142,6 +142,14 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     auto noveltyArchiveLabel = m_noveltyConfigWidget->add<nanogui::Label>("Only consider end position");
     m_noveltyArchiveCheckbox = m_noveltyConfigWidget->add<nanogui::CheckBox>("");
 
+    auto xAxisLabel = m_noveltyConfigWidget->add<nanogui::Label>("Consider x-axis");
+    m_useXAxisCheckbox = m_noveltyConfigWidget->add<nanogui::CheckBox>("");
+    m_useXAxisCheckbox->set_checked(true);
+
+    auto zAxisLabel = m_noveltyConfigWidget->add<nanogui::Label>("Consider z-axis");
+    m_useZAxisCheckbox = m_noveltyConfigWidget->add<nanogui::CheckBox>("");
+    m_useZAxisCheckbox->set_checked(true);
+
     m_guiScreen->set_visible(true);
     resize();
 
@@ -210,6 +218,8 @@ void ivc::GUIWindow::update() {
     m_config->m_noveltyNearestNeighbors = m_neighborsBox->value();
     m_config->m_noveltyInterval = m_noveltyIntevallBox->value();
     m_config->m_onlyUseEndPos = m_noveltyArchiveCheckbox->checked();
+    m_config->m_useXAxis = m_useXAxisCheckbox->checked();
+    m_config->m_useZAxis = m_useZAxisCheckbox->checked();
 
     if(!m_config->m_useNoveltySearch){
         std::string fitnessFunc = "Fitness function: ";
