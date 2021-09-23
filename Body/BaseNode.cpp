@@ -135,13 +135,15 @@ std::vector<unsigned long> ivc::BaseNode::getAllChildOutputs() {
 void ivc::BaseNode::addNeuralConnections() {
     m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
 
-    std::vector<unsigned long> brainInputs = m_localNeurons->getOutputGates();
-    auto childOutputs = getAllChildOutputs();
-    brainInputs.insert(brainInputs.end(), childOutputs.begin(), childOutputs.end());
-    m_brain->setPossibleInputs(brainInputs);
+    if(m_isRoot){
+        std::vector<unsigned long> brainInputs = m_localNeurons->getOutputGates();
+        auto childOutputs = getAllChildOutputs();
+        brainInputs.insert(brainInputs.end(), childOutputs.begin(), childOutputs.end());
+        m_brain->setPossibleInputs(brainInputs);
+        m_brain->randomizeConnections();
+    }
 
     m_localNeurons->randomizeConnections();
-    m_brain->randomizeConnections();
 
     for(auto child : m_childNodeVector){
         child->addNeuralConnections();
@@ -247,14 +249,17 @@ void ivc::BaseNode::mutateBodyAndNeurons() {
 void ivc::BaseNode::mutateNeuralConnections() {
 
     m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
+
+    if(m_isRoot){
+        std::vector<unsigned long> brainInputs = m_localNeurons->getOutputGates();
+        auto childOutputs = getAllChildOutputs();
+        brainInputs.insert(brainInputs.end(), childOutputs.begin(), childOutputs.end());
+        m_brain->setPossibleInputs(brainInputs);
+
+        m_brain->mutateConnections();
+    }
+
     m_localNeurons->mutateConnections();
-
-    std::vector<unsigned long> brainInputs = m_localNeurons->getOutputGates();
-    auto childOutputs = getAllChildOutputs();
-    brainInputs.insert(brainInputs.end(), childOutputs.begin(), childOutputs.end());
-    m_brain->setPossibleInputs(brainInputs);
-
-    m_brain->mutateConnections();
 
     for(auto child : m_childNodeVector){
         child->mutateNeuralConnections();
@@ -377,7 +382,8 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
 
     //add and remove neurons
     m_localNeurons->mutateNewNeurons(getIDHandler());
-    m_brain->mutateNewNeurons(getIDHandler());
+    if(m_isRoot)
+        m_brain->mutateNewNeurons(getIDHandler());
 
     for(auto child : m_childNodeVector){
         child->mutateNewBodyAndNewNeurons();
@@ -585,12 +591,12 @@ void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent) {
         m_generator = &generator;
 
         m_idHandler = new IDHandler();
+        m_brain = new NeuronCluster(m_generator, true, m_isRoot, getIDHandler());
     }else{
         m_generator = gen;
     }
 
     m_localNeurons = new NeuronCluster(m_generator, false, m_isRoot, getIDHandler());
-    m_brain = new NeuronCluster(m_generator, true, m_isRoot, getIDHandler());
 
     if(!m_isRoot){
         m_parentAnchor = getAnchorPosition(m_generator);
@@ -610,9 +616,10 @@ void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent) {
         }
     }
 
-
     mutateBodyAndNeurons();
-
+    mutateNewBodyAndNewNeurons();
+    addNeuralConnections();
+    mutateNeuralConnections();
 }
 
 PxVec3 ivc::BaseNode::getAnchorPosition(std::mt19937 *gen) {
