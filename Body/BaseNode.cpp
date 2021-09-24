@@ -144,10 +144,6 @@ void ivc::BaseNode::addNeuralConnections() {
     }
 
     m_localNeurons->randomizeConnections();
-
-    for(auto child : m_childNodeVector){
-        child->addNeuralConnections();
-    }
 }
 
 void ivc::BaseNode::mutateBodyAndNeurons() {
@@ -312,6 +308,39 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
     std::uniform_real_distribution<> dis(0, 1);
     static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
+    // remove child node
+    if(!m_childNodeVector.empty() && dis(*m_generator) <= MUTATE_REMOVE_BODY_CHILD_CHANCE){
+        std::uniform_int_distribution<> remDis(0, m_childNodeVector.size()-1);
+        auto index = remDis(*m_generator);
+        auto childNode = m_childNodeVector[index];
+        auto anchor = childNode->getParentAnchor();
+        delete childNode;
+
+        m_childNodeVector.erase(m_childNodeVector.begin() + index);
+
+        if(anchor.x == 1)
+            m_freeSides.push_back(POS_X);
+        else if(anchor.x == -1)
+            m_freeSides.push_back(NEG_X);
+        else if(anchor.y == 1)
+            m_freeSides.push_back(POS_Y);
+        else if(anchor.y == -1)
+            m_freeSides.push_back(NEG_Y);
+        else if(anchor.z == 1)
+            m_freeSides.push_back(POS_Z);
+        else if(anchor.z == -1)
+            m_freeSides.push_back(NEG_Z);
+
+    }
+
+    //add child node
+    // TODO: change mean values relative to parent (?)
+    if(dis(*m_generator) <= MUTATE_BODY_CONNECTION_CHANCE && !m_freeSides.empty()){
+        BaseNode *newChild = new BaseNode();
+        newChild->init(false, m_generator, this);
+        m_childNodeVector.emplace_back(newChild);
+    }
+
     //reflect child node one time
     if(dis(*m_generator) <= MUTATE_ONE_TIME_REFLECTION_CHANCE){
         std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
@@ -345,39 +374,6 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
             }
 
         }
-    }
-
-    // remove child node
-    if(!m_childNodeVector.empty() && dis(*m_generator) <= MUTATE_REMOVE_BODY_CHILD_CHANCE){
-        std::uniform_int_distribution<> remDis(0, m_childNodeVector.size()-1);
-        auto index = remDis(*m_generator);
-        auto childNode = m_childNodeVector[index];
-        auto anchor = childNode->getParentAnchor();
-        delete childNode;
-
-        m_childNodeVector.erase(m_childNodeVector.begin() + index);
-
-        if(anchor.x == 1)
-            m_freeSides.push_back(POS_X);
-        else if(anchor.x == -1)
-            m_freeSides.push_back(NEG_X);
-        else if(anchor.y == 1)
-            m_freeSides.push_back(POS_Y);
-        else if(anchor.y == -1)
-            m_freeSides.push_back(NEG_Y);
-        else if(anchor.z == 1)
-            m_freeSides.push_back(POS_Z);
-        else if(anchor.z == -1)
-            m_freeSides.push_back(NEG_Z);
-
-    }
-
-    //add child node
-    // TODO: change mean values relative to parent (?)
-    if(dis(*m_generator) <= MUTATE_BODY_CONNECTION_CHANCE && !m_freeSides.empty()){
-        BaseNode *newChild = new BaseNode();
-        newChild->init(false, m_generator, this);
-        m_childNodeVector.emplace_back(newChild);
     }
 
     //add and remove neurons

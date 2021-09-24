@@ -202,7 +202,6 @@ void ivc::Evolver::createNewGeneration() {
     for(int i = 0; i < m_config->m_creaturesPerGeneration; ++i){
         auto newRootNode = new BaseNode();
         newRootNode->init(true, nullptr, nullptr);
-        newRootNode->addNeuralConnections();
         auto newScene = new PhysicsScene();
         newScene->init(m_base,newRootNode);
         m_sceneMap[newScene] = {newRootNode, {PxVec3(0,0,0),PxVec3(0,0,0)}};
