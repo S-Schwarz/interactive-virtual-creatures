@@ -59,11 +59,11 @@ void ivc::JointEffector::mutate(std::mt19937 *gen) {
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutateBodyAndNeurons input weights
-    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+    if(dis(*gen) <= STANDARD_MUTATION_CHANCE)
         m_weight_0 = Mutator::mutateFloat(gen, m_weight_0, 1.0f, -1.0f);
-    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+    if(dis(*gen) <= STANDARD_MUTATION_CHANCE)
         m_weight_1 = Mutator::mutateFloat(gen, m_weight_1, 1.0f, -1.0f);
-    if(dis(*gen) <= MUTATE_INPUT_WEIGHT_CHANCE)
+    if(dis(*gen) <= STANDARD_MUTATION_CHANCE)
         m_weight_2 = Mutator::mutateFloat(gen, m_weight_2, 1.0f, -1.0f);
 }
 
@@ -76,17 +76,17 @@ void ivc::JointEffector::mutateConnections(std::mt19937 *gen, std::vector<unsign
 
     static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
-    if(std::find(possibleInputs.begin(), possibleInputs.end(), m_id_input_0) == possibleInputs.end() || dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+    if(std::find(possibleInputs.begin(), possibleInputs.end(), m_id_input_0) == possibleInputs.end() || dis(*gen) <= STANDARD_MUTATION_CHANCE){
         std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
         m_id_input_0 = possibleInputs[0];
     }
 
-    if(std::find(possibleInputs.begin(), possibleInputs.end(), m_id_input_1) == possibleInputs.end() || dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+    if(std::find(possibleInputs.begin(), possibleInputs.end(), m_id_input_1) == possibleInputs.end() || dis(*gen) <= STANDARD_MUTATION_CHANCE){
         std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
         m_id_input_1 = possibleInputs[0];
     }
 
-    if(std::find(possibleInputs.begin(), possibleInputs.end(), m_id_input_2) == possibleInputs.end() || dis(*gen) <= MUTATE_CONNECTION_CHANCE){
+    if(std::find(possibleInputs.begin(), possibleInputs.end(), m_id_input_2) == possibleInputs.end() || dis(*gen) <= STANDARD_MUTATION_CHANCE){
         std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
         m_id_input_2 = possibleInputs[0];
     }

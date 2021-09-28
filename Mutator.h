@@ -26,7 +26,7 @@ namespace ivc{
                 auto newValue = dis(*gen);
 
                 std::uniform_real_distribution<> dis2(0, 1);
-                if(dis2(*gen) <= MUTATE_SIGN_CHANCE)
+                if(dis2(*gen) <= STANDARD_MUTATION_CHANCE)
                     newValue *= -1;
 
                 if(newValue > upperLimit)

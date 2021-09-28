@@ -94,7 +94,7 @@ void ivc::NeuronCluster::mutateNewNeurons(ivc::IDHandler *idHandler) {
     std::uniform_real_distribution<> dis(0, 1);
 
     //add remove neuron
-    if(!m_neuronVector.empty() && dis(*m_generator) <= MUTATE_REMOVE_NEURON_CHANCE){
+    if(!m_neuronVector.empty() && dis(*m_generator) <= STANDARD_MUTATION_CHANCE){
         std::uniform_int_distribution<> remDis(0, m_neuronVector.size()-1);
 
         auto index = remDis(*m_generator);
@@ -108,7 +108,7 @@ void ivc::NeuronCluster::mutateNewNeurons(ivc::IDHandler *idHandler) {
     }
 
     //add new neuron
-    if(dis(*m_generator) <= MUTATE_NEW_NEURON_CHANCE){
+    if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE){
         auto newNeuron = new Neuron(m_generator);
         auto newID = idHandler->getNewID();
         newNeuron->setID(newID);
