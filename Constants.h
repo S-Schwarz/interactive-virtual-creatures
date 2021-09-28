@@ -38,7 +38,7 @@ const float CHILD_CHANCE = 0.75f;
 
 const float MIN_PART_SIZE = 1.0f;
 const float MIN_SCALE = 0.1f;
-const float MAX_ROTATION = 0;
+const float MAX_ROTATION = 180;
 
 const float MUTATE_REFLECTION_FLAG_CHANCE = 0.1f;
 
@@ -52,7 +52,7 @@ const float MAX_JOINT_VELOCITY = 4.0f;
 
 const int NUMBER_SAVED_EFFECTOR_VALUES = 10;
 
-const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 1.0f;
+const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.1f;
 
 //neurons
 const int MEAN_LOCAL_NEURONS = 4;

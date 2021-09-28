@@ -159,11 +159,13 @@ void ivc::PhysicalCreature::buildNode(BaseNode* child, PxVec3 parentPos, PxVec3 
     if(jointType == SWING1){
         joint1->setMotion(PxArticulationAxis::eSWING1, PxArticulationMotion::eLIMITED);
         joint1->setLimit(PxArticulationAxis::eSWING1, jointLimits.first, jointLimits.second);
-    }else{
+    }else if(jointType == SWING2){
         joint1->setMotion(PxArticulationAxis::eSWING2, PxArticulationMotion::eLIMITED);
         joint1->setLimit(PxArticulationAxis::eSWING2, jointLimits.first, jointLimits.second);
+    }else if(jointType == TWIST){
+        joint1->setMotion(PxArticulationAxis::eTWIST, PxArticulationMotion::eLIMITED);
+        joint1->setLimit(PxArticulationAxis::eTWIST, jointLimits.first, jointLimits.second);
     }
-
 
     auto dimA = parentHalfExtents*2;
     auto dimB = childHalfExtents*2;
@@ -181,6 +183,7 @@ void ivc::PhysicalCreature::buildNode(BaseNode* child, PxVec3 parentPos, PxVec3 
 
     joint1->setDrive(PxArticulationAxis::eSWING1, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
     joint1->setDrive(PxArticulationAxis::eSWING2, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
+    joint1->setDrive(PxArticulationAxis::eTWIST, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
 
     //collect neurons from node
     auto neuronVec = child->getLocalNeurons()->getCopyOfNeurons();

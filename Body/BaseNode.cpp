@@ -193,11 +193,7 @@ void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons) {
             }
 
             if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE){
-                if(m_jointType == SWING1){
-                    m_jointType = SWING2;
-                }else{
-                    m_jointType = SWING1;
-                }
+                chooseNewJointType();
             }
 
             //mutateBodyAndNeurons parent anchor
@@ -596,11 +592,8 @@ void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent) {
             }
         }
     }else{
-        if(dis(*m_generator) < 0.5){
-            m_jointType = SWING1;
-        }else{
-            m_jointType = SWING2;
-        }
+        std::uniform_int_distribution<> jointDis(0, 2);
+        setJointType(static_cast<JOINT_TYPE>(jointDis(*m_generator)));
     }
 
     mutateBodyAndNeurons(false);
@@ -666,4 +659,47 @@ std::pair<float, float> ivc::BaseNode::getJointLimits() {
 
 ivc::JOINT_TYPE ivc::BaseNode::getJointType() {
     return m_jointType;
+}
+
+void ivc::BaseNode::setJointType(ivc::JOINT_TYPE type) {
+    if(type == SWING1){
+        m_jointType = SWING1;
+        if(m_parentSide == POS_Y || m_parentSide == NEG_Y){
+            chooseNewJointType();
+        }
+    }else if(type == SWING2){
+        m_jointType = SWING2;
+        if(m_parentSide == POS_Z || m_parentSide == NEG_Z){
+            chooseNewJointType();
+        }
+    }else if(type == TWIST){
+        m_jointType = TWIST;
+        if(m_parentSide == POS_X || m_parentSide == NEG_X){
+            chooseNewJointType();
+        }
+    }
+}
+
+void ivc::BaseNode::chooseNewJointType() {
+    std::uniform_real_distribution<> dis(0, 1);
+    if(m_jointType == SWING1){
+        if(dis(*m_generator) < 0.5){
+            setJointType(SWING2);
+        }else{
+            setJointType(TWIST);
+        }
+    }else if(m_jointType == SWING2){
+        if(dis(*m_generator) < 0.5){
+            setJointType(SWING1);
+        }else{
+            setJointType(TWIST);
+        }
+    }else if(m_jointType == TWIST){
+        if(dis(*m_generator) < 0.5){
+            setJointType(SWING1);
+        }else{
+            setJointType(SWING2);
+        }
+    }
+
 }

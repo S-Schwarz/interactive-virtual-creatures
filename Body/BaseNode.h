@@ -29,7 +29,8 @@ namespace ivc{
 
     enum JOINT_TYPE{
         SWING1,
-        SWING2
+        SWING2,
+        TWIST
     };
 
     class BaseNode {
@@ -56,6 +57,8 @@ namespace ivc{
 
             bool m_isRoot = false;
 
+            void setJointType(JOINT_TYPE);
+            void chooseNewJointType();
         public:
             void init(bool, std::mt19937*, BaseNode*);
             BaseNode* copy();

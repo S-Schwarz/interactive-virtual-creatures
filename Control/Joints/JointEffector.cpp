@@ -13,6 +13,7 @@ void ivc::JointEffector::step() {
 
     auto average = getAverageValue();
 
+    m_joint->setDriveVelocity(PxArticulationAxis::eTWIST, average.x);
     m_joint->setDriveVelocity(PxArticulationAxis::eSWING1, average.y);
     m_joint->setDriveVelocity(PxArticulationAxis::eSWING2, average.z);
 }
