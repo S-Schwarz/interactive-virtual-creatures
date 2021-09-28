@@ -12,7 +12,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-const float STANDARD_DEVIATION_FACTOR = 0.5f;
+const float STANDARD_DEVIATION_FACTOR = 0.75f;
 const float STANDARD_MUTATION_CHANCE = 0.04f;
 
 //evolution
@@ -27,13 +27,13 @@ const int CREATURES_PER_GENERATION = 500;
 const int NUMBER_OF_GENERATIONS = 100;
 const int STEPS_PER_GENERATION = 2500;
 
-const int FALL_DOWN_STEPS = 1000;
-const float ROOT_STARTING_HEIGHT = 10;
+const int FALL_DOWN_STEPS = 500;
+const float ROOT_STARTING_HEIGHT = 5;
 
 //body nodes
-const float CREATURE_DENSITY = 20.0f;
+const float CREATURE_DENSITY = 10.0f;
 const float MEAN_PART_SIZE = 3.0f;
-const int MAX_CHILDREN = 1;
+const int MAX_CHILDREN = 2;
 const float CHILD_CHANCE = 0.75f;
 
 const float MIN_PART_SIZE = 1.0f;
@@ -50,16 +50,16 @@ const float MUTATE_REFLECTION_FLAG_CHANCE = 0.1f;
 const float MUTATE_ONE_TIME_REFLECTION_CHANCE = STANDARD_MUTATION_CHANCE;
 
 //joints
-const float MEAN_JOINT_LIMIT = M_PI/4;
+const float MEAN_JOINT_LIMIT = M_PI/2;
 const float SPRING_STIFFNESS = 10.0f;
-const float SPRING_DAMPING = 1.0f;
+const float SPRING_DAMPING = 0.1f;
 
 const float JOINT_LIMIT = M_PI/2;
 const float MAX_JOINT_VELOCITY = 4.0f;
 
 const int NUMBER_SAVED_EFFECTOR_VALUES = 10;
 
-const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.1f;
+const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.5f;
 
 const float MUTATE_JOINT_CHANCE = STANDARD_MUTATION_CHANCE;
 

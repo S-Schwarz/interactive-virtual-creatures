@@ -146,11 +146,7 @@ void ivc::BaseNode::addNeuralConnections() {
     m_localNeurons->randomizeConnections();
 }
 
-void ivc::BaseNode::mutateBodyAndNeurons() {
-
-    //TODO: ignoring recursion for now
-    //TODO: chance to or not to mutateBodyAndNeurons
-    //TODO: limit values
+void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
@@ -158,86 +154,89 @@ void ivc::BaseNode::mutateBodyAndNeurons() {
     if(m_brain)
         m_brain->mutateNeurons();
 
-    //mutateBodyAndNeurons dimensions
-    float newX = m_dimension.x;
-    float newY = m_dimension.y;
-    float newZ = m_dimension.z;
+    if(!onlyNeurons){
+        //mutateBodyAndNeurons dimensions
+        float newX = m_dimension.x;
+        float newY = m_dimension.y;
+        float newZ = m_dimension.z;
 
-    if(dis(*m_generator) <= MUTATE_DIMENSION_CHANCE)
-        newX = Mutator::mutateFloat(m_generator, m_dimension.x, INFINITY, MIN_PART_SIZE);
-    if(dis(*m_generator) <= MUTATE_DIMENSION_CHANCE)
-        newY = Mutator::mutateFloat(m_generator, m_dimension.y, INFINITY, MIN_PART_SIZE);
-    if(dis(*m_generator) <= MUTATE_DIMENSION_CHANCE)
-        newZ = Mutator::mutateFloat(m_generator, m_dimension.z, INFINITY, MIN_PART_SIZE);
+        if(dis(*m_generator) <= MUTATE_DIMENSION_CHANCE)
+            newX = Mutator::mutateFloat(m_generator, m_dimension.x, INFINITY, MIN_PART_SIZE);
+        if(dis(*m_generator) <= MUTATE_DIMENSION_CHANCE)
+            newY = Mutator::mutateFloat(m_generator, m_dimension.y, INFINITY, MIN_PART_SIZE);
+        if(dis(*m_generator) <= MUTATE_DIMENSION_CHANCE)
+            newZ = Mutator::mutateFloat(m_generator, m_dimension.z, INFINITY, MIN_PART_SIZE);
 
-    m_dimension = PxVec3(newX,newY,newZ);
+        m_dimension = PxVec3(newX,newY,newZ);
 
-    //mutateBodyAndNeurons scale
-    newX = m_scale.x;
-    newY = m_scale.y;
-    newZ = m_scale.z;
+        //mutateBodyAndNeurons scale
+        newX = m_scale.x;
+        newY = m_scale.y;
+        newZ = m_scale.z;
 
-    if(dis(*m_generator) <= MUTATE_SCALE_CHANCE)
-        newX = Mutator::mutateFloat(m_generator, m_scale.x, INFINITY, MIN_SCALE);
-    if(dis(*m_generator) <= MUTATE_SCALE_CHANCE)
-        newY = Mutator::mutateFloat(m_generator, m_scale.y, INFINITY, MIN_SCALE);
-    if(dis(*m_generator) <= MUTATE_SCALE_CHANCE)
-        newZ = Mutator::mutateFloat(m_generator, m_scale.z, INFINITY, MIN_SCALE);
+        if(dis(*m_generator) <= MUTATE_SCALE_CHANCE)
+            newX = Mutator::mutateFloat(m_generator, m_scale.x, INFINITY, MIN_SCALE);
+        if(dis(*m_generator) <= MUTATE_SCALE_CHANCE)
+            newY = Mutator::mutateFloat(m_generator, m_scale.y, INFINITY, MIN_SCALE);
+        if(dis(*m_generator) <= MUTATE_SCALE_CHANCE)
+            newZ = Mutator::mutateFloat(m_generator, m_scale.z, INFINITY, MIN_SCALE);
 
-    m_scale = PxVec3(newX,newY,newZ);
+        m_scale = PxVec3(newX,newY,newZ);
 
-    //mutate orientation
-    newX = m_orientation.x;
-    newY = m_orientation.y;
-    newZ = m_orientation.z;
+        //mutate orientation
+        newX = m_orientation.x;
+        newY = m_orientation.y;
+        newZ = m_orientation.z;
 
-    if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
-        newX = Mutator::mutateFloat(m_generator, m_orientation.x, MAX_ROTATION, -MAX_ROTATION);
-    if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
-        newY = Mutator::mutateFloat(m_generator, m_orientation.y, MAX_ROTATION, -MAX_ROTATION);
-    if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
-        newZ = Mutator::mutateFloat(m_generator, m_orientation.z, MAX_ROTATION, -MAX_ROTATION);
+        if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
+            newX = Mutator::mutateFloat(m_generator, m_orientation.x, MAX_ROTATION, -MAX_ROTATION);
+        if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
+            newY = Mutator::mutateFloat(m_generator, m_orientation.y, MAX_ROTATION, -MAX_ROTATION);
+        if(dis(*m_generator) <= MUTATE_ORIENTATION_CHANCE)
+            newZ = Mutator::mutateFloat(m_generator, m_orientation.z, MAX_ROTATION, -MAX_ROTATION);
 
-    m_orientation = PxVec3(newX,newY,newZ);
+        m_orientation = PxVec3(newX,newY,newZ);
 
-    if(!m_isRoot){
-        //mutateBodyAndNeurons joint
-        if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
-            std::pair<float,float> newLimitX = {Mutator::mutateFloat(m_generator, m_jointLimitX.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitX.second, JOINT_LIMIT, -JOINT_LIMIT)};
-            m_jointLimitX = newLimitX;
-        }
+        if(!m_isRoot){
+            //mutateBodyAndNeurons joint
+            if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
+                std::pair<float,float> newLimitX = {Mutator::mutateFloat(m_generator, m_jointLimitX.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitX.second, JOINT_LIMIT, -JOINT_LIMIT)};
+                m_jointLimitX = newLimitX;
+            }
 
-        if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
-            std::pair<float,float> newLimitY = {Mutator::mutateFloat(m_generator, m_jointLimitY.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitY.second, JOINT_LIMIT, -JOINT_LIMIT)};
-            m_jointLimitY = newLimitY;
-        }
+            if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
+                std::pair<float,float> newLimitY = {Mutator::mutateFloat(m_generator, m_jointLimitY.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitY.second, JOINT_LIMIT, -JOINT_LIMIT)};
+                m_jointLimitY = newLimitY;
+            }
 
-        if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
-            std::pair<float,float> newLimitZ = {Mutator::mutateFloat(m_generator, m_jointLimitZ.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitZ.second, JOINT_LIMIT, -JOINT_LIMIT)};
-            m_jointLimitZ = newLimitZ;
-        }
+            if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
+                std::pair<float,float> newLimitZ = {Mutator::mutateFloat(m_generator, m_jointLimitZ.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitZ.second, JOINT_LIMIT, -JOINT_LIMIT)};
+                m_jointLimitZ = newLimitZ;
+            }
 
-        //mutateBodyAndNeurons parent anchor
-        if(m_parentSide == POS_X || m_parentSide == NEG_X){
-            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
-                m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
-            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
-                m_parentAnchor.z = Mutator::mutateFloat(m_generator,m_parentAnchor.z,0.99,0.01);
-        }else if(m_parentSide == POS_Y || m_parentSide == NEG_Y){
-            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
-                m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
-            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
-                m_parentAnchor.z = Mutator::mutateFloat(m_generator,m_parentAnchor.z,0.99,0.01);
-        }else{
-            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
-                m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
-            if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
-                m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
+            //mutateBodyAndNeurons parent anchor
+            if(m_parentSide == POS_X || m_parentSide == NEG_X){
+                if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                    m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
+                if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                    m_parentAnchor.z = Mutator::mutateFloat(m_generator,m_parentAnchor.z,0.99,0.01);
+            }else if(m_parentSide == POS_Y || m_parentSide == NEG_Y){
+                if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                    m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
+                if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                    m_parentAnchor.z = Mutator::mutateFloat(m_generator,m_parentAnchor.z,0.99,0.01);
+            }else{
+                if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                    m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
+                if(dis(*m_generator) <= MUTATE_ANCHOR_CHANCE)
+                    m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
+            }
         }
     }
 
+
     for(auto child : m_childNodeVector){
-        child->mutateBodyAndNeurons();
+        child->mutateBodyAndNeurons(onlyNeurons);
     }
 
 }
@@ -303,76 +302,77 @@ ivc::BaseNode::~BaseNode() {
 
 }
 
-void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
+void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons) {
 
     std::uniform_real_distribution<> dis(0, 1);
     static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
-    // remove child node
-    if(!m_childNodeVector.empty() && dis(*m_generator) <= MUTATE_REMOVE_BODY_CHILD_CHANCE){
-        std::uniform_int_distribution<> remDis(0, m_childNodeVector.size()-1);
-        auto index = remDis(*m_generator);
-        auto childNode = m_childNodeVector[index];
-        auto anchor = childNode->getParentAnchor();
-        delete childNode;
+    if(!onlyNeurons){
+        // remove child node
+        if(!m_childNodeVector.empty() && dis(*m_generator) <= MUTATE_REMOVE_BODY_CHILD_CHANCE){
+            std::uniform_int_distribution<> remDis(0, m_childNodeVector.size()-1);
+            auto index = remDis(*m_generator);
+            auto childNode = m_childNodeVector[index];
+            auto anchor = childNode->getParentAnchor();
+            delete childNode;
 
-        m_childNodeVector.erase(m_childNodeVector.begin() + index);
+            m_childNodeVector.erase(m_childNodeVector.begin() + index);
 
-        if(anchor.x == 1)
-            m_freeSides.push_back(POS_X);
-        else if(anchor.x == -1)
-            m_freeSides.push_back(NEG_X);
-        else if(anchor.y == 1)
-            m_freeSides.push_back(POS_Y);
-        else if(anchor.y == -1)
-            m_freeSides.push_back(NEG_Y);
-        else if(anchor.z == 1)
-            m_freeSides.push_back(POS_Z);
-        else if(anchor.z == -1)
-            m_freeSides.push_back(NEG_Z);
-
-    }
-
-    //add child node
-    // TODO: change mean values relative to parent (?)
-    if(dis(*m_generator) <= MUTATE_BODY_CONNECTION_CHANCE && !m_freeSides.empty()){
-        BaseNode *newChild = new BaseNode();
-        newChild->init(false, m_generator, this);
-        m_childNodeVector.emplace_back(newChild);
-    }
-
-    //reflect child node one time
-    if(dis(*m_generator) <= MUTATE_ONE_TIME_REFLECTION_CHANCE){
-        std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
-        for(auto child : m_childNodeVector){
-            //check if opposite side is free
-            NODE_SIDE oppositeSide = getOppositeSide(child->getParentSide());
-            if(std::find(m_freeSides.begin(), m_freeSides.end(), oppositeSide) != m_freeSides.end()){
-                setSideAsOccupied(oppositeSide);
-                auto reflectedChild = child->reflect();
-                m_childNodeVector.push_back(reflectedChild);
-                break;
-            }else{
-                continue;
-            }
+            if(anchor.x == 1)
+                m_freeSides.push_back(POS_X);
+            else if(anchor.x == -1)
+                m_freeSides.push_back(NEG_X);
+            else if(anchor.y == 1)
+                m_freeSides.push_back(POS_Y);
+            else if(anchor.y == -1)
+                m_freeSides.push_back(NEG_Y);
+            else if(anchor.z == 1)
+                m_freeSides.push_back(POS_Z);
+            else if(anchor.z == -1)
+                m_freeSides.push_back(NEG_Z);
 
         }
-    }
 
-    //set reflection flag for child
-    if(dis(*m_generator) <= MUTATE_REFLECTION_FLAG_CHANCE){
-        std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
-        for(auto child : m_childNodeVector){
-            //check if opposite side is free and flag not already set
-            NODE_SIDE oppositeSide = getOppositeSide(child->getParentSide());
-            if(std::find(m_freeSides.begin(), m_freeSides.end(), oppositeSide) != m_freeSides.end() && !child->shouldBeReflected()){
-                setSideAsOccupied(oppositeSide);
-                child->setReflectionFlag();
-                break;
-            }else{
-                continue;
+        //add child node
+        if(dis(*m_generator) <= MUTATE_BODY_CONNECTION_CHANCE && !m_freeSides.empty()){
+            BaseNode *newChild = new BaseNode();
+            newChild->init(false, m_generator, this);
+            m_childNodeVector.emplace_back(newChild);
+        }
+
+        //reflect child node one time
+        if(dis(*m_generator) <= MUTATE_ONE_TIME_REFLECTION_CHANCE){
+            std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
+            for(auto child : m_childNodeVector){
+                //check if opposite side is free
+                NODE_SIDE oppositeSide = getOppositeSide(child->getParentSide());
+                if(std::find(m_freeSides.begin(), m_freeSides.end(), oppositeSide) != m_freeSides.end()){
+                    setSideAsOccupied(oppositeSide);
+                    auto reflectedChild = child->reflect();
+                    m_childNodeVector.push_back(reflectedChild);
+                    break;
+                }else{
+                    continue;
+                }
+
             }
+        }
 
+        //set reflection flag for child
+        if(dis(*m_generator) <= MUTATE_REFLECTION_FLAG_CHANCE){
+            std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
+            for(auto child : m_childNodeVector){
+                //check if opposite side is free and flag not already set
+                NODE_SIDE oppositeSide = getOppositeSide(child->getParentSide());
+                if(std::find(m_freeSides.begin(), m_freeSides.end(), oppositeSide) != m_freeSides.end() && !child->shouldBeReflected()){
+                    setSideAsOccupied(oppositeSide);
+                    child->setReflectionFlag();
+                    break;
+                }else{
+                    continue;
+                }
+
+            }
         }
     }
 
@@ -382,7 +382,7 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons() {
         m_brain->mutateNewNeurons(getIDHandler());
 
     for(auto child : m_childNodeVector){
-        child->mutateNewBodyAndNewNeurons();
+        child->mutateNewBodyAndNewNeurons(onlyNeurons);
     }
 
 }
@@ -612,8 +612,8 @@ void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent) {
         }
     }
 
-    mutateBodyAndNeurons();
-    mutateNewBodyAndNewNeurons();
+    mutateBodyAndNeurons(false);
+    mutateNewBodyAndNewNeurons(false);
     addNeuralConnections();
     mutateNeuralConnections();
 }

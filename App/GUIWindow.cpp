@@ -123,6 +123,9 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     auto forceDiversityLabel = m_fitnessConfigWidget->add<nanogui::Label>("Force diversity");
     m_ForceDiversityCheckbox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
 
+    auto lockMorphLabel = m_fitnessConfigWidget->add<nanogui::Label>("Lock morphology");
+    m_lockMorphCheckbox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
+
     m_noveltyConfigWidget = m_configurationWidget->add<nanogui::Widget>();
     m_noveltyConfigWidget->set_layout(layout);
 
@@ -214,6 +217,7 @@ void ivc::GUIWindow::update() {
     m_config->m_useSidewaysMP = m_sidewaysCheckbox->checked();
     m_config->m_sidewaysMultiplier = m_sidewaysBox->value();
     m_config->m_forceDiversity = m_ForceDiversityCheckbox->checked();
+    m_config->m_lockMorph = m_lockMorphCheckbox->checked();
     m_config->m_useNoveltySearch = m_noveltyCheckbox->checked();
     m_config->m_noveltyNearestNeighbors = m_neighborsBox->value();
     m_config->m_noveltyInterval = m_noveltyIntevallBox->value();

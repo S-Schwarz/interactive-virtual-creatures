@@ -245,8 +245,8 @@ ivc::Evolver::createNewGenerationFromParents(std::vector<std::pair<BaseNode *, u
             std::random_device rd;
             std::mt19937 generator(rd());
             newRoot->setGenerator(&generator);
-            newRoot->mutateBodyAndNeurons();
-            newRoot->mutateNewBodyAndNewNeurons();
+            newRoot->mutateBodyAndNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph);
+            newRoot->mutateNewBodyAndNewNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph);
             newRoot->mutateNeuralConnections();
             newScene = new PhysicsScene();
             newScene->init(m_base,newRoot);

@@ -6,21 +6,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../Res/stb_image.h"
 
-void GLAPIENTRY
-MessageCallback( GLenum source,
-                 GLenum type,
-                 GLuint id,
-                 GLenum severity,
-                 GLsizei length,
-                 const GLchar* message,
-                 const void* userParam )
-{
-    fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-             ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
-             type, severity, message );
-
-}
-
 void backgroundEvolution(ivc::Evolver* evo){
     evo->startContinuousEvolution();
 }
@@ -306,8 +291,6 @@ void ivc::App::initLiveWindow() {
 
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, c_WIDTH, c_HEIGHT);
-    glEnable( GL_DEBUG_OUTPUT );
-    glDebugMessageCallback( MessageCallback, 0 );
 
     glfwSetWindowUserPointer(m_liveWindow, this);
 

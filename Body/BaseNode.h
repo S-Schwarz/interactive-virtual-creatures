@@ -91,8 +91,8 @@ namespace ivc{
             PxVec3 getAnchorPosition(std::mt19937* gen);
             bool shouldBeReflected();
 
-            void mutateBodyAndNeurons();
-            void mutateNewBodyAndNewNeurons();
+            void mutateBodyAndNeurons(bool);
+            void mutateNewBodyAndNewNeurons(bool);
             void mutateNeuralConnections();
             void addNeuralConnections();
 

@@ -101,7 +101,7 @@ void ivc::JointEffector::addToHistory(PxVec3 newValue) {
 
         m_lastValues[m_lastValuesIndex] = newValue;
 
-        if(m_lastValuesIndex == 9){
+        if(m_lastValuesIndex == NUMBER_SAVED_EFFECTOR_VALUES-1){
             m_lastValuesIndex = 0;
         }else{
             ++m_lastValuesIndex;

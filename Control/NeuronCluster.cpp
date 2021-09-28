@@ -12,7 +12,7 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, I
 
     std::binomial_distribution<> dis(mean, STANDARD_DEVIATION_FACTOR);
 
-    auto numberNeurons = dis(*gen);
+    auto numberNeurons = mean;
 
     for(int i = 0; i < numberNeurons; ++i){
         auto newNeuron = new Neuron(m_generator);

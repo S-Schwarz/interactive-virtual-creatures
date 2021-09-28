@@ -111,8 +111,6 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
     auto contactVec = m_creature->getActiveContactSensors();
     auto effectorVec = m_creature->getJointEffectors();
 
-    printf("SENSORS: %lu\n", sensorVec.size());
-
     int maxHeight = neuronVec.size();
 
     if(sensorVec.size() + contactVec.size() > maxHeight)
