@@ -27,6 +27,11 @@ namespace ivc{
         NONE
     };
 
+    enum JOINT_TYPE{
+        SWING1,
+        SWING2
+    };
+
     class BaseNode {
         protected:
             //body
@@ -37,9 +42,8 @@ namespace ivc{
             PxVec3 m_scale = PxVec3(1,1,1);
             NeuronCluster* m_localNeurons = nullptr;
             BaseNode* m_parentNode = nullptr;
-            std::pair<float,float> m_jointLimitX = {-MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT};
-            std::pair<float,float> m_jointLimitY = {-MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT};
-            std::pair<float,float> m_jointLimitZ = {-MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT};
+            JOINT_TYPE m_jointType;
+            std::pair<float,float> m_jointLimits= {-MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT};
             //children
             std::vector<BaseNode*> m_childNodeVector;
             std::vector<NODE_SIDE> m_freeSides = {POS_X,NEG_X,POS_Y,NEG_Y,POS_Z,NEG_Z};
@@ -72,13 +76,12 @@ namespace ivc{
             std::vector<BaseNode*> getChildren();
             PxVec3 getDimensions();
             PxVec3 getHalfExtents();
-            PxVec3 getOrientation();
+            PxVec3 getOrientationInDegrees();
             PxVec3 getParentAnchor();
             BaseNode* getParentNode();
             PxVec3 getScale();
-            std::pair<float,float> getSwingLimitsY();
-            std::pair<float,float> getSwingLimitsZ();
-            std::pair<float,float> getTwistLimits();
+            std::pair<float,float> getJointLimits();
+            JOINT_TYPE getJointType();
             IDHandler* getIDHandler();
             NeuronCluster* getLocalNeurons();
             NeuronCluster* getBrain();

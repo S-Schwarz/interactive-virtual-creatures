@@ -24,8 +24,8 @@ PxVec3 ivc::BaseNode::getDimensions() {
     return m_dimension;
 }
 
-PxVec3 ivc::BaseNode::getOrientation() {
-    return m_orientation;
+PxVec3 ivc::BaseNode::getOrientationInDegrees() {
+    return m_orientation * (180/M_PI);
 }
 
 PxVec3 ivc::BaseNode::getParentAnchor() {
@@ -38,18 +38,6 @@ ivc::BaseNode* ivc::BaseNode::getParentNode() {
 
 PxVec3 ivc::BaseNode::getHalfExtents() {
     return m_dimension/2;
-}
-
-std::pair<float, float> ivc::BaseNode::getSwingLimitsY() {
-    return m_jointLimitY;
-}
-
-std::pair<float, float> ivc::BaseNode::getSwingLimitsZ() {
-    return m_jointLimitZ;
-}
-
-std::pair<float, float> ivc::BaseNode::getTwistLimits() {
-    return m_jointLimitX;
 }
 
 ivc::NODE_SIDE ivc::BaseNode::occupyRandomSide() {
@@ -200,18 +188,16 @@ void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons) {
         if(!m_isRoot){
             //mutateBodyAndNeurons joint
             if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
-                std::pair<float,float> newLimitX = {Mutator::mutateFloat(m_generator, m_jointLimitX.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitX.second, JOINT_LIMIT, -JOINT_LIMIT)};
-                m_jointLimitX = newLimitX;
+                std::pair<float,float> newLimitX = {Mutator::mutateFloat(m_generator, m_jointLimits.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimits.second, JOINT_LIMIT, -JOINT_LIMIT)};
+                m_jointLimits = newLimitX;
             }
 
             if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
-                std::pair<float,float> newLimitY = {Mutator::mutateFloat(m_generator, m_jointLimitY.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitY.second, JOINT_LIMIT, -JOINT_LIMIT)};
-                m_jointLimitY = newLimitY;
-            }
-
-            if(dis(*m_generator) <= MUTATE_JOINT_CHANCE){
-                std::pair<float,float> newLimitZ = {Mutator::mutateFloat(m_generator, m_jointLimitZ.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimitZ.second, JOINT_LIMIT, -JOINT_LIMIT)};
-                m_jointLimitZ = newLimitZ;
+                if(m_jointType == SWING1){
+                    m_jointType = SWING2;
+                }else{
+                    m_jointType = SWING1;
+                }
             }
 
             //mutateBodyAndNeurons parent anchor
@@ -233,7 +219,6 @@ void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons) {
             }
         }
     }
-
 
     for(auto child : m_childNodeVector){
         child->mutateBodyAndNeurons(onlyNeurons);
@@ -610,6 +595,12 @@ void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent) {
                 m_childNodeVector.emplace_back(newChild);
             }
         }
+    }else{
+        if(dis(*m_generator) < 0.5){
+            m_jointType = SWING1;
+        }else{
+            m_jointType = SWING2;
+        }
     }
 
     mutateBodyAndNeurons(false);
@@ -667,4 +658,12 @@ PxVec3 ivc::BaseNode::getAnchorPosition(std::mt19937 *gen) {
     }
 
     return PxVec3(posX,posY,posZ);
+}
+
+std::pair<float, float> ivc::BaseNode::getJointLimits() {
+    return m_jointLimits;
+}
+
+ivc::JOINT_TYPE ivc::BaseNode::getJointType() {
+    return m_jointType;
 }

@@ -107,7 +107,7 @@ void ivc::PhysicalCreature::buildNode(BaseNode* child, PxVec3 parentPos, PxVec3 
     PxVec3 childSize = child->getHalfExtents();
     PxVec3 childHalfExtents = PxVec3(childSize.x * childScale.x, childSize.y * childScale.y, childSize.z * childScale.z);
 
-    PxVec3 childRotation = child->getOrientation();
+    PxVec3 childRotation = child->getOrientationInDegrees();
     childRotation += parentRotation;
 
     PxVec3 parentVec = child->getParentAnchor();
@@ -150,19 +150,20 @@ void ivc::PhysicalCreature::buildNode(BaseNode* child, PxVec3 parentPos, PxVec3 
     joint1->setChildPose(childTrans);
     joint1->setMaxJointVelocity(MAX_JOINT_VELOCITY);
 
-    auto swingY = child->getSwingLimitsY();
-    auto swingZ = child->getSwingLimitsZ();
-    auto twist = child->getTwistLimits();
+    auto jointLimits = child->getJointLimits();
 
-    joint1->setJointType(PxArticulationJointType::eSPHERICAL);
+    joint1->setJointType(PxArticulationJointType::eREVOLUTE);
 
-    joint1->setMotion(PxArticulationAxis::eTWIST, PxArticulationMotion::eLIMITED);
-    joint1->setMotion(PxArticulationAxis::eSWING1, PxArticulationMotion::eLIMITED);
-    joint1->setMotion(PxArticulationAxis::eSWING2, PxArticulationMotion::eLIMITED);
+    auto jointType = child->getJointType();
 
-    joint1->setLimit(PxArticulationAxis::eTWIST, twist.first, twist.second);
-    joint1->setLimit(PxArticulationAxis::eSWING1, swingY.first, swingY.second);
-    joint1->setLimit(PxArticulationAxis::eSWING2, swingZ.first, swingZ.second);
+    if(jointType == SWING1){
+        joint1->setMotion(PxArticulationAxis::eSWING1, PxArticulationMotion::eLIMITED);
+        joint1->setLimit(PxArticulationAxis::eSWING1, jointLimits.first, jointLimits.second);
+    }else{
+        joint1->setMotion(PxArticulationAxis::eSWING2, PxArticulationMotion::eLIMITED);
+        joint1->setLimit(PxArticulationAxis::eSWING2, jointLimits.first, jointLimits.second);
+    }
+
 
     auto dimA = parentHalfExtents*2;
     auto dimB = childHalfExtents*2;
@@ -173,12 +174,11 @@ void ivc::PhysicalCreature::buildNode(BaseNode* child, PxVec3 parentPos, PxVec3 
 
     // TODO: choose smaller or larger ???
     if(volumeA > volumeB){
-        maxStrength = volumeB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
+        maxStrength = volumeB * volumeB * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
     }else{
-        maxStrength = volumeA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
+        maxStrength = volumeA * volumeA * EFFECTOR_MAXIMUM_STRENGTH_FACTOR;
     }
 
-    joint1->setDrive(PxArticulationAxis::eTWIST, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
     joint1->setDrive(PxArticulationAxis::eSWING1, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
     joint1->setDrive(PxArticulationAxis::eSWING2, SPRING_STIFFNESS, SPRING_DAMPING, maxStrength, PxArticulationDriveType::eVELOCITY);
 
