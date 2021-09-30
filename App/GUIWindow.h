@@ -28,6 +28,8 @@ namespace ivc{
             nanogui::Widget* m_evoConstantsWidget = nullptr;
             nanogui::IntBox<unsigned int>* m_cpgBox = nullptr;
             nanogui::IntBox<unsigned int>* m_spgBox = nullptr;
+            nanogui::FloatBox<float>* m_mutChanceBox = nullptr;
+            nanogui::FloatBox<float>* m_reflChanceBox = nullptr;
 
             nanogui::Widget* m_fitnessConfigWidget = nullptr;
             nanogui::CheckBox* m_sidewaysCheckbox = nullptr;

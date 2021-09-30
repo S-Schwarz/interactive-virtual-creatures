@@ -35,12 +35,12 @@ void ivc::JointSensor::setOutputGate(Gate * gate) {
 
 }
 
-void ivc::JointSensor::mutate(std::mt19937 *gen) {
+void ivc::JointSensor::mutate(std::mt19937 *gen, EvoConfig* config) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutateBodyAndNeurons output weights
-    if(dis(*gen) <= STANDARD_MUTATION_CHANCE)
+    if(dis(*gen) <= config->m_mutChance)
         m_weight = Mutator::mutateFloat(gen, m_weight, 1.0f, -1.0f);
 }
 

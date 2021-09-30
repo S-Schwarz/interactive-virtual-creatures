@@ -110,45 +110,45 @@ void ivc::Neuron::setOutput(ivc::Gate * gate) {
     m_output = gate;
 }
 
-void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation) {
+void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation, EvoConfig* config) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutate outputWeight
-    if(forceMutation || dis(*gen) <= STANDARD_MUTATION_CHANCE)
+    if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_outputWeight = Mutator::mutateFloat(gen, m_outputWeight, 1.0f, -1.0f);
 
     //mutate constant
-    if(forceMutation || dis(*gen) <= STANDARD_MUTATION_CHANCE)
+    if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_constant = Mutator::mutateFloat(gen, m_constant, 1.0f, -1.0f);
 
     //mutate input weights
     for(int i = 0; i < m_numberInputs; ++i){
-        if(forceMutation || dis(*gen) <= STANDARD_MUTATION_CHANCE)
+        if(forceMutation || dis(*gen) <= config->m_mutChance)
             m_inputWeights[i] = Mutator::mutateFloat(gen,m_inputWeights[i], 1.0f, -1.0f);
     }
 
     //mutate sine params
-    if(forceMutation || dis(*gen) <= STANDARD_MUTATION_CHANCE)
+    if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_sin_amplitude = Mutator::mutateFloat(gen,m_sin_amplitude, INFINITY, -INFINITY);
-    if(forceMutation || dis(*gen) <= STANDARD_MUTATION_CHANCE)
+    if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_sin_period = Mutator::mutateFloat(gen,m_sin_period, INFINITY, -INFINITY);
-    if(forceMutation || dis(*gen) <= STANDARD_MUTATION_CHANCE)
+    if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_sin_phase = Mutator::mutateFloat(gen,m_sin_phase, INFINITY, -INFINITY);
-    if(forceMutation || dis(*gen) <= STANDARD_MUTATION_CHANCE)
+    if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_sin_vertical = Mutator::mutateFloat(gen,m_sin_vertical, INFINITY, -INFINITY);
 
     //mutate sine osci step
-    if(forceMutation || dis(*gen) <= STANDARD_MUTATION_CHANCE)
+    if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_osci_stepSize = Mutator::mutateFloat(gen,m_osci_stepSize, INFINITY, -INFINITY);
 
     //mutate sum_threshold threshold
-    if(forceMutation || dis(*gen) <= STANDARD_MUTATION_CHANCE)
+    if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_threshold = Mutator::mutateFloat(gen,m_threshold, INFINITY, -INFINITY);
 
 }
 
-ivc::Neuron::Neuron(std::mt19937* gen) {
+ivc::Neuron::Neuron(std::mt19937* gen, EvoConfig* config) {
 
     std::uniform_int_distribution<> dis(0, COUNT-1);
     m_type = static_cast<NEURON_TYPE>(dis(*gen));
@@ -186,10 +186,10 @@ ivc::Neuron::Neuron(std::mt19937* gen) {
         m_inputWeights.push_back(1.0f);
     }
 
-    mutate(gen, true);
+    mutate(gen, true, config);
 }
 
-void ivc::Neuron::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs) {
+void ivc::Neuron::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs, EvoConfig* config) {
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutate input connections
@@ -199,7 +199,7 @@ void ivc::Neuron::mutateConnections(std::mt19937 *gen, std::vector<unsigned long
     static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
     for(int i = 0; i < m_numberInputs; ++i){
-        if(std::find(possibleInputs.begin(), possibleInputs.end(), m_inputIDs[i]) == possibleInputs.end() || dis(*gen) <= STANDARD_MUTATION_CHANCE){
+        if(std::find(possibleInputs.begin(), possibleInputs.end(), m_inputIDs[i]) == possibleInputs.end() || dis(*gen) <= config->m_mutChance){
             std::shuffle(std::begin(possibleInputs), std::end(possibleInputs), rng);
             m_inputIDs[i] = possibleInputs[0];
         }

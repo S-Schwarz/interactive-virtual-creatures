@@ -96,18 +96,26 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_evoConstantsWidget->set_layout(layout);
 
     auto cpgLabel = m_evoConstantsWidget->add<nanogui::Label>("CPG");
-
     m_cpgBox = m_evoConstantsWidget->add<nanogui::IntBox<unsigned int>>();
     m_cpgBox->set_editable(false);
     m_cpgBox->set_value(CREATURES_PER_GENERATION);
     m_cpgBox->set_min_max_values(1,1000);
 
     auto spgLabel = m_evoConstantsWidget->add<nanogui::Label>("SPG");
-
     m_spgBox = m_evoConstantsWidget->add<nanogui::IntBox<unsigned int>>();
     m_spgBox->set_editable(false);
     m_spgBox->set_value(STEPS_PER_GENERATION);
     m_spgBox->set_min_max_values(1000,5000);
+
+    auto mutChanceLabel = m_evoConstantsWidget->add<nanogui::Label>("Multiplier");
+    m_mutChanceBox = m_evoConstantsWidget->add<nanogui::FloatBox<float>>();
+    m_mutChanceBox->set_min_max_values(0.0f, 10.0f);
+    m_mutChanceBox->set_value(STANDARD_MUTATION_CHANCE);
+
+    auto reflChanceLabel = m_evoConstantsWidget->add<nanogui::Label>("Multiplier");
+    m_reflChanceBox = m_evoConstantsWidget->add<nanogui::FloatBox<float>>();
+    m_reflChanceBox->set_min_max_values(0.0f, 10.0f);
+    m_reflChanceBox->set_value(MUTATE_REFLECTION_FLAG_CHANCE);
 
     m_fitnessConfigWidget = m_configurationWidget->add<nanogui::Widget>();
     m_fitnessConfigWidget->set_layout(layout);
@@ -214,6 +222,8 @@ void ivc::GUIWindow::updateGraphs(std::vector<EvoData*> dataVec) {
 void ivc::GUIWindow::update() {
     m_config->m_creaturesPerGeneration = m_cpgBox->value();
     m_config->m_stepsPerGeneration = m_spgBox->value();
+    m_config->m_mutChance = m_mutChanceBox->value();
+    m_config->m_reflChance = m_reflChanceBox->value();
     m_config->m_useSidewaysMP = m_sidewaysCheckbox->checked();
     m_config->m_sidewaysMultiplier = m_sidewaysBox->value();
     m_config->m_forceDiversity = m_ForceDiversityCheckbox->checked();
@@ -300,6 +310,8 @@ void ivc::GUIWindow::handleKeyInput(int key, int action) {
 
     updateIntBox(m_cpgBox,key,action,10);
     updateIntBox(m_spgBox,key,action,10);
+    updateFloatBox(m_mutChanceBox,key,action,0.05f);
+    updateFloatBox(m_reflChanceBox,key,action,0.05f);
     updateFloatBox(m_sidewaysBox,key,action,0.05f);
     updateIntBox(m_neighborsBox,key,action,1);
     updateIntBox(m_noveltyIntevallBox,key,action,10);

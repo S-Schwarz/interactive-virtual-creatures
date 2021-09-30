@@ -12,6 +12,7 @@
 #include <chrono>
 #include "../Constants.h"
 #include "../Mutator.h"
+#include "../Evolution/EvoConfig.h"
 #include <stdexcept>
 #include <cmath>
 
@@ -73,7 +74,7 @@ namespace ivc{
                 //sum_threshold neuron
                 float m_threshold = 0.0f;
         public:
-            Neuron(std::mt19937*);
+            Neuron(std::mt19937*, EvoConfig*);
             void setOutput(Gate*);
             void swap();
             void step();
@@ -84,8 +85,8 @@ namespace ivc{
             unsigned long getOutputID();
             void setID(unsigned long);
             void chooseRandomInputs(std::vector<unsigned long>);
-            void mutate(std::mt19937*,bool);
-            void mutateConnections(std::mt19937*,std::vector<unsigned long>);
+            void mutate(std::mt19937*,bool, EvoConfig*);
+            void mutateConnections(std::mt19937*,std::vector<unsigned long>,EvoConfig*);
 
             std::vector<unsigned long> getInputs();
             void setInputs(std::vector<unsigned long>);

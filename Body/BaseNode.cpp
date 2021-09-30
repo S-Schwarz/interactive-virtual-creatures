@@ -134,13 +134,13 @@ void ivc::BaseNode::addNeuralConnections() {
     m_localNeurons->randomizeConnections();
 }
 
-void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons) {
+void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons, EvoConfig* config) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
-    m_localNeurons->mutateNeurons();
+    m_localNeurons->mutateNeurons(config);
     if(m_brain)
-        m_brain->mutateNeurons();
+        m_brain->mutateNeurons(config);
 
     if(!onlyNeurons){
         //mutateBodyAndNeurons dimensions
@@ -148,11 +148,11 @@ void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons) {
         float newY = m_dimension.y;
         float newZ = m_dimension.z;
 
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+        if(dis(*m_generator) <= config->m_mutChance)
             newX = Mutator::mutateFloat(m_generator, m_dimension.x, INFINITY, MIN_PART_SIZE);
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+        if(dis(*m_generator) <= config->m_mutChance)
             newY = Mutator::mutateFloat(m_generator, m_dimension.y, INFINITY, MIN_PART_SIZE);
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+        if(dis(*m_generator) <= config->m_mutChance)
             newZ = Mutator::mutateFloat(m_generator, m_dimension.z, INFINITY, MIN_PART_SIZE);
 
         m_dimension = PxVec3(newX,newY,newZ);
@@ -162,11 +162,11 @@ void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons) {
         newY = m_scale.y;
         newZ = m_scale.z;
 
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+        if(dis(*m_generator) <= config->m_mutChance)
             newX = Mutator::mutateFloat(m_generator, m_scale.x, INFINITY, MIN_SCALE);
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+        if(dis(*m_generator) <= config->m_mutChance)
             newY = Mutator::mutateFloat(m_generator, m_scale.y, INFINITY, MIN_SCALE);
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+        if(dis(*m_generator) <= config->m_mutChance)
             newZ = Mutator::mutateFloat(m_generator, m_scale.z, INFINITY, MIN_SCALE);
 
         m_scale = PxVec3(newX,newY,newZ);
@@ -176,53 +176,53 @@ void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons) {
         newY = m_orientation.y;
         newZ = m_orientation.z;
 
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+        if(dis(*m_generator) <= config->m_mutChance)
             newX = Mutator::mutateFloat(m_generator, m_orientation.x, MAX_ROTATION, -MAX_ROTATION);
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+        if(dis(*m_generator) <= config->m_mutChance)
             newY = Mutator::mutateFloat(m_generator, m_orientation.y, MAX_ROTATION, -MAX_ROTATION);
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+        if(dis(*m_generator) <= config->m_mutChance)
             newZ = Mutator::mutateFloat(m_generator, m_orientation.z, MAX_ROTATION, -MAX_ROTATION);
 
         m_orientation = PxVec3(newX,newY,newZ);
 
         if(!m_isRoot){
             //mutateBodyAndNeurons joint
-            if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE){
+            if(dis(*m_generator) <= config->m_mutChance){
                 std::pair<float,float> newLimitX = {Mutator::mutateFloat(m_generator, m_jointLimits.first, JOINT_LIMIT, -JOINT_LIMIT), Mutator::mutateFloat(m_generator, m_jointLimits.second, JOINT_LIMIT, -JOINT_LIMIT)};
                 m_jointLimits = newLimitX;
             }
 
-            if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE){
+            if(dis(*m_generator) <= config->m_mutChance){
                 chooseNewJointType();
             }
 
             //mutateBodyAndNeurons parent anchor
             if(m_parentSide == POS_X || m_parentSide == NEG_X){
-                if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+                if(dis(*m_generator) <= config->m_mutChance)
                     m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
-                if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+                if(dis(*m_generator) <= config->m_mutChance)
                     m_parentAnchor.z = Mutator::mutateFloat(m_generator,m_parentAnchor.z,0.99,0.01);
             }else if(m_parentSide == POS_Y || m_parentSide == NEG_Y){
-                if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+                if(dis(*m_generator) <= config->m_mutChance)
                     m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
-                if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+                if(dis(*m_generator) <= config->m_mutChance)
                     m_parentAnchor.z = Mutator::mutateFloat(m_generator,m_parentAnchor.z,0.99,0.01);
             }else{
-                if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+                if(dis(*m_generator) <= config->m_mutChance)
                     m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
-                if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE)
+                if(dis(*m_generator) <= config->m_mutChance)
                     m_parentAnchor.x = Mutator::mutateFloat(m_generator,m_parentAnchor.x,0.99,0.01);
             }
         }
     }
 
     for(auto child : m_childNodeVector){
-        child->mutateBodyAndNeurons(onlyNeurons);
+        child->mutateBodyAndNeurons(onlyNeurons, config);
     }
 
 }
 
-void ivc::BaseNode::mutateNeuralConnections() {
+void ivc::BaseNode::mutateNeuralConnections(EvoConfig* config) {
 
     m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
 
@@ -232,13 +232,13 @@ void ivc::BaseNode::mutateNeuralConnections() {
         brainInputs.insert(brainInputs.end(), childOutputs.begin(), childOutputs.end());
         m_brain->setPossibleInputs(brainInputs);
 
-        m_brain->mutateConnections();
+        m_brain->mutateConnections(config);
     }
 
-    m_localNeurons->mutateConnections();
+    m_localNeurons->mutateConnections(config);
 
     for(auto child : m_childNodeVector){
-        child->mutateNeuralConnections();
+        child->mutateNeuralConnections(config);
     }
 
 }
@@ -283,14 +283,14 @@ ivc::BaseNode::~BaseNode() {
 
 }
 
-void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons) {
+void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons, EvoConfig* config) {
 
     std::uniform_real_distribution<> dis(0, 1);
     static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
     if(!onlyNeurons){
         // remove child node
-        if(!m_childNodeVector.empty() && dis(*m_generator) <= STANDARD_MUTATION_CHANCE){
+        if(!m_childNodeVector.empty() && dis(*m_generator) <= config->m_mutChance){
             std::uniform_int_distribution<> remDis(0, m_childNodeVector.size()-1);
             auto index = remDis(*m_generator);
             auto childNode = m_childNodeVector[index];
@@ -315,14 +315,14 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons) {
         }
 
         //add child node
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE && !m_freeSides.empty()){
+        if(dis(*m_generator) <= config->m_mutChance && !m_freeSides.empty()){
             BaseNode *newChild = new BaseNode();
-            newChild->init(false, m_generator, this);
+            newChild->init(false, m_generator, this, config);
             m_childNodeVector.emplace_back(newChild);
         }
 
         //reflect child node one time
-        if(dis(*m_generator) <= MUTATE_REFLECTION_FLAG_CHANCE){
+        if(dis(*m_generator) <= config->m_reflChance){
             std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
             for(auto child : m_childNodeVector){
                 //check if opposite side is free
@@ -340,7 +340,7 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons) {
         }
 
         //set reflection flag for child
-        if(dis(*m_generator) <= MUTATE_REFLECTION_FLAG_CHANCE){
+        if(dis(*m_generator) <= config->m_reflChance){
             std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
             for(auto child : m_childNodeVector){
                 //check if opposite side is free and flag not already set
@@ -358,12 +358,12 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons) {
     }
 
     //add and remove neurons
-    m_localNeurons->mutateNewNeurons(getIDHandler());
+    m_localNeurons->mutateNewNeurons(getIDHandler(),config);
     if(m_isRoot)
-        m_brain->mutateNewNeurons(getIDHandler());
+        m_brain->mutateNewNeurons(getIDHandler(),config);
 
     for(auto child : m_childNodeVector){
-        child->mutateNewBodyAndNewNeurons(onlyNeurons);
+        child->mutateNewBodyAndNewNeurons(onlyNeurons, config);
     }
 
 }
@@ -558,7 +558,7 @@ ivc::BaseNode *ivc::BaseNode::copy() {
     return copiedNode;
 }
 
-void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent) {
+void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent, EvoConfig* config) {
     m_parentNode = parent;
     m_isRoot = root;
 
@@ -568,12 +568,12 @@ void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent) {
         m_generator = &generator;
 
         m_idHandler = new IDHandler();
-        m_brain = new NeuronCluster(m_generator, true, m_isRoot, getIDHandler());
+        m_brain = new NeuronCluster(m_generator, true, m_isRoot, getIDHandler(),config);
     }else{
         m_generator = gen;
     }
 
-    m_localNeurons = new NeuronCluster(m_generator, false, m_isRoot, getIDHandler());
+    m_localNeurons = new NeuronCluster(m_generator, false, m_isRoot, getIDHandler(),config);
 
     if(!m_isRoot){
         m_parentAnchor = getAnchorPosition(m_generator);
@@ -587,7 +587,7 @@ void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent) {
         for(int i = 0; i < MAX_CHILDREN; ++i){
             if(dis(*m_generator) < CHILD_CHANCE && !m_freeSides.empty()){
                 BaseNode *newChild = new BaseNode();
-                newChild->init(false, m_generator, this);
+                newChild->init(false, m_generator, this, config);
                 m_childNodeVector.emplace_back(newChild);
             }
         }
@@ -596,10 +596,10 @@ void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent) {
         setJointType(static_cast<JOINT_TYPE>(jointDis(*m_generator)));
     }
 
-    mutateBodyAndNeurons(false);
-    mutateNewBodyAndNewNeurons(false);
+    mutateBodyAndNeurons(false, config);
+    mutateNewBodyAndNewNeurons(false, config);
     addNeuralConnections();
-    mutateNeuralConnections();
+    mutateNeuralConnections(config);
 }
 
 PxVec3 ivc::BaseNode::getAnchorPosition(std::mt19937 *gen) {

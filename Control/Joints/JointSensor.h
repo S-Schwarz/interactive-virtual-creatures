@@ -11,6 +11,7 @@
 #include <random>
 #include "../../Constants.h"
 #include "../../Mutator.h"
+#include "../../Evolution/EvoConfig.h"
 
 using namespace physx;
 
@@ -31,7 +32,7 @@ namespace ivc{
         void setID(unsigned long);
         unsigned long getOutputID();
         Gate* getOutputGate();
-        void mutate(std::mt19937*);
+        void mutate(std::mt19937*,EvoConfig*);
     };
 }
 

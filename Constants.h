@@ -14,10 +14,12 @@
 
 const float STANDARD_DEVIATION_FACTOR = 0.05f;
 const float STANDARD_MUTATION_CHANCE = 0.04f;
+const float STANDARD_VALUE_FLIP_CHANCE = 0.05f;
+const float MUTATE_REFLECTION_FLAG_CHANCE = 0.1f;
 
 //evolution
 const float EVOLUTION_MIN_SCORE = 0.99;
-const int EVOLUTION_MAX_PARENTS = 10;
+const int EVOLUTION_MAX_PARENTS = 100;
 const int AMOUNT_STEPS_DELTA = 100;
 const float MAX_ALLOWED_HEIGHT = 10;
 
@@ -40,19 +42,17 @@ const float MIN_PART_SIZE = 1.0f;
 const float MIN_SCALE = 0.1f;
 const float MAX_ROTATION = 180;
 
-const float MUTATE_REFLECTION_FLAG_CHANCE = 0.1f;
-
 //joints
-const float MEAN_JOINT_LIMIT = M_PI*(3.f/4.f);
+const float MEAN_JOINT_LIMIT = M_PI*0.4;
 const float SPRING_STIFFNESS = 10.1f;
 const float SPRING_DAMPING = 0.1f;
 
-const float JOINT_LIMIT = M_PI*(3.f/4.f);
-const float MAX_JOINT_VELOCITY = 2.0f;
+const float JOINT_LIMIT = M_PI*0.4;
+const float MAX_JOINT_VELOCITY = 4.0f;
 
-const int NUMBER_SAVED_EFFECTOR_VALUES = 20;
+const int NUMBER_SAVED_EFFECTOR_VALUES = 60;
 
-const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.3f;
+const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.75f;
 
 //neurons
 const int MEAN_LOCAL_NEURONS = 2;
@@ -61,9 +61,12 @@ const int MEAN_BRAIN_NEURONS = 4;
 const int BRAINSTEPS_PER_SIMSTEP = 2;
 
 //material
-const float STATIC_FRICTION = 0.5;
-const float DYNAMIC_FRICTION = 0.5;
-const float RESTITUTION = 0.6;
+const float STATIC_FRICTION = 0.7;
+const float DYNAMIC_FRICTION = 0.7;
+const float RESTITUTION = 0.2;
+
+//visualizer
+const float MAX_NODE_WIDTH = 0.2f;
 
 const glm::vec4 COLOR_GREEN(0.0f, 0.8f, 0.3f, 1.0f);
 const glm::vec4 COLOR_RED(0.8f, 0.2f, 0.3f, 1.0f);

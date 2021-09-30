@@ -4,7 +4,7 @@
 
 #include "NeuronCluster.h"
 
-ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, IDHandler* idHandler) {
+ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, IDHandler* idHandler, EvoConfig* config) {
 
     m_generator = gen;
 
@@ -15,7 +15,7 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, I
     auto numberNeurons = mean;
 
     for(int i = 0; i < numberNeurons; ++i){
-        auto newNeuron = new Neuron(m_generator);
+        auto newNeuron = new Neuron(m_generator, config);
         auto newID = idHandler->getNewID();
         newNeuron->setID(newID);
         m_outputGates.push_back(newID);
@@ -76,21 +76,21 @@ std::pair<ivc::JointSensor *, ivc::JointEffector *> ivc::NeuronCluster::getCopie
     return {new JointSensor(*m_sensor), new JointEffector(*m_effector)};
 }
 
-void ivc::NeuronCluster::mutateNeurons() {
+void ivc::NeuronCluster::mutateNeurons(EvoConfig* config) {
     for(auto neuron : m_neuronVector){
-        neuron->mutate(m_generator,false);
+        neuron->mutate(m_generator,false,config);
     }
     if(m_sensor != nullptr){
-        m_sensor->mutate(m_generator);
-        m_effector->mutate(m_generator);
+        m_sensor->mutate(m_generator,config);
+        m_effector->mutate(m_generator,config);
     }
 }
 
-void ivc::NeuronCluster::mutateNewNeurons(ivc::IDHandler *idHandler) {
+void ivc::NeuronCluster::mutateNewNeurons(ivc::IDHandler *idHandler, EvoConfig* config) {
     std::uniform_real_distribution<> dis(0, 1);
 
     //add remove neuron
-    if(!m_neuronVector.empty() && dis(*m_generator) <= STANDARD_MUTATION_CHANCE){
+    if(!m_neuronVector.empty() && dis(*m_generator) <= config->m_mutChance){
         std::uniform_int_distribution<> remDis(0, m_neuronVector.size()-1);
 
         auto index = remDis(*m_generator);
@@ -104,8 +104,8 @@ void ivc::NeuronCluster::mutateNewNeurons(ivc::IDHandler *idHandler) {
     }
 
     //add new neuron
-    if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE){
-        auto newNeuron = new Neuron(m_generator);
+    if(dis(*m_generator) <= config->m_mutChance){
+        auto newNeuron = new Neuron(m_generator,config);
         auto newID = idHandler->getNewID();
         newNeuron->setID(newID);
         m_outputGates.push_back(newID);
@@ -114,12 +114,12 @@ void ivc::NeuronCluster::mutateNewNeurons(ivc::IDHandler *idHandler) {
 
 }
 
-void ivc::NeuronCluster::mutateConnections() {
+void ivc::NeuronCluster::mutateConnections(EvoConfig* config) {
     for(auto neuron : m_neuronVector){
-        neuron->mutateConnections(m_generator,m_possibleInputGates);
+        neuron->mutateConnections(m_generator,m_possibleInputGates,config);
     }
     if(m_sensor != nullptr){
-        m_effector->mutateConnections(m_generator,m_possibleInputGates);
+        m_effector->mutateConnections(m_generator,m_possibleInputGates,config);
     }
 }
 

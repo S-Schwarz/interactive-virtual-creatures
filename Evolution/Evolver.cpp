@@ -201,7 +201,7 @@ void ivc::Evolver::createNextGeneration() {
 void ivc::Evolver::createNewGeneration() {
     for(int i = 0; i < m_config->m_creaturesPerGeneration; ++i){
         auto newRootNode = new BaseNode();
-        newRootNode->init(true, nullptr, nullptr);
+        newRootNode->init(true, nullptr, nullptr,m_config);
         auto newScene = new PhysicsScene();
         newScene->init(m_base,newRootNode);
         m_sceneMap[newScene] = {newRootNode, {PxVec3(0,0,0),PxVec3(0,0,0)}};
@@ -234,6 +234,8 @@ void ivc::Evolver::deleteLastGeneration(std::vector<BaseNode*> parents) {
 std::map<ivc::PhysicsScene *, std::pair<ivc::BaseNode *, std::pair<PxVec3, PxVec3>>>
 ivc::Evolver::createNewGenerationFromParents(std::vector<std::pair<BaseNode *, unsigned int>> amountPerParent) {
 
+    printf("Choose %i parents from this generation\n", amountPerParent.size());
+
     std::map<PhysicsScene*, std::pair<BaseNode*, std::pair<PxVec3, PxVec3>>> nextGenMap;
 
     for(auto pair : amountPerParent){
@@ -245,9 +247,9 @@ ivc::Evolver::createNewGenerationFromParents(std::vector<std::pair<BaseNode *, u
             std::random_device rd;
             std::mt19937 generator(rd());
             newRoot->setGenerator(&generator);
-            newRoot->mutateBodyAndNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph);
-            newRoot->mutateNewBodyAndNewNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph);
-            newRoot->mutateNeuralConnections();
+            newRoot->mutateBodyAndNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
+            newRoot->mutateNewBodyAndNewNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
+            newRoot->mutateNeuralConnections(m_config);
             newScene = new PhysicsScene();
             newScene->init(m_base,newRoot);
             nextGenMap[newScene] = {newRoot, {PxVec3(0,0,0), PxVec3(0,0,0)}};

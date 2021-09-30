@@ -13,6 +13,7 @@
 #include "Joints/JointEffector.h"
 #include "IDHandler.h"
 #include "ContactSensor.h"
+#include "../Evolution/EvoConfig.h"
 #include <map>
 
 namespace ivc {
@@ -29,7 +30,7 @@ namespace ivc {
 
     public:
         ~NeuronCluster();
-        NeuronCluster(std::mt19937*,bool,bool,IDHandler*);
+        NeuronCluster(std::mt19937*,bool,bool,IDHandler*,EvoConfig*);
         std::vector<unsigned long> getOutputGates();
         void setPossibleInputs(std::vector<unsigned long>);
         void randomizeConnections();
@@ -37,9 +38,9 @@ namespace ivc {
         std::pair<JointSensor*,JointEffector*> getCopiesOfJointNeurons();
         ContactSensor* getCopyOfContactSensor();
         void setContactSensor(ContactSensor*);
-        void mutateNeurons();
-        void mutateNewNeurons(IDHandler*);
-        void mutateConnections();
+        void mutateNeurons(EvoConfig*);
+        void mutateNewNeurons(IDHandler*, EvoConfig*);
+        void mutateConnections(EvoConfig*);
         NeuronCluster* copy();
         void setNeurons(std::vector<Neuron*>);
         void setJointNeurons(JointSensor*,JointEffector*);

@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <random>
 #include "../Mutator.h"
+#include "../Evolution/EvoConfig.h"
 #include <map>
 
 using namespace physx;
@@ -60,7 +61,7 @@ namespace ivc{
             void setJointType(JOINT_TYPE);
             void chooseNewJointType();
         public:
-            void init(bool, std::mt19937*, BaseNode*);
+            void init(bool, std::mt19937*, BaseNode*, EvoConfig*);
             BaseNode* copy();
             ~BaseNode();
 
@@ -97,9 +98,9 @@ namespace ivc{
             PxVec3 getAnchorPosition(std::mt19937* gen);
             bool shouldBeReflected();
 
-            void mutateBodyAndNeurons(bool);
-            void mutateNewBodyAndNewNeurons(bool);
-            void mutateNeuralConnections();
+            void mutateBodyAndNeurons(bool, EvoConfig*);
+            void mutateNewBodyAndNewNeurons(bool, EvoConfig*);
+            void mutateNeuralConnections(EvoConfig*);
             void addNeuralConnections();
 
             NODE_SIDE occupyRandomSide();

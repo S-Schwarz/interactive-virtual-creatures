@@ -13,6 +13,7 @@
 #include <chrono>
 #include <algorithm>
 #include "../../Mutator.h"
+#include "../../Evolution/EvoConfig.h"
 
 using namespace physx;
 
@@ -36,8 +37,8 @@ namespace ivc{
         std::vector<unsigned long> getGateIDs();
         int bindGates(std::vector<Gate*>);
         void chooseRandomInputs(std::vector<unsigned long>);
-        void mutate(std::mt19937*);
-        void mutateConnections(std::mt19937*,std::vector<unsigned long>);
+        void mutate(std::mt19937*,EvoConfig*);
+        void mutateConnections(std::mt19937*,std::vector<unsigned long>,EvoConfig*);
 
         std::vector<unsigned long> getInputs();
         void setInputs(std::vector<unsigned long>);
