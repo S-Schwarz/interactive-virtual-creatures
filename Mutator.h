@@ -7,6 +7,7 @@
 
 #include <random>
 #include "Constants.h"
+#include <stdexcept>
 
 namespace ivc{
     class Mutator{
@@ -15,7 +16,7 @@ namespace ivc{
         public:
             static float mutateFloat(std::mt19937* gen, float old, float upperLimit, float lowerLimit){
                 if(upperLimit <= lowerLimit)
-                    return old;
+                    throw std::invalid_argument("INVALID MUTATOR LIMITS");
 
                 float stddev = old * STANDARD_DEVIATION_FACTOR;
 
