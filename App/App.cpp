@@ -182,6 +182,7 @@ int ivc::App::update() {
             auto newCreature = m_evolver->getCurrentBest();
             if(newCreature != nullptr && newCreature != m_currentlyDisplayedCreature){
                 printf("INSERTING NEW CREATURE INTO LIVE SCENE\n");
+                m_currentlyDisplayedCreature = newCreature;
                 m_liveEnvironment->insertNewCreature(newCreature);
                 m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getCreature());
                 m_lastGenNum = currentGenNum;

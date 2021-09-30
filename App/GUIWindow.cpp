@@ -107,12 +107,12 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_spgBox->set_value(STEPS_PER_GENERATION);
     m_spgBox->set_min_max_values(1000,5000);
 
-    auto mutChanceLabel = m_evoConstantsWidget->add<nanogui::Label>("Multiplier");
+    auto mutChanceLabel = m_evoConstantsWidget->add<nanogui::Label>("Mutation Chance");
     m_mutChanceBox = m_evoConstantsWidget->add<nanogui::FloatBox<float>>();
     m_mutChanceBox->set_min_max_values(0.0f, 10.0f);
     m_mutChanceBox->set_value(STANDARD_MUTATION_CHANCE);
 
-    auto reflChanceLabel = m_evoConstantsWidget->add<nanogui::Label>("Multiplier");
+    auto reflChanceLabel = m_evoConstantsWidget->add<nanogui::Label>("Reflection Chance");
     m_reflChanceBox = m_evoConstantsWidget->add<nanogui::FloatBox<float>>();
     m_reflChanceBox->set_min_max_values(0.0f, 10.0f);
     m_reflChanceBox->set_value(MUTATE_REFLECTION_FLAG_CHANCE);
