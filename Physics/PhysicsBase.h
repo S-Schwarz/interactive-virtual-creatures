@@ -6,6 +6,7 @@
 #define INTERACTIVE_VIRTUAL_CREATURES_PHYSICSBASE_H
 
 #include "PxPhysicsAPI.h"
+#include "../Constants.h"
 
 using namespace physx;
 

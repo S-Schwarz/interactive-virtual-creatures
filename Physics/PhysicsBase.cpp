@@ -19,7 +19,7 @@ int ivc::PhysicsBase::init() {
         return -1;
     }
 
-    m_material = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
+    m_material = m_physics->createMaterial(STATIC_FRICTION, DYNAMIC_FRICTION, RESTITUTION);
 
     m_isInitialized = true;
 
