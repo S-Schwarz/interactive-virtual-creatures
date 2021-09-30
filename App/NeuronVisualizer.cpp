@@ -121,7 +121,7 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
 
     m_yPos = (1.f/maxHeight);
     m_ySize = m_yPos * 0.5f;
-    m_xSize = (1.f/3.f) * 0.6f;
+    m_xSize = m_ySize;
 
     int i = 0;
     for(auto neuron : neuronVec){
