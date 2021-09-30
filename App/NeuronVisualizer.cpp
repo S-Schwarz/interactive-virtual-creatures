@@ -119,7 +119,7 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
     if(effectorVec.size() > maxHeight)
         maxHeight = effectorVec.size();
 
-    m_yPos = (1.f/(maxHeight+1));
+    m_yPos = (1.f/((float)maxHeight+0.5f));
     m_ySize = m_yPos * 0.5f;
     if(m_ySize < MAX_NODE_WIDTH){
         m_xSize = m_ySize;
@@ -227,6 +227,8 @@ void ivc::NeuronVisualizer::draw() {
 
     glm::vec3 scale;
 
+    unsigned int nnCounter = 0;
+
     for(auto const& [gate,pos] : m_gatePosMap){
         glm::mat4 model = glm::mat4(1.0f);
         m_shader->setMat4("model", model);
@@ -236,8 +238,8 @@ void ivc::NeuronVisualizer::draw() {
                 pos.second.x, pos.second.y, pos.second.z
         };
 
-        PxVec3 extraPos1 = PxVec3(-m_xSize*1.2f, pos.second.y - 2*m_ySize, 0);
-        PxVec3 extraPos2 = PxVec3(m_xSize*1.2f, pos.second.y - 2*m_ySize, 0);
+        PxVec3 extraPos1 = PxVec3(-m_xSize*1.2f, pos.second.y - 1.8f*m_ySize, 0);
+        PxVec3 extraPos2 = PxVec3(m_xSize*1.2f, pos.second.y - 1.8f*m_ySize, 0);
 
         float bypassVertices[] = {
                 pos.first.x, pos.first.y, pos.first.z,
@@ -248,9 +250,35 @@ void ivc::NeuronVisualizer::draw() {
                 pos.second.x, pos.second.y, pos.second.z
         };
 
+        PxVec3 nnPos1 = PxVec3(pos.second.x + 0.2f * m_xSize, pos.second.y,0);
+        PxVec3 nnPos2 = PxVec3(pos.second.x + 0.2f * m_xSize, pos.second.y + 1.2f*m_ySize,0);
+        PxVec3 nnPos3 = PxVec3(pos.first.x - 0.2f * m_xSize - nnCounter*0.025f, pos.second.y + 1.2f*m_ySize,0);
+        PxVec3 nnPos4 = PxVec3(pos.first.x - 0.2f * m_xSize - nnCounter*0.025f, pos.first.y,0);
+
+        float nnVertices[] = {
+                pos.second.x, pos.second.y, pos.second.z,
+                nnPos1.x, nnPos1.y, nnPos1.z,
+
+                nnPos1.x, nnPos1.y, nnPos1.z,
+                nnPos2.x, nnPos2.y, nnPos2.z,
+
+                nnPos2.x, nnPos2.y, nnPos2.z,
+                nnPos3.x, nnPos3.y, nnPos3.z,
+
+                nnPos3.x, nnPos3.y, nnPos3.z,
+                nnPos4.x, nnPos4.y, nnPos4.z,
+
+                nnPos4.x, nnPos4.y, nnPos4.z,
+                pos.first.x, pos.first.y, pos.first.z
+        };
+
         bool bypassNeuron = false;
+        bool nnConn = false;
         if(pos.second.x == -1+(1.f/3.f)+m_xSize && pos.first.x == 1-(1.f/3.f)-m_xSize){
             bypassNeuron = true;
+        }else if(pos.second.x == m_xSize && pos.first.x == -m_xSize){
+            nnConn = true;
+            nnCounter++;
         }
 
         //modify line look by value
@@ -267,6 +295,8 @@ void ivc::NeuronVisualizer::draw() {
 
         if(bypassNeuron){
             glBufferData(GL_ARRAY_BUFFER, sizeof(bypassVertices), bypassVertices, GL_STATIC_DRAW);
+        }else if(nnConn){
+            glBufferData(GL_ARRAY_BUFFER, sizeof(nnVertices), nnVertices, GL_STATIC_DRAW);
         }else{
             glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
         }
@@ -276,6 +306,8 @@ void ivc::NeuronVisualizer::draw() {
 
         if(bypassNeuron){
             glDrawArrays(GL_LINES, 0, 6);
+        }else if(nnConn){
+            glDrawArrays(GL_LINES, 0, 10);
         }else{
             glDrawArrays(GL_LINES, 0, 2);
         }
