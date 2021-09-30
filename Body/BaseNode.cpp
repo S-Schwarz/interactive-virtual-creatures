@@ -322,7 +322,7 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons) {
         }
 
         //reflect child node one time
-        if(dis(*m_generator) <= STANDARD_MUTATION_CHANCE){
+        if(dis(*m_generator) <= MUTATE_REFLECTION_FLAG_CHANCE){
             std::shuffle(std::begin(m_childNodeVector), std::end(m_childNodeVector), rng);
             for(auto child : m_childNodeVector){
                 //check if opposite side is free
