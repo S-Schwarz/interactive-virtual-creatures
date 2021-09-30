@@ -119,9 +119,14 @@ void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
     if(effectorVec.size() > maxHeight)
         maxHeight = effectorVec.size();
 
-    m_yPos = (1.f/maxHeight);
+    m_yPos = (1.f/(maxHeight+1));
     m_ySize = m_yPos * 0.5f;
-    m_xSize = m_ySize;
+    if(m_ySize < MAX_NODE_WIDTH){
+        m_xSize = m_ySize;
+    }else{
+        m_xSize = MAX_NODE_WIDTH;
+    }
+
 
     int i = 0;
     for(auto neuron : neuronVec){
@@ -231,6 +236,23 @@ void ivc::NeuronVisualizer::draw() {
                 pos.second.x, pos.second.y, pos.second.z
         };
 
+        PxVec3 extraPos1 = PxVec3(-m_xSize*1.2f, pos.second.y - 2*m_ySize, 0);
+        PxVec3 extraPos2 = PxVec3(m_xSize*1.2f, pos.second.y - 2*m_ySize, 0);
+
+        float bypassVertices[] = {
+                pos.first.x, pos.first.y, pos.first.z,
+                extraPos2.x, extraPos2.y, extraPos2.z,
+                extraPos2.x, extraPos2.y, extraPos2.z,
+                extraPos1.x, extraPos1.y, extraPos1.z,
+                extraPos1.x, extraPos1.y, extraPos1.z,
+                pos.second.x, pos.second.y, pos.second.z
+        };
+
+        bool bypassNeuron = false;
+        if(pos.second.x == -1+(1.f/3.f)+m_xSize && pos.first.x == 1-(1.f/3.f)-m_xSize){
+            bypassNeuron = true;
+        }
+
         //modify line look by value
         auto val = m_gatePtrMap[gate]->getValue();
         if(val >= 0)
@@ -238,15 +260,26 @@ void ivc::NeuronVisualizer::draw() {
         else
             m_shader->setVec4("drawColor", glm::vec4(1.0f,0,0,std::max(abs(val),0.2f)));
 
-        glLineWidth(5);
+        glLineWidth(3);
 
         glBindVertexArray(m_lineVAO);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
+
+        if(bypassNeuron){
+            glBufferData(GL_ARRAY_BUFFER, sizeof(bypassVertices), bypassVertices, GL_STATIC_DRAW);
+        }else{
+            glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
+        }
+
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
-        glDrawArrays(GL_LINES, 0, 2);
+        if(bypassNeuron){
+            glDrawArrays(GL_LINES, 0, 6);
+        }else{
+            glDrawArrays(GL_LINES, 0, 2);
+        }
+
     }
 
     glLineWidth(1);
