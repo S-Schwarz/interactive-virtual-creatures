@@ -38,14 +38,10 @@ ivc::PhysicalCreature::PhysicalCreature(BaseNode* rootNode, PxVec3 pos, PhysicsB
     }
     //and for sensors
     for(auto sensor : m_sensorVector){
-        auto outVec = sensor->getOutputIDs();
-        std::vector<Gate*> newGates;
-        for(auto id : outVec){
-            auto newGate = new Gate();
-            newGates.push_back(newGate);
-            m_gateMap[id] = newGate;
-        }
-        sensor->setOutputGates(newGates);
+        auto outID = sensor->getOutputID();
+        auto newGate = new Gate();
+        m_gateMap[outID] = newGate;
+        sensor->setOutputGate(newGate);
     }
 
     //and for contact Sensors
@@ -387,7 +383,7 @@ std::vector<ivc::Neuron *> ivc::PhysicalCreature::getActiveNeurons() {
     return m_activeNeuronVector;
 }
 
-std::vector<std::pair<ivc::JointSensor*,std::vector<unsigned long>>> ivc::PhysicalCreature::getActiveJointSensors() {
+std::vector<std::pair<ivc::JointSensor*,unsigned long>> ivc::PhysicalCreature::getActiveJointSensors() {
     return m_activeSensorVector;
 }
 
@@ -442,14 +438,9 @@ void ivc::PhysicalCreature::checkNeuronsForActivity() {
     }
 
     for(auto sensor : m_sensorVector){
-        auto idVec = sensor->getOutputIDs();
-        std::vector<unsigned long> activeOuts;
-        for(auto id : idVec){
-            if(activeIDs.find(id) != activeIDs.end())
-                activeOuts.push_back(id);
-        }
-        if(activeOuts.size() > 0)
-            m_activeSensorVector.push_back({sensor,activeOuts});
+        auto id = sensor->getOutputID();
+        if(activeIDs.find(id) != activeIDs.end())
+            m_activeSensorVector.push_back({sensor,id});
     }
 
     for(auto contact : m_contactVector){

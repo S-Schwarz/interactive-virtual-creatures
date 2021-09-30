@@ -33,13 +33,9 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, I
         m_contact->setIDs(contactIDs);
         if(!isRoot){
             m_sensor = new JointSensor();
-            auto sensorID_0 = idHandler->getNewID();
-            m_outputGates.push_back(sensorID_0);
-            auto sensorID_1 = idHandler->getNewID();
-            m_outputGates.push_back(sensorID_1);
-            auto sensorID_2 = idHandler->getNewID();
-            m_outputGates.push_back(sensorID_2);
-            m_sensor->setIDs(sensorID_0,sensorID_1,sensorID_2);
+            auto sensorID = idHandler->getNewID();
+            m_outputGates.push_back(sensorID);
+            m_sensor->setID(sensorID);
 
             m_effector = new JointEffector();
         }
@@ -177,14 +173,12 @@ ivc::NeuronCluster::~NeuronCluster() {
 void ivc::NeuronCluster::chooseNewNeuronIDs(std::map<unsigned long, unsigned long>* map,IDHandler* idHandler) {
 
     //new IDs for sensors
-    auto oldSensorIDs = m_sensor->getOutputIDs();
+    auto oldSensorID = m_sensor->getOutputID();
     std::vector<unsigned long> newSensorIDs;
-    for(auto id : oldSensorIDs){
-        auto newID = idHandler->getNewID();
-        newSensorIDs.push_back(newID);
-        (*map)[id] = newID;
-    }
-    m_sensor->setIDs(newSensorIDs);
+    auto newSensorID = idHandler->getNewID();
+    newSensorIDs.push_back(newSensorID);
+    (*map)[oldSensorID] = newSensorID;
+    m_sensor->setID(newSensorID);
 
     //new IDs for contacts
     auto oldContactIDs = m_contact->getOutputIDs();

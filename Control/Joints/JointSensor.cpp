@@ -7,43 +7,31 @@
 void ivc::JointSensor::step() {
     auto index = m_link->getLinkIndex();
 
-    float jointPosX = m_cache->jointPosition[index];
-    float jointPosY = m_cache->jointPosition[index + 1];
-    float jointPosZ = m_cache->jointPosition[index + 2];
+    float jointPos = m_cache->jointPosition[index];
 
-    jointPosX = Mutator::normalize(jointPosX, -PxTwoPi, PxTwoPi);
-    jointPosY = Mutator::normalize(jointPosY, -PxTwoPi, PxTwoPi);
-    jointPosZ = Mutator::normalize(jointPosZ, -PxTwoPi, PxTwoPi);
+    jointPos = Mutator::normalize(jointPos, -PxTwoPi, PxTwoPi);
 
-    m_output_0->setValue(jointPosX * m_weight_0);
-    m_output_1->setValue(jointPosY * m_weight_1);
-    m_output_2->setValue(jointPosZ * m_weight_2);
+    m_output->setValue(jointPos * m_weight);
 }
 
 void ivc::JointSensor::swap() {
-    m_output_0->swap();
-    m_output_1->swap();
-    m_output_2->swap();
+    m_output->swap();
 }
 
-void ivc::JointSensor::setIDs(unsigned long id_0, unsigned long id_1, unsigned long id_2) {
-    m_id_output_0 = id_0;
-    m_id_output_1 = id_1;
-    m_id_output_2 = id_2;
+void ivc::JointSensor::setID(unsigned long id) {
+    m_id_output = id;
 }
 
-std::vector<unsigned long> ivc::JointSensor::getOutputIDs() {
-    return {m_id_output_0, m_id_output_1, m_id_output_2};
+unsigned long ivc::JointSensor::getOutputID() {
+    return m_id_output;
 }
 
-void ivc::JointSensor::setOutputGates(std::vector<Gate *> gates) {
+void ivc::JointSensor::setOutputGate(Gate * gate) {
 
-    if(gates.size() != 3)
+    if(gate == nullptr)
         return;
 
-    m_output_0 = gates[0];
-    m_output_1 = gates[1];
-    m_output_2 = gates[2];
+    m_output = gate;
 
 }
 
@@ -53,11 +41,7 @@ void ivc::JointSensor::mutate(std::mt19937 *gen) {
 
     //mutateBodyAndNeurons output weights
     if(dis(*gen) <= STANDARD_MUTATION_CHANCE)
-        m_weight_0 = Mutator::mutateFloat(gen, m_weight_0, 1.0f, -1.0f);
-    if(dis(*gen) <= STANDARD_MUTATION_CHANCE)
-        m_weight_1 = Mutator::mutateFloat(gen, m_weight_1, 1.0f, -1.0f);
-    if(dis(*gen) <= STANDARD_MUTATION_CHANCE)
-        m_weight_2 = Mutator::mutateFloat(gen, m_weight_2, 1.0f, -1.0f);
+        m_weight = Mutator::mutateFloat(gen, m_weight, 1.0f, -1.0f);
 }
 
 void ivc::JointSensor::setCache(PxArticulationCache* cache) {
@@ -68,15 +52,6 @@ void ivc::JointSensor::setLink(PxArticulationLink* link) {
     m_link = link;
 }
 
-void ivc::JointSensor::setIDs(std::vector<unsigned long> idVec) {
-    if(idVec.size() != 3)
-        return;
-
-    m_id_output_0 = idVec[0];
-    m_id_output_1 = idVec[1];
-    m_id_output_2 = idVec[2];
-}
-
-std::vector<ivc::Gate *> ivc::JointSensor::getOutputGates() {
-    return {m_output_0, m_output_1, m_output_2};
+ivc::Gate* ivc::JointSensor::getOutputGate() {
+    return m_output;
 }

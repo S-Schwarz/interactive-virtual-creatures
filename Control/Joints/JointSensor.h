@@ -19,21 +19,18 @@ namespace ivc{
     private:
         PxArticulationCache* m_cache = nullptr;
         PxArticulationLink* m_link = nullptr;
-        Gate *m_output_0, *m_output_1, *m_output_2;
-        unsigned long m_id_output_0, m_id_output_1, m_id_output_2;
-        float m_weight_0 = 1.0f;
-        float m_weight_1 = 1.0f;
-        float m_weight_2 = 1.0f;
+        Gate *m_output;
+        unsigned long m_id_output;
+        float m_weight = 1.0f;
     public:
-        void setOutputGates(std::vector<Gate*>);
+        void setOutputGate(Gate*);
         void step();
         void swap();
         void setCache(PxArticulationCache*);
         void setLink(PxArticulationLink*);
-        void setIDs(unsigned long, unsigned long, unsigned long);
-        void setIDs(std::vector<unsigned long>);
-        std::vector<unsigned long> getOutputIDs();
-        std::vector<Gate*> getOutputGates();
+        void setID(unsigned long);
+        unsigned long getOutputID();
+        Gate* getOutputGate();
         void mutate(std::mt19937*);
     };
 }
