@@ -34,10 +34,11 @@ namespace ivc{
 
             std::vector<std::shared_ptr<EvoData>> m_dataVec;
 
-            std::map<std::shared_ptr<PhysicsScene>, std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>> m_testSceneMap;
+            std::vector<std::shared_ptr<PhysicsScene>> m_testSceneVec;
+            std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>> m_testPosMap;
             std::vector<std::vector<PxVec3>> m_noveltyArchive;
 
-            std::vector<std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>> m_currentViableCreaturesVec;
+            std::vector<std::pair<std::shared_ptr<BaseNode>, std::vector<PxVec3>>> m_currentViableCreaturesVec;
             std::map<std::shared_ptr<BaseNode>, float> m_currentFitnessMap;
             std::map<std::shared_ptr<BaseNode>, float> m_currentNoveltyMap;
             std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>> m_currentGenNoveltyArchive;

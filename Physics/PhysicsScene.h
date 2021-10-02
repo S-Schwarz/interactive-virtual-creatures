@@ -42,6 +42,8 @@ namespace ivc{
             void resetCreaturePosition();
             void rebuild();
 
+            std::shared_ptr<BaseNode> getRootNode();
+
             PhysicalCreature* getCreature();
 
     };

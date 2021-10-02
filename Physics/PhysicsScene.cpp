@@ -193,3 +193,7 @@ void ivc::PhysicsScene::rebuild() {
 ivc::PhysicalCreature *ivc::PhysicsScene::getCreature() {
     return m_creature;
 }
+
+std::shared_ptr<ivc::BaseNode> ivc::PhysicsScene::getRootNode() {
+    return m_rootNode;
+}
