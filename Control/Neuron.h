@@ -46,7 +46,6 @@ namespace ivc{
 
             Gate* m_output;
             unsigned long m_outputID;
-            float m_outputWeight = 1.0f;
 
             unsigned int m_numberInputs;
             std::vector<unsigned long> m_inputIDs;

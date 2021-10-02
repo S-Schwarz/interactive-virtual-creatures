@@ -22,7 +22,6 @@ namespace ivc{
         PxArticulationLink* m_link = nullptr;
         Gate *m_output;
         unsigned long m_id_output;
-        float m_weight = 1.0f;
     public:
         void setOutputGate(Gate*);
         void step();
@@ -32,7 +31,6 @@ namespace ivc{
         void setID(unsigned long);
         unsigned long getOutputID();
         Gate* getOutputGate();
-        void mutate(std::mt19937*,EvoConfig*);
     };
 }
 

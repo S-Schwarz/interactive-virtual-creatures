@@ -114,10 +114,6 @@ void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation, EvoConfig* confi
 
     std::uniform_real_distribution<> dis(0, 1);
 
-    //mutate outputWeight
-    if(forceMutation || dis(*gen) <= config->m_mutChance)
-        m_outputWeight = Mutator::mutateFloat(gen, m_outputWeight, 1.0f, -1.0f);
-
     //mutate constant
     if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_constant = Mutator::mutateFloat(gen, m_constant, 1.0f, -1.0f);
@@ -245,7 +241,7 @@ void ivc::Neuron::sine_osci_one_in() {
 void ivc::Neuron::sum() {
     float val_0 = m_inputWeights[0] * m_inputGates[0]->getValue();
     float val_1 = m_inputWeights[1] * m_inputGates[1]->getValue();
-    float result = std::clamp(m_outputWeight * val_0 + val_1, -1.0f, 1.0f);
+    float result = std::clamp(val_0 + val_1, -1.0f, 1.0f);
     m_output->setValue(result);
 }
 
@@ -255,10 +251,10 @@ void ivc::Neuron::min() {
 
     float result = 0;
     if(val_0 < val_1){
-        result = std::clamp(m_outputWeight * val_0, -1.0f, 1.0f);
+        result = std::clamp(val_0, -1.0f, 1.0f);
         m_output->setValue(result);
     }else{
-        result = std::clamp(m_outputWeight * val_1, -1.0f, 1.0f);
+        result = std::clamp(val_1, -1.0f, 1.0f);
         m_output->setValue(result);
     }
 
@@ -270,10 +266,10 @@ void ivc::Neuron::max() {
 
     float result = 0;
     if(val_0 > val_1){
-        result = std::clamp(m_outputWeight * val_0, -1.0f, 1.0f);
+        result = std::clamp(val_0, -1.0f, 1.0f);
         m_output->setValue(result);
     }else{
-        result = std::clamp(m_outputWeight * val_1, -1.0f, 1.0f);
+        result = std::clamp(val_1, -1.0f, 1.0f);
         m_output->setValue(result);
     }
 }
@@ -281,7 +277,7 @@ void ivc::Neuron::max() {
 void ivc::Neuron::product() {
     float val_0 = m_inputWeights[0] * m_inputGates[0]->getValue();
     float val_1 = m_inputWeights[1] * m_inputGates[1]->getValue();
-    float result = m_outputWeight * val_0 * val_1;
+    float result = val_0 * val_1;
     result = std::clamp(result, -1.0f, 1.0f);
 
     m_output->setValue(result);
@@ -294,7 +290,7 @@ void ivc::Neuron::divide() {
     if(val_1 == 0)
         val_1 = 0.00001;
 
-    float result = m_outputWeight * (val_0 / val_1);
+    float result = (val_0 / val_1);
     result = std::clamp(result, -1.0f, 1.0f);
 
     m_output->setValue(result);

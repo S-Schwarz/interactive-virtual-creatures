@@ -70,6 +70,7 @@ const float MAX_NODE_WIDTH = 0.2f;
 
 const glm::vec4 COLOR_GREEN(0.0f, 0.8f, 0.3f, 1.0f);
 const glm::vec4 COLOR_RED(0.8f, 0.2f, 0.3f, 1.0f);
+const glm::vec4 COLOR_YELLOW(0.8f, 0.8f, 0.0f, 1.0f);
 const glm::vec4 COLOR_PLANE(0.0f, 0.5f, 0.2f, 1.0f);
 const glm::vec4 COLOR_CLEAR(0.0f, 0.7f, 0.9f, 1.0f);
 

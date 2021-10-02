@@ -80,8 +80,7 @@ void ivc::NeuronCluster::mutateNeurons(EvoConfig* config) {
     for(auto neuron : m_neuronVector){
         neuron->mutate(m_generator,false,config);
     }
-    if(m_sensor != nullptr){
-        m_sensor->mutate(m_generator,config);
+    if(m_effector != nullptr){
         m_effector->mutate(m_generator,config);
     }
 }

@@ -11,7 +11,7 @@ void ivc::JointSensor::step() {
 
     jointPos = Mutator::normalize(jointPos, -PxTwoPi, PxTwoPi);
 
-    m_output->setValue(jointPos * m_weight);
+    m_output->setValue(jointPos);
 }
 
 void ivc::JointSensor::swap() {
@@ -33,15 +33,6 @@ void ivc::JointSensor::setOutputGate(Gate * gate) {
 
     m_output = gate;
 
-}
-
-void ivc::JointSensor::mutate(std::mt19937 *gen, EvoConfig* config) {
-
-    std::uniform_real_distribution<> dis(0, 1);
-
-    //mutateBodyAndNeurons output weights
-    if(dis(*gen) <= config->m_mutChance)
-        m_weight = Mutator::mutateFloat(gen, m_weight, 1.0f, -1.0f);
 }
 
 void ivc::JointSensor::setCache(PxArticulationCache* cache) {
