@@ -48,7 +48,6 @@ namespace ivc {
             GUIWindow* m_guiWindow = nullptr;
 
             LiveEnvironment* m_liveEnvironment = nullptr;
-            BaseNode* m_currentlyDisplayedCreature = nullptr;
             Evolver* m_evolver = nullptr;
             std::thread* m_evolutionThread = nullptr;
 

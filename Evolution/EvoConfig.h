@@ -14,6 +14,7 @@ namespace ivc{
         int m_stepsPerGeneration = STEPS_PER_GENERATION;
         float m_mutChance = STANDARD_MUTATION_CHANCE;
         float m_reflChance = MUTATE_REFLECTION_FLAG_CHANCE;
+        int m_numberDisplayedCreatures = 1;
 
         bool m_useSidewaysMP = false;
         float m_sidewaysMultiplier = 0.0f;

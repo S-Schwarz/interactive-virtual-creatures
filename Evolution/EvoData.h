@@ -14,7 +14,6 @@ namespace ivc{
         private:
             unsigned int m_generationNumber = 0;
 
-            BaseNode* m_bestCreature = nullptr;
             std::vector<std::pair<BaseNode*, unsigned int>> m_parentVec;
 
             float m_bestFitnessScore = 0;
@@ -39,8 +38,6 @@ namespace ivc{
             float getBestNoveltyScore();
             float getWorstNoveltyScore();
             float getAverageNoveltyScore();
-            void setBestCreature(BaseNode*);
-            BaseNode* getBestCreature();
             std::vector<std::pair<BaseNode*, unsigned int>> getParentVec();
             std::vector<BaseNode*> getParents();
     };

@@ -152,24 +152,11 @@ void ivc::Evolver::evolveNextGeneration() {
 
 }
 
-ivc::BaseNode* ivc::Evolver::evolveNewCreature() {
-
-    for(int i = 0; i < NUMBER_OF_GENERATIONS; ++i){
-        printf("---------------------------\n");
-        printf("GENERATION #%i:\n", i+1);
-        evolveNextGeneration();
-    }
-
-    return m_currentBest;
-
-}
-
 void ivc::Evolver::createNextGeneration() {
 
     auto newData = new EvoData();
     newData->setGeneration(m_numberGenerations);
     newData->setLargestDistance(m_largestDistanceTravelled);
-    newData->setBestCreature(m_currentBest);
     m_largestDistanceTravelled = -INFINITY;
     auto fitnessScores = getAllFitnessScores();
     auto noveltyScores = getAllNoveltyScores();
@@ -178,7 +165,6 @@ void ivc::Evolver::createNextGeneration() {
         newData->calculateScoreData(fitnessScores, m_config->m_creaturesPerGeneration, m_config->m_forceDiversity, noveltyScores, m_config->m_useNoveltySearch);
         m_dataVec.push_back(newData);
         printf("Largest Distance: %f\n", newData->getLargestDistance());
-        m_currentBest = newData->getBestCreature();
     }
 
     if(newData->getBestFitnessScore() == 0 || fitnessScores.empty()){
@@ -220,9 +206,13 @@ void ivc::Evolver::deleteLastGeneration(std::vector<BaseNode*> parents) {
                 break;
             }
         }
+        for(auto b : m_currentBestVector){
+            if(pair.second.first == b.first){
+                keep = true;
+                break;
+            }
+        }
         if(!keep){
-            if(pair.second.first == m_currentBest)
-                m_currentBest = nullptr;
             delete pair.second.first;
         }
 
@@ -280,8 +270,8 @@ void ivc::Evolver::stopEvolution() {
     m_config->m_paused = true;
 }
 
-ivc::BaseNode*ivc::Evolver::getCurrentBest() {
-    return m_currentBest;
+std::vector<std::pair<ivc::BaseNode*,float>> ivc::Evolver::getCurrentBestVector() {
+    return m_currentBestVector;
 }
 
 unsigned int ivc::Evolver::getNumberGenerations() {
@@ -307,9 +297,9 @@ void ivc::Evolver::calcFitness() {
         m_noveltyArchive.push_back(noveltyVec);
     }
 
+    m_largestDistanceTravelled = -INFINITY;
     // normal fitness function
     auto sideMP = m_config->m_useSidewaysMP ? m_config->m_sidewaysMultiplier : 0.0f;
-    m_largestDistanceTravelled = -INFINITY;
     for(auto const& [key, val] : m_sceneMap){
         auto baseNode = val.first;
         auto startPos = val.second.first;
@@ -318,8 +308,26 @@ void ivc::Evolver::calcFitness() {
         auto distanceTravelled = startPos.z - endPos.z;
         if(distanceTravelled > m_largestDistanceTravelled){
             m_largestDistanceTravelled = distanceTravelled;
-            m_currentBest = baseNode;
         }
+
+        if(m_currentBestVector.size() < m_config->m_numberDisplayedCreatures){
+            if(distanceTravelled > 0)
+                m_currentBestVector.push_back({baseNode, distanceTravelled});
+        }else{
+            int toReplaceIndex = -1;
+            float worstDistance = INFINITY;
+            for(int i = 0; i < m_currentBestVector.size(); ++i){
+                float oldDistance = m_currentBestVector[i].second;
+                if(distanceTravelled > oldDistance && worstDistance > oldDistance){
+                    toReplaceIndex = i;
+                    worstDistance = oldDistance;
+                }
+            }
+            if(toReplaceIndex > -1){
+                m_currentBestVector[toReplaceIndex] = {baseNode, distanceTravelled};
+            }
+        }
+
         auto swervingX = sideMP * abs(startPos.x - endPos.x);
         float fitness = (distanceTravelled - swervingX);
 

@@ -30,6 +30,7 @@ namespace ivc{
             nanogui::IntBox<unsigned int>* m_spgBox = nullptr;
             nanogui::FloatBox<float>* m_mutChanceBox = nullptr;
             nanogui::FloatBox<float>* m_reflChanceBox = nullptr;
+            nanogui::IntBox<unsigned int>* m_displayNumBox = nullptr;
 
             nanogui::Widget* m_fitnessConfigWidget = nullptr;
             nanogui::CheckBox* m_sidewaysCheckbox = nullptr;

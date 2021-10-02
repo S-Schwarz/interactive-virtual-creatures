@@ -117,6 +117,12 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_reflChanceBox->set_min_max_values(0.0f, 10.0f);
     m_reflChanceBox->set_value(MUTATE_REFLECTION_FLAG_CHANCE);
 
+    auto displayLabel = m_evoConstantsWidget->add<nanogui::Label>("# displayed");
+    m_displayNumBox = m_evoConstantsWidget->add<nanogui::IntBox<unsigned int>>();
+    m_displayNumBox->set_editable(false);
+    m_displayNumBox->set_value(1);
+    m_displayNumBox->set_min_max_values(1,100);
+
     m_fitnessConfigWidget = m_configurationWidget->add<nanogui::Widget>();
     m_fitnessConfigWidget->set_layout(layout);
 
@@ -224,6 +230,7 @@ void ivc::GUIWindow::update() {
     m_config->m_stepsPerGeneration = m_spgBox->value();
     m_config->m_mutChance = m_mutChanceBox->value();
     m_config->m_reflChance = m_reflChanceBox->value();
+    m_config->m_numberDisplayedCreatures = m_displayNumBox->value();
     m_config->m_useSidewaysMP = m_sidewaysCheckbox->checked();
     m_config->m_sidewaysMultiplier = m_sidewaysBox->value();
     m_config->m_forceDiversity = m_ForceDiversityCheckbox->checked();
@@ -312,6 +319,7 @@ void ivc::GUIWindow::handleKeyInput(int key, int action) {
     updateIntBox(m_spgBox,key,action,10);
     updateFloatBox(m_mutChanceBox,key,action,0.05f);
     updateFloatBox(m_reflChanceBox,key,action,0.05f);
+    updateIntBox(m_displayNumBox,key,action,1);
     updateFloatBox(m_sidewaysBox,key,action,0.05f);
     updateIntBox(m_neighborsBox,key,action,1);
     updateIntBox(m_noveltyIntevallBox,key,action,10);

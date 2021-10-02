@@ -4,22 +4,40 @@
 
 #include "LiveEnvironment.h"
 
-int ivc::LiveEnvironment::init(ivc::PhysicsScene *scene) {
+int ivc::LiveEnvironment::init(PhysicsBase* base, std::vector<std::pair<BaseNode*,float>> nodeVec) {
 
-    m_scene = scene;
+    m_base = base;
+
+    float bestDistance = -INFINITY;
+    for(auto n : nodeVec){
+        auto liveScene = new PhysicsScene();
+        liveScene->init(m_base, n.first);
+        m_sceneVec.push_back(liveScene);
+        if(n.second > bestDistance){
+            m_currentBest = n.first;
+            m_bestScene = liveScene;
+            bestDistance = n.second;
+        }
+    }
+
+    std::vector<std::pair<PhysicsScene*,int>> stableVec;
+    for(auto scene : m_sceneVec){
+        stableVec.push_back({scene,0});
+    }
 
     //settle in to stable position
-    int stableSteps = 0;
-    for(int i = 0; i < FALL_DOWN_STEPS; ++i){
-        if(stableSteps == 5)
-            break;
-        auto beforePos = scene->getCreaturePos();
-        m_scene->simulate(false);
-        auto afterPos = scene->getCreaturePos();
-        if(beforePos == afterPos){
-            ++stableSteps;
-        }else{
-            stableSteps = 0;
+    for(int f = 0; f < FALL_DOWN_STEPS; ++f){
+        for(int i = 0; i < stableVec.size(); ++i){
+            if(stableVec[i].second == 5)
+                continue;
+            auto beforePos = stableVec[i].first->getCreaturePos();
+            stableVec[i].first->simulate(false);
+            auto afterPos = stableVec[i].first->getCreaturePos();
+            if(beforePos == afterPos){
+                stableVec[i] = {stableVec[i].first,stableVec[i].second+1};
+            }else{
+                stableVec[i] = {stableVec[i].first,0};
+            }
         }
     }
 
@@ -27,58 +45,123 @@ int ivc::LiveEnvironment::init(ivc::PhysicsScene *scene) {
 }
 
 int ivc::LiveEnvironment::simulate() {
-    if(m_inactiveTime > 0){
-        m_scene->simulate(false);
-        --m_inactiveTime;
-    }else{
-        m_scene->simulate(true);
+
+    for(auto scene : m_sceneVec){
+        scene->simulate(true);
     }
 
     return 0;
 }
 
-std::vector<PxArticulationLink *> ivc::LiveEnvironment::getBodyParts() {
-    return m_scene->getBodyParts();
+std::vector<std::pair<std::vector<PxArticulationLink*>, bool>> ivc::LiveEnvironment::getBodyParts() {
+
+    std::vector<std::pair<std::vector<PxArticulationLink*>, bool>> returnVec;
+
+    for(auto scene : m_sceneVec){
+        bool best = false;
+        if(scene == m_bestScene)
+            best = true;
+        returnVec.push_back({scene->getBodyParts(),best});
+    }
+
+    return returnVec;
+
 }
 
 PxRigidStatic *ivc::LiveEnvironment::getFloorPlane() {
-    return m_scene->getPlane();
+    return m_bestScene->getPlane();
 }
 
 void ivc::LiveEnvironment::destroy() {
-    m_scene->destroy();
+    for(auto scene : m_sceneVec){
+        scene->destroy();
+    }
 }
 
-void ivc::LiveEnvironment::insertNewCreature(ivc::BaseNode* newNode) {
-    m_scene->insertNewCreature(newNode);
+void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<BaseNode*,float>> nodeVec) {
 
-    //settle in to stable position
-    int stableSteps = 0;
-    for(int i = 0; i < FALL_DOWN_STEPS; ++i){
-        if(stableSteps == 5)
-            break;
-        auto beforePos = m_scene->getCreaturePos();
-        m_scene->simulate(false);
-        auto afterPos = m_scene->getCreaturePos();
-        if(beforePos == afterPos){
-            ++stableSteps;
-        }else{
-            stableSteps = 0;
+    float bestDistance = -INFINITY;
+    if(m_sceneVec.size() >= nodeVec.size()){
+        for(int i = 0; i < m_sceneVec.size(); ++i){
+            if(i >= nodeVec.size()){
+                m_sceneVec[i]->destroy();
+            }else{
+                m_sceneVec[i]->insertNewCreature(nodeVec[i].first);
+            }
+            if(nodeVec[i].second > bestDistance){
+                m_currentBest = nodeVec[i].first;
+                bestDistance = nodeVec[i].second;
+            }
+        }
+        m_sceneVec.resize(nodeVec.size());
+    }else{
+        for(int i = 0; i < nodeVec.size(); ++i){
+            if(i >= m_sceneVec.size()){
+                auto liveScene = new PhysicsScene();
+                liveScene->init(m_base, nodeVec[i].first);
+                m_sceneVec.push_back(liveScene);
+            }else{
+                m_sceneVec[i]->insertNewCreature(nodeVec[i].first);
+            }
+            if(nodeVec[i].second > bestDistance){
+                m_currentBest = nodeVec[i].first;
+                bestDistance = nodeVec[i].second;
+            }
         }
     }
+
+    std::vector<std::pair<PhysicsScene*,int>> stableVec;
+    for(auto scene : m_sceneVec){
+        stableVec.push_back({scene,0});
+    }
+
+    //settle in to stable position
+    for(int f = 0; f < FALL_DOWN_STEPS; ++f){
+        for(int i = 0; i < stableVec.size(); ++i){
+            if(stableVec[i].second == 5)
+                continue;
+            auto beforePos = stableVec[i].first->getCreaturePos();
+            stableVec[i].first->simulate(false);
+            auto afterPos = stableVec[i].first->getCreaturePos();
+            if(beforePos == afterPos){
+                stableVec[i] = {stableVec[i].first,stableVec[i].second+1};
+            }else{
+                stableVec[i] = {stableVec[i].first,0};
+            }
+        }
+    }
+
 }
 
 void ivc::LiveEnvironment::resetCreaturePosition() {
 
-    m_scene->resetCreaturePosition();
-    setInactiveTime(FALL_DOWN_STEPS);
+    std::vector<std::pair<PhysicsScene*,int>> stableVec;
+    for(auto scene : m_sceneVec){
+        scene->resetCreaturePosition();
+        stableVec.push_back({scene,0});
+    }
+
+    //settle in to stable position
+    for(int f = 0; f < FALL_DOWN_STEPS; ++f){
+        printf("F: %i\n", f);
+        for(int i = 0; i < stableVec.size(); ++i){
+            if(stableVec[i].second == 5)
+                continue;
+            auto beforePos = stableVec[i].first->getCreaturePos();
+            stableVec[i].first->simulate(false);
+            auto afterPos = stableVec[i].first->getCreaturePos();
+            if(beforePos == afterPos){
+                stableVec[i] = {stableVec[i].first,stableVec[i].second+1};
+            }else{
+                stableVec[i] = {stableVec[i].first,0};
+            }
+        }
+        if(f == FALL_DOWN_STEPS-1)
+            printf("TEST\n");
+    }
 
 }
 
-void ivc::LiveEnvironment::setInactiveTime(unsigned int time) {
-    m_inactiveTime = time;
-}
-
-ivc::PhysicalCreature *ivc::LiveEnvironment::getCreature() {
-    return m_scene->getCreature();
+ivc::PhysicalCreature *ivc::LiveEnvironment::getBestCreature() {
+    return m_bestScene->getCreature();
 }

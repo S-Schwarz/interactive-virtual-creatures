@@ -18,7 +18,9 @@ namespace ivc{
     class Evolver {
         private:
             PhysicsBase* m_base = nullptr;
-            BaseNode* m_currentBest = nullptr;
+            std::vector<std::pair<BaseNode*,float>> m_currentBestVector;
+            float m_largestDistanceTravelled = -INFINITY;
+
             unsigned int m_numberGenerations = 0;
 
             unsigned int m_numThreads = 1;
@@ -33,8 +35,6 @@ namespace ivc{
             std::map<BaseNode*, std::vector<PxVec3>> m_currentGenNoveltyArchive;
             std::vector<std::vector<PxVec3>> m_noveltyArchive;
 
-            float m_largestDistanceTravelled = -INFINITY;
-
             void evolveNextGeneration();
             void createNextGeneration();
             void createNewGeneration();
@@ -45,10 +45,9 @@ namespace ivc{
             void calcFitness();
         public:
             int init(PhysicsBase*, EvoConfig*);
-            BaseNode* evolveNewCreature();
             void startContinuousEvolution();
             void stopEvolution();
-            BaseNode* getCurrentBest();
+            std::vector<std::pair<BaseNode*,float>> getCurrentBestVector();
             unsigned int getNumberGenerations();
             std::vector<EvoData*> getEvoDataVec();
 

@@ -179,12 +179,11 @@ int ivc::App::update() {
     if(liveEnvInitialized){
         auto currentGenNum = m_evolver->getNumberGenerations();
         if(currentGenNum != m_lastGenNum && currentGenNum % 4 == 0){
-            auto newCreature = m_evolver->getCurrentBest();
-            if(newCreature != nullptr && newCreature != m_currentlyDisplayedCreature){
-                printf("INSERTING NEW CREATURE INTO LIVE SCENE\n");
-                m_currentlyDisplayedCreature = newCreature;
-                m_liveEnvironment->insertNewCreature(newCreature);
-                m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getCreature());
+            auto newCreatureVector = m_evolver->getCurrentBestVector();
+            if(!newCreatureVector.empty()){
+                printf("INSERTING %i NEW CREATURES INTO LIVE SCENE\n", newCreatureVector.size());
+                m_liveEnvironment->insertNewCreatures(newCreatureVector);
+                m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getBestCreature());
                 m_lastGenNum = currentGenNum;
             }
         }
@@ -193,12 +192,10 @@ int ivc::App::update() {
         drawLiveWindow();
         m_neuronVisualizer->draw();
     }else{
-        auto currentCreature = m_evolver->getCurrentBest();
-        if(currentCreature != nullptr){
-            auto liveScene = new PhysicsScene();
-            liveScene->init(m_physicsBase, currentCreature);
-            m_liveEnvironment->init(liveScene);
-            m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getCreature());
+        auto currentCreatureVec = m_evolver->getCurrentBestVector();
+        if(!currentCreatureVec.empty()){
+            m_liveEnvironment->init(m_physicsBase, currentCreatureVec);
+            m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getBestCreature());
             liveEnvInitialized = true;
         }
     }
@@ -291,6 +288,8 @@ void ivc::App::initLiveWindow() {
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(0, 0, c_WIDTH, c_HEIGHT);
 
     glfwSetWindowUserPointer(m_liveWindow, this);
@@ -358,34 +357,34 @@ void ivc::App::drawLiveWindow() {
     drawShape(BOX, glm::vec3(0,0,0),glm::quat(),glm::vec3(20.0,0.1,0.1), COLOR_RED, false);
 
     // PHYSX OBJECTS ----------
-    for(auto body : m_liveEnvironment->getBodyParts()){
-        auto transform = body->getGlobalPose();
+    for(auto bodyPair : m_liveEnvironment->getBodyParts()){
+        for(auto body : bodyPair.first){
+            auto transform = body->getGlobalPose();
 
-        glm::vec3 posVec = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
+            glm::vec3 posVec = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
 
-        glm::quat rotQuat = glm::quat(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
+            glm::quat rotQuat = glm::quat(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
 
-        //TODO: ???
-        glm::vec3 scaleVec;
+            //TODO: ???
+            glm::vec3 scaleVec;
 
-        auto numShapes = body->getNbShapes();
-        PxShape **shapes = new PxShape*[numShapes];
-        body->getShapes(shapes, numShapes * sizeof(PxShape));
-        for(int i = 0; i < numShapes; ++i){
-            if(std::strcmp(shapes[i]->getName(),"draw") == 0){
-                PxBoxGeometry* bodyGeom = new PxBoxGeometry();
-                shapes[i]->getBoxGeometry(*bodyGeom);
-                scaleVec = glm::vec3(bodyGeom->halfExtents.x * 2, bodyGeom->halfExtents.y * 2, bodyGeom->halfExtents.z * 2);
-                delete bodyGeom;
-                break;
+            auto numShapes = body->getNbShapes();
+            PxShape **shapes = new PxShape*[numShapes];
+            body->getShapes(shapes, numShapes * sizeof(PxShape));
+            for(int i = 0; i < numShapes; ++i){
+                if(std::strcmp(shapes[i]->getName(),"draw") == 0){
+                    PxBoxGeometry* bodyGeom = new PxBoxGeometry();
+                    shapes[i]->getBoxGeometry(*bodyGeom);
+                    scaleVec = glm::vec3(bodyGeom->halfExtents.x * 2, bodyGeom->halfExtents.y * 2, bodyGeom->halfExtents.z * 2);
+                    delete bodyGeom;
+                    break;
+                }
             }
-        }
-        delete[] shapes;
+            delete[] shapes;
 
-        if(m_physicsPaused)
+            m_liveShader->setBool("transparent", !bodyPair.second);
             drawShape(TEXTURED_BOX, posVec, rotQuat, scaleVec, COLOR_RED, false);
-        else
-            drawShape(TEXTURED_BOX, posVec, rotQuat, scaleVec, COLOR_GREEN, false);
+        }
     }
 
     // PLANE ------------------

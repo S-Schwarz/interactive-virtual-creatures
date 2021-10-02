@@ -137,10 +137,6 @@ float ivc::EvoData::getAverageFitnessScore() {
     return m_averageFitnessScore;
 }
 
-ivc::BaseNode *ivc::EvoData::getBestCreature() {
-    return m_bestCreature;
-}
-
 std::vector<std::pair<ivc::BaseNode*, unsigned int>> ivc::EvoData::getParentVec() {
     return m_parentVec;
 }
@@ -171,8 +167,4 @@ void ivc::EvoData::setLargestDistance(float distance) {
 
 float ivc::EvoData::getLargestDistance() {
     return m_largestDistanceTravelled;
-}
-
-void ivc::EvoData::setBestCreature(ivc::BaseNode *node) {
-    m_bestCreature = node;
 }
