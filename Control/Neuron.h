@@ -21,11 +21,12 @@ namespace ivc{
         //no input
         CONSTANT,
         SINE_OSCI,
+        SAW_OSCI,
         //one input
         SIGN,
         ABS,
         SIN,
-        SINE_OSCI_ONE_IN,
+        SAW,
         DELAY,
         //two inputs
         SUM,
@@ -57,13 +58,13 @@ namespace ivc{
                 float m_constant = 1.0f;
 
             //one input
-                //sine neuron
-                float m_sin_amplitude = 1.0f;
-                float m_sin_period = 1.0f;
-                float m_sin_phase = 0.0f;
-                float m_sin_vertical = 0.0f;
+                //sine/saw neuron
+                float m_amplitude = 1.0f;
+                float m_period = 1.0f;
+                float m_phase = 0.0f;
+                float m_vertical = 0.0f;
 
-                //sine osci
+                //osci neuron
                 float m_osci_stepSize = 1.0f;
                 float m_osci_offset = 0.0f;
 
@@ -94,11 +95,12 @@ namespace ivc{
 
             //no inputs
             void sine_osci();
+            void saw_osci();
             //one input
             void sign();
             void abs();
             void sin();
-            void sine_osci_one_in();
+            void saw();
             void delay();
             //two inputs
             void sum();

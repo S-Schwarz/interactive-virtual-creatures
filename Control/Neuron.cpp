@@ -17,6 +17,9 @@ void ivc::Neuron::step() {
         case SINE_OSCI:
             sine_osci();
             break;
+        case SAW_OSCI:
+            saw_osci();
+            break;
         //one input
         case SIGN:
             sign();
@@ -27,8 +30,8 @@ void ivc::Neuron::step() {
         case SIN:
             sin();
             break;
-        case SINE_OSCI_ONE_IN:
-            sine_osci_one_in();
+        case SAW:
+            saw();
             break;
         case DELAY:
             delay();
@@ -126,13 +129,13 @@ void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation, EvoConfig* confi
 
     //mutate sine params
     if(forceMutation || dis(*gen) <= config->m_mutChance)
-        m_sin_amplitude = Mutator::mutateFloat(gen,m_sin_amplitude, INFINITY, -INFINITY);
+        m_amplitude = Mutator::mutateFloat(gen, m_amplitude, INFINITY, -INFINITY);
     if(forceMutation || dis(*gen) <= config->m_mutChance)
-        m_sin_period = Mutator::mutateFloat(gen,m_sin_period, INFINITY, -INFINITY);
+        m_period = Mutator::mutateFloat(gen, m_period, INFINITY, -INFINITY);
     if(forceMutation || dis(*gen) <= config->m_mutChance)
-        m_sin_phase = Mutator::mutateFloat(gen,m_sin_phase, INFINITY, -INFINITY);
+        m_phase = Mutator::mutateFloat(gen, m_phase, INFINITY, -INFINITY);
     if(forceMutation || dis(*gen) <= config->m_mutChance)
-        m_sin_vertical = Mutator::mutateFloat(gen,m_sin_vertical, INFINITY, -INFINITY);
+        m_vertical = Mutator::mutateFloat(gen, m_vertical, INFINITY, -INFINITY);
 
     //mutate sine osci step
     if(forceMutation || dis(*gen) <= config->m_mutChance)
@@ -152,12 +155,13 @@ ivc::Neuron::Neuron(std::mt19937* gen, EvoConfig* config) {
     switch (m_type){
         case CONSTANT:
         case SINE_OSCI:
+        case SAW_OSCI:
             m_numberInputs = 0;
             break;
         case SIGN:
         case ABS:
         case SIN:
-        case SINE_OSCI_ONE_IN:
+        case SAW:
         case DELAY:
             m_numberInputs = 1;
             break;
@@ -223,18 +227,32 @@ void ivc::Neuron::abs() {
         m_output->setValue(val);
 }
 
+void ivc::Neuron::saw(){
+    float val = m_inputWeights[0] * m_inputGates[0]->getValue();
+    float result = -(2*m_amplitude/M_PI) * std::atan(1 / std::tan((M_PI * (val + m_phase)) / m_period )) + m_vertical;
+    result = std::clamp(result, -1.0f, 1.0f);
+    m_osci_offset += m_osci_stepSize;
+    m_output->setValue(result);
+}
+
 void ivc::Neuron::sin() {
     float val = m_inputWeights[0] * m_inputGates[0]->getValue();
-    float result = m_sin_amplitude * std::sin(m_sin_period * (val + m_sin_phase)) + m_sin_vertical;
+    float result = m_amplitude * std::sin(m_period * (val + m_phase)) + m_vertical;
     result = std::clamp(result, -1.0f, 1.0f);
     m_output->setValue(result);
 }
 
-void ivc::Neuron::sine_osci_one_in() {
-    float val = m_inputWeights[0] * m_inputGates[0]->getValue();
-    float result = m_sin_amplitude * std::sin(m_sin_period * (val + m_osci_offset)) + m_sin_vertical;
-    m_osci_offset += m_osci_stepSize;
+void ivc::Neuron::saw_osci(){
+    float result = -(2*m_amplitude/M_PI) * std::atan(1 / std::tan((M_PI * m_osci_offset) / m_period )) + m_vertical;
     result = std::clamp(result, -1.0f, 1.0f);
+    m_osci_offset += m_osci_stepSize;
+    m_output->setValue(result);
+}
+
+void ivc::Neuron::sine_osci() {
+    float result = m_amplitude * std::sin(m_period * m_osci_offset) + m_vertical;
+    result = std::clamp(result, -1.0f, 1.0f);
+    m_osci_offset += m_osci_stepSize;
     m_output->setValue(result);
 }
 
@@ -318,13 +336,6 @@ void ivc::Neuron::greater_than() {
     else
         m_output->setValue(0.0f);
 
-}
-
-void ivc::Neuron::sine_osci() {
-    float result = m_sin_amplitude * std::sin(m_sin_period * (m_osci_offset)) + m_sin_vertical;
-    result = std::clamp(result, -1.0f, 1.0f);
-    m_osci_offset += m_osci_stepSize;
-    m_output->setValue(result);
 }
 
 void ivc::Neuron::if_then_else() {

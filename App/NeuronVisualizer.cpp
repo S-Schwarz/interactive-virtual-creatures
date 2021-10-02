@@ -384,6 +384,9 @@ void ivc::NeuronVisualizer::drawText(ivc::Neuron* neuron, glm::mat4 model) {
         case SINE_OSCI:
             toDraw = 'O';
             break;
+        case SAW_OSCI:
+            toDraw = 'Z';
+            break;
         case SIGN:
             toDraw = 'V';
             break;
@@ -393,8 +396,8 @@ void ivc::NeuronVisualizer::drawText(ivc::Neuron* neuron, glm::mat4 model) {
         case SIN:
             toDraw = 'S';
             break;
-        case SINE_OSCI_ONE_IN:
-            toDraw = 'O';
+        case SAW:
+            toDraw = 'W';
             break;
         case DELAY:
             toDraw = 'D';
