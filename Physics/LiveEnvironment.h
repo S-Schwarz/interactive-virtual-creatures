@@ -11,11 +11,11 @@ namespace ivc{
     class LiveEnvironment {
         private:
             std::vector<PhysicsScene*> m_sceneVec;
-            BaseNode* m_currentBest = nullptr;
+            std::shared_ptr<BaseNode> m_currentBest = nullptr;
             PhysicsScene* m_bestScene = nullptr;
             PhysicsBase* m_base = nullptr;
         public:
-            int init(PhysicsBase*, std::vector<std::pair<BaseNode*,float>>);
+            int init(PhysicsBase*, std::vector<std::pair<std::shared_ptr<BaseNode>,float>>);
             int simulate();
             void destroy();
 
@@ -24,7 +24,7 @@ namespace ivc{
 
             std::vector<std::pair<std::vector<PxArticulationLink*>, bool>> getBodyParts();
             PxRigidStatic* getFloorPlane();
-            void insertNewCreatures(std::vector<std::pair<BaseNode*,float>>);
+            void insertNewCreatures(std::vector<std::pair<std::shared_ptr<BaseNode>,float>>);
 
             PhysicalCreature* getBestCreature();
     };

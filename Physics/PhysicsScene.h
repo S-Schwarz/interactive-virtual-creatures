@@ -10,6 +10,7 @@
 #include "../Body/PhysicalCreature.h"
 #include "../Body/BaseNode.h"
 #include "../Constants.h"
+#include <memory>
 
 using namespace physx;
 
@@ -20,12 +21,13 @@ namespace ivc{
             PxScene* m_scene = nullptr;
             PhysicalCreature* m_creature = nullptr;
 
-            BaseNode* m_rootNode = nullptr;
+            std::shared_ptr<BaseNode> m_rootNode = nullptr;
 
             PxRigidStatic* m_plane = nullptr;
             bool m_isInitialized = false;
         public:
-            int init(PhysicsBase*,BaseNode*);
+            int init(PhysicsBase*,std::shared_ptr<BaseNode>);
+            ~PhysicsScene(){destroy();};
             void destroy();
             int simulate(bool);
 
@@ -34,7 +36,7 @@ namespace ivc{
             PxVec3 getCreaturePos();
             std::vector<PxArticulationLink*> getBodyParts();
 
-            void insertNewCreature(BaseNode*);
+            void insertNewCreature(std::shared_ptr<BaseNode>);
             void alignChildren(std::vector<PxArticulationLink*>, std::vector<PxArticulationLink*>, PxArticulationCache*, PxArticulationCache*);
 
             void resetCreaturePosition();

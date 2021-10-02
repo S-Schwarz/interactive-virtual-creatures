@@ -13,43 +13,47 @@
 #include <vector>
 #include <map>
 #include <thread>
+#include <memory>
 
 namespace ivc{
     class Evolver {
         private:
             PhysicsBase* m_base = nullptr;
-            std::vector<std::pair<BaseNode*,float>> m_currentBestVector;
+            std::vector<std::pair<std::shared_ptr<BaseNode>,float>> m_currentBestVector;
             float m_largestDistanceTravelled = -INFINITY;
 
-            unsigned int m_numberGenerations = 0;
+            unsigned int m_numberGenerations = 1;
 
             unsigned int m_numThreads = 1;
 
             EvoConfig* m_config = nullptr;
 
-            std::vector<EvoData*> m_dataVec;
+            std::vector<std::shared_ptr<EvoData>> m_dataVec;
 
-            std::map<PhysicsScene*, std::pair<BaseNode*, std::pair<PxVec3, PxVec3>>> m_sceneMap;
-            std::map<BaseNode*, float> m_fitnessMap;
-            std::map<BaseNode*, float> m_noveltyMap;
-            std::map<BaseNode*, std::vector<PxVec3>> m_currentGenNoveltyArchive;
+            std::map<std::shared_ptr<PhysicsScene>, std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>> m_testSceneMap;
+            std::vector<std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>> m_currentViableCreaturesVec;
+
+            std::map<std::shared_ptr<BaseNode>, float> m_fitnessMap;
+            std::map<std::shared_ptr<BaseNode>, float> m_noveltyMap;
+            std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>> m_currentGenNoveltyArchive;
             std::vector<std::vector<PxVec3>> m_noveltyArchive;
 
             void evolveNextGeneration();
             void createNextGeneration();
-            void createNewGeneration();
-            std::map<PhysicsScene*, std::pair<BaseNode*, std::pair<PxVec3, PxVec3>>> createNewGenerationFromParents(std::vector<std::pair<BaseNode*,unsigned int>>);
-            void deleteLastGeneration(std::vector<BaseNode*>);
-            std::vector<std::pair<BaseNode*, float>> getAllFitnessScores();
-            std::vector<std::pair<BaseNode*, float>> getAllNoveltyScores();
+            void createFirstGeneration();
+            std::map<std::shared_ptr<PhysicsScene>, std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>> createNewGenerationFromParents(std::vector<std::pair<std::shared_ptr<BaseNode>,unsigned int>>);
+            void deleteLastGeneration(std::vector<std::shared_ptr<BaseNode>>);
+            std::vector<std::pair<std::shared_ptr<BaseNode>, float>> getAllFitnessScores();
+            std::vector<std::pair<std::shared_ptr<BaseNode>, float>> getAllNoveltyScores();
             void calcFitness();
+            void testCurrentGeneration();
         public:
             int init(PhysicsBase*, EvoConfig*);
             void startContinuousEvolution();
             void stopEvolution();
-            std::vector<std::pair<BaseNode*,float>> getCurrentBestVector();
+            std::vector<std::pair<std::shared_ptr<BaseNode>,float>> getCurrentBestVector();
             unsigned int getNumberGenerations();
-            std::vector<EvoData*> getEvoDataVec();
+            std::vector<std::shared_ptr<EvoData>> getEvoDataVec();
 
 
     };

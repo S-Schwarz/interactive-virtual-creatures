@@ -16,7 +16,7 @@ unsigned int ivc::BaseNode::getNumberOfParts() {
 
 }
 
-std::vector<ivc::BaseNode*> ivc::BaseNode::getChildren() {
+std::vector<std::shared_ptr<ivc::BaseNode>> ivc::BaseNode::getChildren() {
     return m_childNodeVector;
 }
 
@@ -32,7 +32,7 @@ PxVec3 ivc::BaseNode::getParentAnchor() {
     return m_parentAnchor;
 }
 
-ivc::BaseNode* ivc::BaseNode::getParentNode() {
+std::shared_ptr<ivc::BaseNode> ivc::BaseNode::getParentNode() {
     return m_parentNode;
 }
 
@@ -243,11 +243,11 @@ void ivc::BaseNode::mutateNeuralConnections(EvoConfig* config) {
 
 }
 
-void ivc::BaseNode::setChildren(std::vector<BaseNode *> children) {
+void ivc::BaseNode::setChildren(std::vector<std::shared_ptr<BaseNode>> children) {
     m_childNodeVector = children;
 }
 
-void ivc::BaseNode::setParent(ivc::BaseNode *parent) {
+void ivc::BaseNode::setParent(std::shared_ptr<BaseNode> parent) {
     m_parentNode = parent;
 }
 
@@ -277,10 +277,6 @@ ivc::BaseNode::~BaseNode() {
     delete m_brain;
     delete m_idHandler;
 
-    for(auto child : m_childNodeVector){
-            delete child;
-    }
-
 }
 
 void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons, EvoConfig* config) {
@@ -295,7 +291,6 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons, EvoConfig* conf
             auto index = remDis(*m_generator);
             auto childNode = m_childNodeVector[index];
             auto anchor = childNode->getParentAnchor();
-            delete childNode;
 
             m_childNodeVector.erase(m_childNodeVector.begin() + index);
 
@@ -316,8 +311,8 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons, EvoConfig* conf
 
         //add child node
         if(dis(*m_generator) <= config->m_mutChance && !m_freeSides.empty()){
-            BaseNode *newChild = new BaseNode();
-            newChild->init(false, m_generator, this, config);
+            auto newChild = std::make_shared<BaseNode>();
+            newChild->init(false, m_generator, shared_from_this(), config);
             m_childNodeVector.emplace_back(newChild);
         }
 
@@ -368,7 +363,7 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons, EvoConfig* conf
 
 }
 
-ivc::BaseNode *ivc::BaseNode::reflect() {
+std::shared_ptr<ivc::BaseNode> ivc::BaseNode::reflect() {
 
     //copy this node recursively
     auto reflectedVersion = copy();
@@ -537,13 +532,13 @@ void ivc::BaseNode::setBrain(ivc::NeuronCluster* brain) {
     m_brain = brain;
 }
 
-ivc::BaseNode *ivc::BaseNode::copy() {
-    auto copiedNode = new BaseNode(*this);
+std::shared_ptr<ivc::BaseNode> ivc::BaseNode::copy() {
+    auto copiedNode = std::make_shared<BaseNode>(*this);
 
     if(m_idHandler)
         copiedNode->m_idHandler = new IDHandler(*m_idHandler);
 
-    std::vector<BaseNode*> copiedChildren;
+    std::vector<std::shared_ptr<BaseNode>> copiedChildren;
     for(auto child : m_childNodeVector){
         auto newChild = child->copy();
         newChild->setParent(copiedNode);
@@ -558,7 +553,7 @@ ivc::BaseNode *ivc::BaseNode::copy() {
     return copiedNode;
 }
 
-void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent, EvoConfig* config) {
+void ivc::BaseNode::init(bool root, std::mt19937* gen, std::shared_ptr<BaseNode> parent, EvoConfig* config) {
     m_parentNode = parent;
     m_isRoot = root;
 
@@ -586,8 +581,8 @@ void ivc::BaseNode::init(bool root, std::mt19937* gen, BaseNode* parent, EvoConf
     if(m_isRoot){
         for(int i = 0; i < MAX_CHILDREN; ++i){
             if(dis(*m_generator) < CHILD_CHANCE && !m_freeSides.empty()){
-                BaseNode *newChild = new BaseNode();
-                newChild->init(false, m_generator, this, config);
+                auto newChild = std::make_shared<BaseNode>();
+                newChild->init(false, m_generator, shared_from_this(), config);
                 m_childNodeVector.emplace_back(newChild);
             }
         }

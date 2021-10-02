@@ -13,6 +13,7 @@
 #include "../Mutator.h"
 #include "../Evolution/EvoConfig.h"
 #include <map>
+#include <memory>
 
 using namespace physx;
 
@@ -34,7 +35,7 @@ namespace ivc{
         TWIST
     };
 
-    class BaseNode {
+class BaseNode : public std::enable_shared_from_this<BaseNode> {
         protected:
             //body
             PxVec3 m_orientation = PxVec3(0,0,0);
@@ -43,11 +44,11 @@ namespace ivc{
             NODE_SIDE m_parentSide = NONE;
             PxVec3 m_scale = PxVec3(1,1,1);
             NeuronCluster* m_localNeurons = nullptr;
-            BaseNode* m_parentNode = nullptr;
+            std::shared_ptr<BaseNode> m_parentNode = nullptr;
             JOINT_TYPE m_jointType;
             std::pair<float,float> m_jointLimits= {-MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT};
             //children
-            std::vector<BaseNode*> m_childNodeVector;
+            std::vector<std::shared_ptr<BaseNode>> m_childNodeVector;
             std::vector<NODE_SIDE> m_freeSides = {POS_X,NEG_X,POS_Y,NEG_Y,POS_Z,NEG_Z};
 
             bool m_reflect = false;
@@ -61,13 +62,13 @@ namespace ivc{
             void setJointType(JOINT_TYPE);
             void chooseNewJointType();
         public:
-            void init(bool, std::mt19937*, BaseNode*, EvoConfig*);
-            BaseNode* copy();
+            void init(bool, std::mt19937*, std::shared_ptr<BaseNode>, EvoConfig*);
+            std::shared_ptr<BaseNode> copy();
             ~BaseNode();
 
-            void setParent(BaseNode*);
+            void setParent(std::shared_ptr<BaseNode>);
             void setLocalNeurons(NeuronCluster*);
-            void setChildren(std::vector<BaseNode*>);
+            void setChildren(std::vector<std::shared_ptr<BaseNode>>);
             int setSideAsOccupied(NODE_SIDE);
             void setSideAsFree(NODE_SIDE);
             void setParentAnchor(PxVec3);
@@ -77,12 +78,12 @@ namespace ivc{
             void setBrain(NeuronCluster*);
 
             unsigned int getNumberOfParts();
-            std::vector<BaseNode*> getChildren();
+            std::vector<std::shared_ptr<BaseNode>> getChildren();
             PxVec3 getDimensions();
             PxVec3 getHalfExtents();
             PxVec3 getOrientationInDegrees();
             PxVec3 getParentAnchor();
-            BaseNode* getParentNode();
+            std::shared_ptr<BaseNode> getParentNode();
             PxVec3 getScale();
             std::pair<float,float> getJointLimits();
             JOINT_TYPE getJointType();
@@ -106,7 +107,7 @@ namespace ivc{
             NODE_SIDE occupyRandomSide();
             bool isFree(NODE_SIDE side);
 
-            BaseNode* reflect();
+            std::shared_ptr<BaseNode> reflect();
             void chooseNewNeuronIDs(std::map<unsigned long,unsigned long>*);
             void rewireInputs(std::map<unsigned long,unsigned long>*);
             PxVec3 flipAnchor(PxVec3);

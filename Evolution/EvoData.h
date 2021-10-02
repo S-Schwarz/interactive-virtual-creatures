@@ -14,7 +14,7 @@ namespace ivc{
         private:
             unsigned int m_generationNumber = 0;
 
-            std::vector<std::pair<BaseNode*, unsigned int>> m_parentVec;
+            std::vector<std::pair<std::shared_ptr<BaseNode>, unsigned int>> m_parentVec;
 
             float m_bestFitnessScore = 0;
             float m_worstFitnessScore = 0;
@@ -26,7 +26,7 @@ namespace ivc{
 
             float m_largestDistanceTravelled = 0;
         public:
-            void calculateScoreData(std::vector<std::pair<BaseNode*, float>>, int, bool, std::vector<std::pair<BaseNode*, float>>, bool);
+            void calculateScoreData(std::vector<std::pair<std::shared_ptr<BaseNode>, float>>, int, bool, std::vector<std::pair<std::shared_ptr<BaseNode>, float>>, bool);
             void setGeneration(unsigned int);
             void setLargestDistance(float);
 
@@ -38,8 +38,8 @@ namespace ivc{
             float getBestNoveltyScore();
             float getWorstNoveltyScore();
             float getAverageNoveltyScore();
-            std::vector<std::pair<BaseNode*, unsigned int>> getParentVec();
-            std::vector<BaseNode*> getParents();
+            std::vector<std::pair<std::shared_ptr<BaseNode>, unsigned int>> getParentVec();
+            std::vector<std::shared_ptr<BaseNode>> getParents();
     };
 }
 

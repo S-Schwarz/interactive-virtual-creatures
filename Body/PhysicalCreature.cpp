@@ -4,7 +4,7 @@
 
 #include "PhysicalCreature.h"
 
-ivc::PhysicalCreature::PhysicalCreature(BaseNode* rootNode, PxVec3 pos, PhysicsBase* base) {
+ivc::PhysicalCreature::PhysicalCreature(std::shared_ptr<BaseNode> rootNode, PxVec3 pos, PhysicsBase* base) {
 
     m_position = pos;
     m_physics = base->getPhysics();
@@ -79,7 +79,7 @@ ivc::PhysicalCreature::PhysicalCreature(BaseNode* rootNode, PxVec3 pos, PhysicsB
 
 }
 
-void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentPos, PxVec3 parentScale, PxVec3 parentRotation, PxArticulationLink* parentLink) {
+void ivc::PhysicalCreature::buildChildNodes(std::shared_ptr<BaseNode> parentNode, PxVec3 parentPos, PxVec3 parentScale, PxVec3 parentRotation, PxArticulationLink* parentLink) {
 
     auto parentHalfExtents = parentNode->getDimensions()/2;
     parentHalfExtents = PxVec3(parentHalfExtents.x * parentScale.x, parentHalfExtents.y * parentScale.y, parentHalfExtents.z * parentScale.z);
@@ -95,7 +95,7 @@ void ivc::PhysicalCreature::buildChildNodes(BaseNode* parentNode, PxVec3 parentP
 
 }
 
-void ivc::PhysicalCreature::buildNode(BaseNode* child, PxVec3 parentPos, PxVec3 parentScale, PxVec3 parentRotation, PxArticulationLink* parentLink, PxVec3 parentHalfExtents) {
+void ivc::PhysicalCreature::buildNode(std::shared_ptr<BaseNode> child, PxVec3 parentPos, PxVec3 parentScale, PxVec3 parentRotation, PxArticulationLink* parentLink, PxVec3 parentHalfExtents) {
 
     PxVec3 scale = child->getScale();
     PxVec3 childScale = PxVec3(parentScale.x * scale.x, parentScale.y * scale.y, parentScale.z * scale.z);

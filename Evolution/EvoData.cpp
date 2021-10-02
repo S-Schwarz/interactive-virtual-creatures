@@ -4,7 +4,7 @@
 
 #include "EvoData.h"
 
-void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> scoreVec, int cpg, bool forceDiversity, std::vector<std::pair<BaseNode*, float>> noveltyVec, bool useNovelty) {
+void ivc::EvoData::calculateScoreData(std::vector<std::pair<std::shared_ptr<BaseNode>, float>> scoreVec, int cpg, bool forceDiversity, std::vector<std::pair<std::shared_ptr<BaseNode>, float>> noveltyVec, bool useNovelty) {
 
     // fitness calc
     m_bestFitnessScore = -INFINITY;
@@ -37,7 +37,7 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> s
     m_averageNoveltyScore = noveltySum / noveltyVec.size();
 
     //normalize scores
-    std::vector<std::pair<BaseNode*, float>> normalizedScores;
+    std::vector<std::pair<std::shared_ptr<BaseNode>, float>> normalizedScores;
     if(!useNovelty){
         for(auto pair : scoreVec){
             auto score = pair.second;
@@ -60,7 +60,7 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> s
 
 
     //choose best creatures
-    std::vector<std::pair<BaseNode*,float>> bestVec;
+    std::vector<std::pair<std::shared_ptr<BaseNode>,float>> bestVec;
     for(auto pair : normalizedScores){
         auto score = pair.second;
         if(score > EVOLUTION_MIN_SCORE){
@@ -80,7 +80,7 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> s
 
     if(!useNovelty && forceDiversity){
         //choose and add by morphologic diversity
-        std::map<unsigned int, std::pair<BaseNode*,float>> diverseMap;
+        std::map<unsigned int, std::pair<std::shared_ptr<BaseNode>,float>> diverseMap;
         for(auto pair : normalizedScores){
             auto numNodes = pair.first->getNumberOfParts();
             if(diverseMap.find(numNodes) == diverseMap.end()){
@@ -101,7 +101,7 @@ void ivc::EvoData::calculateScoreData(std::vector<std::pair<BaseNode*, float>> s
     }
 
     //choose amount of children per root
-    std::vector<std::pair<BaseNode*,unsigned int>> amountVec;
+    std::vector<std::pair<std::shared_ptr<BaseNode>,unsigned int>> amountVec;
     float total = 0;
     for(auto pair : bestVec){
         total += pair.second;
@@ -137,12 +137,12 @@ float ivc::EvoData::getAverageFitnessScore() {
     return m_averageFitnessScore;
 }
 
-std::vector<std::pair<ivc::BaseNode*, unsigned int>> ivc::EvoData::getParentVec() {
+std::vector<std::pair<std::shared_ptr<ivc::BaseNode>, unsigned int>> ivc::EvoData::getParentVec() {
     return m_parentVec;
 }
 
-std::vector<ivc::BaseNode*> ivc::EvoData::getParents() {
-    std::vector<BaseNode*> parents;
+std::vector<std::shared_ptr<ivc::BaseNode>> ivc::EvoData::getParents() {
+    std::vector<std::shared_ptr<BaseNode>> parents;
     for(auto pair : m_parentVec){
         parents.push_back(pair.first);
     }

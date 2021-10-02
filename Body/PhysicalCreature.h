@@ -17,6 +17,7 @@
 #include "../Physics/PhysicsBase.h"
 
 #include <set>
+#include <memory>
 
 using namespace physx;
 
@@ -48,13 +49,13 @@ namespace ivc{
 
             PxArticulationLink* createLink(PxArticulationLink*, PxVec3 , PxVec3 , PxVec3);
             void addContactTriggers(PxArticulationLink*, PxVec3, ContactSensor*);
-            void buildChildNodes(BaseNode*,PxVec3,PxVec3,PxVec3,PxArticulationLink*);
-            void buildNode(BaseNode*, PxVec3, PxVec3, PxVec3, PxArticulationLink*, PxVec3);
+            void buildChildNodes(std::shared_ptr<BaseNode>,PxVec3,PxVec3,PxVec3,PxArticulationLink*);
+            void buildNode(std::shared_ptr<BaseNode>, PxVec3, PxVec3, PxVec3, PxArticulationLink*, PxVec3);
 
             void checkNeuronsForActivity();
         public:
             ~PhysicalCreature();
-            PhysicalCreature(BaseNode*, PxVec3, PhysicsBase*);
+            PhysicalCreature(std::shared_ptr<BaseNode>, PxVec3, PhysicsBase*);
             std::vector<PxArticulationLink*> getBodies();
             void updateContactStates();
             void performBrainStep();

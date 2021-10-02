@@ -186,7 +186,7 @@ nanogui::Screen* ivc::GUIWindow::getScreen() {
     return m_guiScreen;
 }
 
-void ivc::GUIWindow::updateGraphs(std::vector<EvoData*> dataVec) {
+void ivc::GUIWindow::updateGraphs(std::vector<std::shared_ptr<EvoData>> dataVec) {
     float bestLargestDistance = -INFINITY;
     float worstLargestDistance = INFINITY;
     float bestFitnessScore = -INFINITY;

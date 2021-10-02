@@ -4,7 +4,7 @@
 
 #include "LiveEnvironment.h"
 
-int ivc::LiveEnvironment::init(PhysicsBase* base, std::vector<std::pair<BaseNode*,float>> nodeVec) {
+int ivc::LiveEnvironment::init(PhysicsBase* base, std::vector<std::pair<std::shared_ptr<BaseNode>,float>> nodeVec) {
 
     m_base = base;
 
@@ -78,7 +78,7 @@ void ivc::LiveEnvironment::destroy() {
     }
 }
 
-void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<BaseNode*,float>> nodeVec) {
+void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_ptr<BaseNode>,float>> nodeVec) {
 
     float bestDistance = -INFINITY;
     if(m_sceneVec.size() >= nodeVec.size()){

@@ -58,7 +58,7 @@ namespace ivc{
             void resize();
             void draw();
             nanogui::Screen* getScreen();
-            void updateGraphs(std::vector<EvoData*>);
+            void updateGraphs(std::vector<std::shared_ptr<EvoData>>);
             void setConfig(EvoConfig*);
             nanogui::IntBox<unsigned int>* getCPGBox();
             void handleKeyInput(int,int);
