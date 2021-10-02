@@ -4,19 +4,20 @@
 
 #include "LiveEnvironment.h"
 
-int ivc::LiveEnvironment::init(PhysicsBase* base, std::vector<std::pair<std::shared_ptr<BaseNode>,float>> nodeVec) {
+int ivc::LiveEnvironment::init(PhysicsBase* base, std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> nodeVec) {
 
     m_base = base;
 
     float bestDistance = -INFINITY;
-    for(auto n : nodeVec){
+    for(const auto& [node, pair] : nodeVec){
         auto liveScene = new PhysicsScene();
-        liveScene->init(m_base, n.first);
+        liveScene->init(m_base, node);
         m_sceneVec.push_back(liveScene);
-        if(n.second > bestDistance){
-            m_currentBest = n.first;
+        if(pair.first > bestDistance){
+            m_currentBest = node;
+            m_currentBestPath = pair.second;
             m_bestScene = liveScene;
-            bestDistance = n.second;
+            bestDistance = pair.first;
         }
     }
 
@@ -53,15 +54,15 @@ int ivc::LiveEnvironment::simulate() {
     return 0;
 }
 
-std::vector<std::pair<std::vector<PxArticulationLink*>, bool>> ivc::LiveEnvironment::getBodyParts() {
+std::vector<std::pair<std::vector<PxArticulationLink*>, std::vector<PxVec3>>> ivc::LiveEnvironment::getBodyParts() {
 
-    std::vector<std::pair<std::vector<PxArticulationLink*>, bool>> returnVec;
+    std::vector<std::pair<std::vector<PxArticulationLink*>, std::vector<PxVec3>>> returnVec;
 
     for(auto scene : m_sceneVec){
-        bool best = false;
+        std::vector<PxVec3> path = {};
         if(scene == m_bestScene)
-            best = true;
-        returnVec.push_back({scene->getBodyParts(),best});
+            path = m_currentBestPath;
+        returnVec.emplace_back(scene->getBodyParts(),path);
     }
 
     return returnVec;
@@ -78,7 +79,7 @@ void ivc::LiveEnvironment::destroy() {
     }
 }
 
-void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_ptr<BaseNode>,float>> nodeVec) {
+void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> nodeVec) {
 
     float bestDistance = -INFINITY;
     if(m_sceneVec.size() >= nodeVec.size()){
@@ -88,9 +89,10 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
             }else{
                 m_sceneVec[i]->insertNewCreature(nodeVec[i].first);
             }
-            if(nodeVec[i].second > bestDistance){
+            if(nodeVec[i].second.first > bestDistance){
                 m_currentBest = nodeVec[i].first;
-                bestDistance = nodeVec[i].second;
+                m_currentBestPath = nodeVec[i].second.second;
+                bestDistance = nodeVec[i].second.first;
             }
         }
         m_sceneVec.resize(nodeVec.size());
@@ -103,9 +105,10 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
             }else{
                 m_sceneVec[i]->insertNewCreature(nodeVec[i].first);
             }
-            if(nodeVec[i].second > bestDistance){
+            if(nodeVec[i].second.first > bestDistance){
                 m_currentBest = nodeVec[i].first;
-                bestDistance = nodeVec[i].second;
+                m_currentBestPath = nodeVec[i].second.second;
+                bestDistance = nodeVec[i].second.first;
             }
         }
     }

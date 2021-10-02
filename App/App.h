@@ -76,6 +76,7 @@ namespace ivc {
             void initGUIWindow();
             void initNeuronWindow();
             void drawLiveWindow();
+            void drawPath(std::vector<PxVec3>);
         public:
             bool shouldClose();
 

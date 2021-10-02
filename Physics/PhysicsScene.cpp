@@ -104,7 +104,7 @@ void ivc::PhysicsScene::insertNewCreature(std::shared_ptr<BaseNode> newNode) {
 
     auto rootNodeHeight = m_rootNode->getDimensions().y;
 
-    m_creature = new PhysicalCreature(newNode,PxVec3(0,rootNodeHeight,0), m_base);
+    m_creature = new PhysicalCreature(newNode,PxVec3(0,rootNodeHeight * 1.2f,0), m_base);
     sceneDesc.simulationEventCallback = m_creature->getReporter();
 
     m_scene = m_base->getPhysics()->createScene(sceneDesc);
@@ -185,7 +185,7 @@ void ivc::PhysicsScene::rebuild() {
 
     auto rootNodeHeight = m_rootNode->getDimensions().y;
 
-    m_creature = new PhysicalCreature(m_rootNode,PxVec3(0,rootNodeHeight,0), m_base);
+    m_creature = new PhysicalCreature(m_rootNode,PxVec3(0,rootNodeHeight * 1.2f,0), m_base);
     sceneDesc.simulationEventCallback = m_creature->getReporter();
 
     m_scene = m_base->getPhysics()->createScene(sceneDesc);

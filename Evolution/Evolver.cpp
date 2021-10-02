@@ -78,9 +78,9 @@ void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std
             continue;
 
         int goalLength = std::floor(stepsPG / interval) + 1;
-        auto lastDelta = posRecordVec.back();
+        auto lastPos = posRecordVec.back();
         while(posRecordVec.size() < goalLength){
-            posRecordVec.push_back(lastDelta);
+            posRecordVec.push_back(lastPos);
         }
 
         //write result
@@ -174,7 +174,7 @@ void ivc::Evolver::stopEvolution() {
     m_config->m_paused = true;
 }
 
-std::vector<std::pair<std::shared_ptr<ivc::BaseNode>,float>> ivc::Evolver::getCurrentBestVector() {
+std::vector<std::pair<std::shared_ptr<ivc::BaseNode>,std::pair<float, std::vector<PxVec3>>>> ivc::Evolver::getCurrentBestVector() {
     return m_currentBestVector;
 }
 
@@ -252,19 +252,19 @@ void ivc::Evolver::calcFitness() {
 
         // is this creature better than the current best creatures?
         if(m_currentBestVector.size() < m_config->m_numberDisplayedCreatures){
-                m_currentBestVector.emplace_back(baseNode, distanceTravelled);
+                m_currentBestVector.push_back({baseNode, {distanceTravelled, posVec}});
         }else{
             int toReplaceIndex = -1;
             float worstDistance = INFINITY;
             for(int i = 0; i < m_currentBestVector.size(); ++i){
-                float oldDistance = m_currentBestVector[i].second;
+                float oldDistance = m_currentBestVector[i].second.first;
                 if(distanceTravelled > oldDistance && worstDistance > oldDistance){
                     toReplaceIndex = i;
                     worstDistance = oldDistance;
                 }
             }
             if(toReplaceIndex > -1){
-                m_currentBestVector[toReplaceIndex] = {baseNode, distanceTravelled};
+                m_currentBestVector[toReplaceIndex] = {baseNode, {distanceTravelled, posVec}};
             }
         }
 

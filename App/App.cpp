@@ -382,7 +382,10 @@ void ivc::App::drawLiveWindow() {
             }
             delete[] shapes;
 
-            m_liveShader->setBool("transparent", !bodyPair.second);
+            if(!bodyPair.second.empty())
+                drawPath(bodyPair.second);
+
+            m_liveShader->setBool("transparent", bodyPair.second.empty());
             drawShape(TEXTURED_BOX, posVec, rotQuat, scaleVec, COLOR_RED, false);
         }
     }
@@ -424,5 +427,13 @@ void ivc::App::initNeuronWindow() {
     glfwSetWindowUserPointer(m_neuronWindow, this);
 
     ShapeHandler::initNeuronShapes();
+
+}
+
+void ivc::App::drawPath(std::vector<PxVec3> posVec) {
+
+    for(const auto& pos : posVec){
+        drawShape(BOX, glm::vec3(pos.x,pos.y,pos.z),glm::quat(),glm::vec3(0.2,0.2,0.2), COLOR_YELLOW, false);
+    }
 
 }
