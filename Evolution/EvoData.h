@@ -27,17 +27,24 @@ namespace ivc{
             float m_largestDistanceTravelled = 0;
         public:
             void calculateScoreData(std::vector<std::pair<std::shared_ptr<BaseNode>, float>>, int, bool, std::vector<std::pair<std::shared_ptr<BaseNode>, float>>, bool);
-            void setGeneration(unsigned int);
-            void setLargestDistance(float);
 
             unsigned int getGeneration();
+            void setGeneration(unsigned int);
+
             float getLargestDistance();
+            void setLargestDistance(float);
+
             float getBestFitnessScore();
+            void setBestFitnessScore(float);
             float getWorstFitnessScore();
+            void setWorstFitnessScore(float);
             float getAverageFitnessScore();
+            void setAverageFitnessScore(float);
+
             float getBestNoveltyScore();
             float getWorstNoveltyScore();
             float getAverageNoveltyScore();
+
             std::vector<std::pair<std::shared_ptr<BaseNode>, unsigned int>> getParentVec();
             std::vector<std::shared_ptr<BaseNode>> getParents();
     };

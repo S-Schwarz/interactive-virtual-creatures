@@ -20,7 +20,11 @@ namespace ivc{
         private:
             PhysicsBase* m_base = nullptr;
             std::vector<std::pair<std::shared_ptr<BaseNode>,float>> m_currentBestVector;
-            float m_largestDistanceTravelled = -INFINITY;
+
+            float m_currentLargestDistance = -INFINITY;
+            float m_currentBestFitnessScore = -INFINITY;
+            float m_currentWorstFitnessScore = INFINITY;
+            float m_currentAverageFitnessScore = 0;
 
             unsigned int m_numberGenerations = 1;
 
@@ -31,21 +35,22 @@ namespace ivc{
             std::vector<std::shared_ptr<EvoData>> m_dataVec;
 
             std::map<std::shared_ptr<PhysicsScene>, std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>> m_testSceneMap;
-            std::vector<std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>> m_currentViableCreaturesVec;
-
-            std::map<std::shared_ptr<BaseNode>, float> m_fitnessMap;
-            std::map<std::shared_ptr<BaseNode>, float> m_noveltyMap;
-            std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>> m_currentGenNoveltyArchive;
             std::vector<std::vector<PxVec3>> m_noveltyArchive;
 
-            void evolveNextGeneration();
-            void createNextGeneration();
+            std::vector<std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>> m_currentViableCreaturesVec;
+            std::map<std::shared_ptr<BaseNode>, float> m_currentFitnessMap;
+            std::map<std::shared_ptr<BaseNode>, float> m_currentNoveltyMap;
+            std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>> m_currentGenNoveltyArchive;
+            std::vector<std::pair<std::shared_ptr<BaseNode>, unsigned int>> m_nextParentVec;
+
+
+
             void createFirstGeneration();
-            std::map<std::shared_ptr<PhysicsScene>, std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>> createNewGenerationFromParents(std::vector<std::pair<std::shared_ptr<BaseNode>,unsigned int>>);
-            void deleteLastGeneration(std::vector<std::shared_ptr<BaseNode>>);
-            std::vector<std::pair<std::shared_ptr<BaseNode>, float>> getAllFitnessScores();
-            std::vector<std::pair<std::shared_ptr<BaseNode>, float>> getAllNoveltyScores();
+            void createNewGenerationFromParents();
             void calcFitness();
+            void calcNovelty();
+            void chooseParents();
+            void createEvoData();
             void testCurrentGeneration();
         public:
             int init(PhysicsBase*, EvoConfig*);

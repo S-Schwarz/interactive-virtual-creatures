@@ -7,21 +7,7 @@
 #include <memory>
 #include "../Body/BaseNode.h"
 
-int ivc::Evolver::init(ivc::PhysicsBase *base, EvoConfig* config) {
-
-    m_base = base;
-    m_config = config;
-
-    //find number of available threads
-    m_numThreads = std::thread::hardware_concurrency();
-    printf("AVAILABLE THREADS: %i\n", m_numThreads);
-
-    createFirstGeneration();
-
-    return 0;
-}
-
-void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std::map<std::shared_ptr<ivc::PhysicsScene>, std::pair<std::shared_ptr<ivc::BaseNode>, std::pair<PxVec3, PxVec3>>> *mapPtr, std::map<std::shared_ptr<ivc::BaseNode>, std::vector<PxVec3>>* noveltyArchive, int stepsPG, int noveltyInterval){
+void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std::map<std::shared_ptr<ivc::PhysicsScene>, std::pair<std::shared_ptr<ivc::BaseNode>, std::pair<PxVec3, PxVec3>>> *mapPtr, std::map<std::shared_ptr<ivc::BaseNode>, std::vector<PxVec3>>* noveltyArchive,bool recordNovelty, int stepsPG, int noveltyInterval){
 
     for(auto scene : sceneVec){
         //simulate and score
@@ -111,41 +97,47 @@ void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std
 
 }
 
-void ivc::Evolver::evolveNextGeneration() {
+int ivc::Evolver::init(ivc::PhysicsBase *base, EvoConfig* config) {
 
-    calcFitness();
-    createNextGeneration();
+    m_base = base;
+    m_config = config;
 
+    //find number of available threads
+    m_numThreads = std::thread::hardware_concurrency();
+    printf("AVAILABLE THREADS: %i\n", m_numThreads);
+
+    createFirstGeneration();
+
+    return 0;
 }
 
-void ivc::Evolver::createNextGeneration() {
+void ivc::Evolver::startContinuousEvolution() {
 
-    auto newData = std::make_shared<EvoData>();
-    newData->setGeneration(m_numberGenerations);
-    newData->setLargestDistance(m_largestDistanceTravelled);
-    m_largestDistanceTravelled = -INFINITY;
-    auto fitnessScores = getAllFitnessScores();
-    auto noveltyScores = getAllNoveltyScores();
+    while(m_config->m_paused){
 
-    if(!fitnessScores.empty()){
-        newData->calculateScoreData(fitnessScores, m_config->m_creaturesPerGeneration, m_config->m_forceDiversity, noveltyScores, m_config->m_useNoveltySearch);
-        m_dataVec.push_back(newData);
-        printf("Largest Distance: %f\n", newData->getLargestDistance());
     }
+    while(!m_config->m_paused){
+        printf("---------------------------\n");
+        printf("GENERATION #%i:\n", m_numberGenerations);
 
-    if(newData->getBestFitnessScore() == 0 || fitnessScores.empty()){
-        //create completely new generation
-        printf("Creating new generation!\n");
-        deleteLastGeneration({});
-        m_testSceneMap = {};
-        createFirstGeneration();
-    }else{
-        //create new generation
-        auto nextGenMap = createNewGenerationFromParents(newData->getParentVec());
+        testCurrentGeneration();
+        m_testSceneMap.clear();
 
-        //replace and delete old generation
-        deleteLastGeneration(newData->getParents());
-        m_testSceneMap = nextGenMap;
+        if(m_currentViableCreaturesVec.empty()){
+            createFirstGeneration();
+        }else{
+            calcFitness();
+            printf("Largest distance: %f\n", m_currentLargestDistance);
+            chooseParents();
+            createNewGenerationFromParents();
+            createEvoData();
+
+            m_currentViableCreaturesVec.clear();
+            m_currentFitnessMap.clear();
+            m_currentNoveltyMap.clear();
+
+            m_numberGenerations += 1;
+        }
     }
 
 }
@@ -160,25 +152,17 @@ void ivc::Evolver::createFirstGeneration() {
     }
 }
 
-void ivc::Evolver::deleteLastGeneration(std::vector<std::shared_ptr<BaseNode>> parents) {
-    m_testSceneMap.clear();
-    m_fitnessMap = {};
-    m_noveltyMap = {};
-}
 
-std::map<std::shared_ptr<ivc::PhysicsScene>, std::pair<std::shared_ptr<ivc::BaseNode>, std::pair<PxVec3, PxVec3>>>
-ivc::Evolver::createNewGenerationFromParents(std::vector<std::pair<std::shared_ptr<BaseNode>, unsigned int>> amountPerParent) {
+void ivc::Evolver::createNewGenerationFromParents() {
 
-    printf("Choose %i parents from this generation\n", amountPerParent.size());
+    printf("Choose %zu parents from this generation\n", m_nextParentVec.size());
 
-    std::map<std::shared_ptr<PhysicsScene>, std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>> nextGenMap;
-
-    for(auto pair : amountPerParent){
+    for(const auto&[node, amount] : m_nextParentVec){
         auto newScene = std::make_shared<PhysicsScene>();
-        newScene->init(m_base,pair.first);
-        nextGenMap[newScene] = {pair.first, {PxVec3(0,0,0), PxVec3(0,0,0)}};
-        for(int i = 0; i < pair.second; ++i){
-            auto newRoot = pair.first->copy();
+        newScene->init(m_base,node);
+        m_testSceneMap[newScene] = {node, {PxVec3(0,0,0), PxVec3(0,0,0)}};
+        for(int i = 0; i < amount; ++i){
+            auto newRoot = node->copy();
             std::random_device rd;
             std::mt19937 generator(rd());
             newRoot->setGenerator(&generator);
@@ -187,26 +171,8 @@ ivc::Evolver::createNewGenerationFromParents(std::vector<std::pair<std::shared_p
             newRoot->mutateNeuralConnections(m_config);
             newScene = std::make_shared<PhysicsScene>();
             newScene->init(m_base,newRoot);
-            nextGenMap[newScene] = {newRoot, {PxVec3(0,0,0), PxVec3(0,0,0)}};
+            m_testSceneMap[newScene] = {newRoot, {PxVec3(0,0,0), PxVec3(0,0,0)}};
         }
-    }
-
-    return nextGenMap;
-
-}
-
-void ivc::Evolver::startContinuousEvolution() {
-
-    while(m_config->m_paused){
-
-    }
-
-    while(!m_config->m_paused){
-        printf("---------------------------\n");
-        printf("GENERATION #%i:\n", m_numberGenerations);
-        testCurrentGeneration();
-        evolveNextGeneration();
-        m_numberGenerations += 1;
     }
 
 }
@@ -223,41 +189,80 @@ unsigned int ivc::Evolver::getNumberGenerations() {
     return m_numberGenerations;
 }
 
-std::vector<std::pair<std::shared_ptr<ivc::BaseNode>, float>> ivc::Evolver::getAllFitnessScores() {
-    std::vector<std::pair<std::shared_ptr<BaseNode>, float>> scoreVec;
-    for(auto const& [key, val] : m_fitnessMap){
-        scoreVec.push_back({key, val});
-    }
-    return scoreVec;
-}
-
 std::vector<std::shared_ptr<ivc::EvoData>> ivc::Evolver::getEvoDataVec() {
     return m_dataVec;
 }
 
-void ivc::Evolver::calcFitness() {
+void ivc::Evolver::testCurrentGeneration() {
 
-    // copy current gen into overall archive
-    for(auto const& [baseNode, noveltyVec] : m_currentGenNoveltyArchive){
-        m_noveltyArchive.push_back(noveltyVec);
+    void (*testFuncPtr)(std::vector<std::shared_ptr<PhysicsScene>>, std::map<std::shared_ptr<PhysicsScene>,std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>>*,std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>>*,bool, int, int) = testCreatures;
+
+    printf("Size: %lu\n", m_testSceneMap.size());
+
+    //fitness test all creatures
+    //divide scenes among threads
+    std::vector<std::unique_ptr<std::thread>> allThreads;
+    std::vector<std::vector<std::shared_ptr<PhysicsScene>>> allScenes;
+    allScenes.reserve(m_numThreads);
+    for(int i = 0; i < m_numThreads; ++i){
+        allScenes.emplace_back();
     }
 
-    m_largestDistanceTravelled = -INFINITY;
+    unsigned int iter = 0;
+    for(auto const& pair : m_testSceneMap){
+        auto scene = pair.first;
+        allScenes[iter].push_back(scene);
+        if(iter == m_numThreads - 1){
+            iter = 0;
+        }else{
+            ++iter;
+        }
+    }
+
+    int noveltyInterval = m_config->m_noveltyInterval;
+
+    allThreads.reserve(allScenes.size());
+    for(const auto& sceneVec : allScenes){
+        allThreads.push_back(std::make_unique<std::thread>(testFuncPtr, sceneVec, &m_testSceneMap, &m_currentGenNoveltyArchive,m_config->m_useNoveltySearch, m_config->m_stepsPerGeneration, noveltyInterval));
+    }
+
+    for (auto&& thread : allThreads) {
+        thread->join();
+    }
+
+    allThreads.clear();
+
+    //choose viable creatures
+    for(const auto &[scene, pair] : m_testSceneMap){
+        auto node = pair.first;
+        auto posPair = pair.second;
+        if(posPair.first.x != -INFINITY) {
+            m_currentViableCreaturesVec.push_back(pair);
+        }
+    }
+
+}
+
+void ivc::Evolver::calcFitness() {
+
+    m_currentLargestDistance = -INFINITY;
+    m_currentBestFitnessScore = -INFINITY;
+    m_currentWorstFitnessScore = INFINITY;
     // normal fitness function
     auto sideMP = m_config->m_useSidewaysMP ? m_config->m_sidewaysMultiplier : 0.0f;
-    for(auto const& [key, val] : m_testSceneMap){
-        auto baseNode = val.first;
-        auto startPos = val.second.first;
-        auto endPos = val.second.second;
+    for(auto const& [baseNode, posPair] : m_currentViableCreaturesVec){
+        auto startPos = posPair.first;
+        auto endPos = posPair.second;
 
+        // calc distance travelled
         auto distanceTravelled = startPos.z - endPos.z;
-        if(distanceTravelled > m_largestDistanceTravelled){
-            m_largestDistanceTravelled = distanceTravelled;
+        if(distanceTravelled > m_currentLargestDistance){
+            m_currentLargestDistance = distanceTravelled;
         }
 
+        // is this creature better than the current best creatures?
         if(m_currentBestVector.size() < m_config->m_numberDisplayedCreatures){
-            if(distanceTravelled > 0)
-                m_currentBestVector.push_back({baseNode, distanceTravelled});
+                m_currentBestVector.emplace_back(baseNode, distanceTravelled);
         }else{
             int toReplaceIndex = -1;
             float worstDistance = INFINITY;
@@ -273,20 +278,29 @@ void ivc::Evolver::calcFitness() {
             }
         }
 
+        // calculate and save fitness
         auto swervingX = sideMP * abs(startPos.x - endPos.x);
         float fitness = (distanceTravelled - swervingX);
 
-        m_fitnessMap[baseNode] = fitness;
-    }
-
-    //remove unfit creatures
-    for(auto const& [key, val] : m_testSceneMap) {
-        auto baseNode = val.first;
-
-        if (m_fitnessMap[baseNode] == INFINITY || m_fitnessMap[baseNode] == -INFINITY) {
-            m_fitnessMap.erase(baseNode);
+        if(fitness > m_currentBestFitnessScore){
+            m_currentBestFitnessScore = fitness;
         }
+        if(fitness < m_currentWorstFitnessScore){
+            m_currentWorstFitnessScore = fitness;
+        }
+
+        m_currentFitnessMap[baseNode] = fitness;
     }
+
+}
+
+void ivc::Evolver::calcNovelty() {
+
+    // copy current gen into overall archive
+    for(auto const& [baseNode, noveltyVec] : m_currentGenNoveltyArchive){
+        m_noveltyArchive.push_back(noveltyVec);
+    }
+
     // novelty fitness
     // assign novelty score to current gen
     for(auto const& [baseNode, noveltyVec] : m_currentGenNoveltyArchive){
@@ -342,66 +356,76 @@ void ivc::Evolver::calcFitness() {
 
         float averageDistance = sumDiff / nearestNeighborsDifferenceVec.size();
 
-        m_noveltyMap[baseNode] = averageDistance;
+        m_currentNoveltyMap[baseNode] = averageDistance;
 
     }
 
-    m_currentGenNoveltyArchive = {};
+    m_currentGenNoveltyArchive.clear();
 
 }
 
-std::vector<std::pair<std::shared_ptr<ivc::BaseNode>, float>> ivc::Evolver::getAllNoveltyScores() {
-    std::vector<std::pair<std::shared_ptr<BaseNode>, float>> noveltyVec;
-    for(auto const& [key, val] : m_noveltyMap){
-        noveltyVec.push_back({key, val});
+void ivc::Evolver::chooseParents() {
+
+    // calculate average score
+    float scoreSum = 0;
+    for(const auto &[node, score] : m_currentFitnessMap){
+        scoreSum += score;
     }
-    return noveltyVec;
-}
+    m_currentAverageFitnessScore = scoreSum / m_currentFitnessMap.size();
 
-void ivc::Evolver::testCurrentGeneration() {
-
-    void (*testFuncPtr)(std::vector<std::shared_ptr<PhysicsScene>>, std::map<std::shared_ptr<PhysicsScene>,std::pair<std::shared_ptr<BaseNode>, std::pair<PxVec3, PxVec3>>>*,std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>>*, int, int) = testCreatures;
-
-    printf("Size: %lu\n", m_testSceneMap.size());
-
-    //fitness test all creatures
-    //divide scenes among threads
-    std::vector<std::unique_ptr<std::thread>> allThreads;
-    std::vector<std::vector<std::shared_ptr<PhysicsScene>>> allScenes;
-    for(int i = 0; i < m_numThreads; ++i){
-        allScenes.push_back({});
-    }
-
-    unsigned int iter = 0;
-    for(auto const& pair : m_testSceneMap){
-        auto scene = pair.first;
-        allScenes[iter].push_back(scene);
-        if(iter == m_numThreads - 1){
-            iter = 0;
+    // normalize scores
+    std::vector<std::pair<std::shared_ptr<BaseNode>, float>> normalizedScores;
+    for(const auto &[node, score] : m_currentFitnessMap){
+        if(m_currentBestFitnessScore == m_currentWorstFitnessScore){
+            normalizedScores.emplace_back(node,1.0f);
         }else{
-            ++iter;
+            normalizedScores.emplace_back(node, Mutator::normalize(score, m_currentWorstFitnessScore, m_currentBestFitnessScore));
         }
     }
 
-    int noveltyInterval = m_config->m_noveltyInterval;
-
-    for(auto sceneVec : allScenes){
-        allThreads.push_back(std::unique_ptr<std::thread>(new std::thread(testFuncPtr, sceneVec, &m_testSceneMap, &m_currentGenNoveltyArchive, m_config->m_stepsPerGeneration, noveltyInterval)));
-    }
-
-    for (auto&& thread : allThreads) {
-        thread->join();
-    }
-
-    allThreads.clear();
-
-    //choose viable creatures
-    for(const auto &[scene, pair] : m_testSceneMap){
-        auto node = pair.first;
-        auto posPair = pair.second;
-        if(posPair.first.x != -INFINITY) {
-            m_currentViableCreaturesVec.push_back(pair);
+    //choose best creatures
+    std::vector<std::pair<std::shared_ptr<BaseNode>,float>> bestVec;
+    for(const auto&[node, score] : normalizedScores){
+        if(score > EVOLUTION_MIN_SCORE){
+            bestVec.emplace_back(node,score);
         }
     }
+
+    //sort by score
+    std::sort(bestVec.begin(), bestVec.end(), [](auto &left, auto &right) {
+        return left.second > right.second;
+    });
+
+    //cap number of parents
+    if(bestVec.size() > EVOLUTION_MAX_PARENTS){
+        bestVec.resize(EVOLUTION_MAX_PARENTS);
+    }
+
+    //choose amount of children per root
+    std::vector<std::pair<std::shared_ptr<BaseNode>,unsigned int>> amountVec;
+    float total = 0;
+    for(const auto&[node, score] : bestVec){
+        total += score;
+    }
+    float partSize = m_config->m_creaturesPerGeneration / total;
+
+    for(const auto&[node, score] : bestVec){
+        auto amountChildren = std::max(1.0f, floor(score * partSize));
+        amountVec.emplace_back(node, amountChildren);
+    }
+
+    m_nextParentVec = amountVec;
+
+}
+
+void ivc::Evolver::createEvoData() {
+
+    auto newData = std::make_shared<EvoData>();
+    newData->setGeneration(m_numberGenerations);
+    newData->setLargestDistance(m_currentLargestDistance);
+    newData->setBestFitnessScore(m_currentBestFitnessScore);
+    newData->setWorstFitnessScore(m_currentWorstFitnessScore);
+    newData->setAverageFitnessScore(m_currentAverageFitnessScore);
+    m_dataVec.push_back(newData);
 
 }

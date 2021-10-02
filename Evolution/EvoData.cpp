@@ -168,3 +168,15 @@ void ivc::EvoData::setLargestDistance(float distance) {
 float ivc::EvoData::getLargestDistance() {
     return m_largestDistanceTravelled;
 }
+
+void ivc::EvoData::setBestFitnessScore(float val) {
+    m_bestFitnessScore = val;
+}
+
+void ivc::EvoData::setWorstFitnessScore(float val) {
+    m_worstFitnessScore = val;
+}
+
+void ivc::EvoData::setAverageFitnessScore(float val) {
+    m_averageFitnessScore = val;
+}
