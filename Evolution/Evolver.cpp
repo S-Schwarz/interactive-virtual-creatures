@@ -379,7 +379,7 @@ void ivc::Evolver::chooseParents() {
             normalizedScores.emplace_back(node, Mutator::normalize(score, m_currentWorstFitnessScore, m_currentBestFitnessScore));
         }
     }
-
+/*
     //choose best creatures
     std::vector<std::pair<std::shared_ptr<BaseNode>,float>> bestVec;
     for(const auto&[node, score] : normalizedScores){
@@ -387,26 +387,27 @@ void ivc::Evolver::chooseParents() {
             bestVec.emplace_back(node,score);
         }
     }
-
+*/
     //sort by score
-    std::sort(bestVec.begin(), bestVec.end(), [](auto &left, auto &right) {
+    std::sort(normalizedScores.begin(), normalizedScores.end(), [](auto &left, auto &right) {
         return left.second > right.second;
     });
 
     //cap number of parents
-    if(bestVec.size() > EVOLUTION_MAX_PARENTS){
-        bestVec.resize(EVOLUTION_MAX_PARENTS);
+    auto maxParents = floor(m_config->m_creaturesPerGeneration * 0.2);
+    if(normalizedScores.size() > maxParents){
+        normalizedScores.resize(maxParents);
     }
 
     //choose amount of children per root
     std::vector<std::pair<std::shared_ptr<BaseNode>,unsigned int>> amountVec;
     float total = 0;
-    for(const auto&[node, score] : bestVec){
+    for(const auto&[node, score] : normalizedScores){
         total += score;
     }
     float partSize = m_config->m_creaturesPerGeneration / total;
 
-    for(const auto&[node, score] : bestVec){
+    for(const auto&[node, score] : normalizedScores){
         auto amountChildren = std::max(1.0f, floor(score * partSize));
         amountVec.emplace_back(node, amountChildren);
     }
