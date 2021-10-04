@@ -30,7 +30,7 @@ const int NUMBER_OF_GENERATIONS = 100;
 const int STEPS_PER_GENERATION = 2500;
 
 const int FALL_DOWN_STEPS = 500;
-const float ROOT_STARTING_HEIGHT = 5;
+const float ROOT_STARTING_HEIGHT_FACTOR = 1.2f;
 
 //body nodes
 const float CREATURE_DENSITY = 10.0f;
