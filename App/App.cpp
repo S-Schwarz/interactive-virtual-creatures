@@ -47,8 +47,10 @@ void ivc::App::processInput()
 
     static int oldPlaceState = GLFW_RELEASE;
     int newPlaceState = glfwGetKey(m_liveWindow, GLFW_KEY_SPACE);
-    if(newPlaceState == GLFW_RELEASE && oldPlaceState == GLFW_PRESS)
+    if(newPlaceState == GLFW_RELEASE && oldPlaceState == GLFW_PRESS){
         m_evoConfig->m_objVec.emplace_back(m_newObjectPos, m_newObjectScale);
+        m_evolver->clearBestVec();
+    }
     oldPlaceState = newPlaceState;
 
     static int oldPauseState = GLFW_RELEASE;
@@ -213,7 +215,7 @@ int ivc::App::update() {
         if(currentGenNum != m_lastGenNum && currentGenNum % 4 == 0){
             auto newCreatureVector = m_evolver->getCurrentBestVector();
             if(!newCreatureVector.empty()){
-                printf("INSERTING %i NEW CREATURES INTO LIVE SCENE\n", newCreatureVector.size());
+                printf("INSERTING %i NEW CREATURES INTO LIVE SCENE %p\n", newCreatureVector.size(), newCreatureVector[0].first.get());
                 m_liveEnvironment->insertNewCreatures(newCreatureVector);
                 m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getBestCreature());
                 m_lastGenNum = currentGenNum;

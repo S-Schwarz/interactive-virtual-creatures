@@ -239,9 +239,9 @@ void ivc::Evolver::calcFitness() {
     m_currentBestFitnessScore = -INFINITY;
     m_currentWorstFitnessScore = INFINITY;
 
-    if(numObj != m_config->m_objVec.size()){
-        numObj = m_config->m_objVec.size();
-        m_currentViableCreaturesVec = {};
+    if(m_clearBestVec){
+        m_currentBestVector = {};
+        m_clearBestVec = false;
     }
 
     // normal fitness function
@@ -432,4 +432,8 @@ void ivc::Evolver::createEvoData() {
     newData->setAverageFitnessScore(m_currentAverageFitnessScore);
     m_dataVec.push_back(newData);
 
+}
+
+void ivc::Evolver::clearBestVec() {
+    m_clearBestVec = true;
 }

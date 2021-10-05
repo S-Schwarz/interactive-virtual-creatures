@@ -31,7 +31,7 @@ namespace ivc{
             unsigned int m_numThreads = 1;
 
             EvoConfig* m_config = nullptr;
-            unsigned int numObj = 0;
+            bool m_clearBestVec = false;
 
             std::vector<std::shared_ptr<EvoData>> m_dataVec;
 
@@ -61,6 +61,7 @@ namespace ivc{
             std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> getCurrentBestVector();
             unsigned int getNumberGenerations();
             std::vector<std::shared_ptr<EvoData>> getEvoDataVec();
+            void clearBestVec();
 
 
     };
