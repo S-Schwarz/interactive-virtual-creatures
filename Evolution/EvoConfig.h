@@ -6,6 +6,7 @@
 #define INTERACTIVE_VIRTUAL_CREATURES_EVOCONFIG_H
 
 #include "../Constants.h"
+#include <vector>
 
 namespace ivc{
     class EvoConfig {
@@ -29,6 +30,8 @@ namespace ivc{
         bool m_useZAxis = true;
 
         bool m_paused = true;
+
+        std::vector<std::pair<glm::vec3, glm::vec3>> m_objVec;
 
     };
 }

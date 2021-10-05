@@ -41,8 +41,15 @@ void ivc::App::processInput()
     if (glfwGetKey(m_liveWindow, GLFW_KEY_D) == GLFW_PRESS)
         m_camera.ProcessKeyboard(RIGHT, m_deltaTime);
 
+
     if (glfwGetKey(m_liveWindow, GLFW_KEY_R) == GLFW_PRESS)
         m_liveEnvironment->resetCreaturePosition();
+
+    static int oldPlaceState = GLFW_RELEASE;
+    int newPlaceState = glfwGetKey(m_liveWindow, GLFW_KEY_SPACE);
+    if(newPlaceState == GLFW_RELEASE && oldPlaceState == GLFW_PRESS)
+        m_evoConfig->m_objVec.emplace_back(m_newObjectPos, m_newObjectScale);
+    oldPlaceState = newPlaceState;
 
     static int oldPauseState = GLFW_RELEASE;
     int newPauseState = glfwGetKey(m_liveWindow, GLFW_KEY_P);
@@ -87,6 +94,21 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
 
 }
 
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+
+    auto appPtr = (ivc::App*)glfwGetWindowUserPointer(window);
+
+    if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+        appPtr->addToScale(glm::vec3(0,0,yoffset));
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        appPtr->addToScale(glm::vec3(yoffset,0,0));
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+        appPtr->addToScale(glm::vec3(0,yoffset,0));
+
+}
+
+
 bool ivc::App::firstMouseMovement() {
     return m_firstMouseMovement;
 }
@@ -125,11 +147,11 @@ int ivc::App::init(){
     m_physicsBase = new PhysicsBase();
     m_physicsBase->init();
 
-    auto evoConfig = new EvoConfig();
+    m_evoConfig = new EvoConfig();
 
     Evolver* evolver = new Evolver();
     m_evolver = evolver;
-    evolver->init(m_physicsBase, evoConfig);
+    evolver->init(m_physicsBase, m_evoConfig);
 
     m_evolutionThread = new std::thread(backgroundEvolution, evolver);
 
@@ -138,7 +160,7 @@ int ivc::App::init(){
     initLiveWindow();
     initNeuronWindow();
     initGUIWindow();
-    m_guiWindow->setConfig(evoConfig);
+    m_guiWindow->setConfig(m_evoConfig);
     initShadersAndTextures();
 
     m_neuronVisualizer = new NeuronVisualizer(m_neuronWindow,m_neuronShader);
@@ -175,6 +197,16 @@ int ivc::App::update() {
         }
     }
 
+    // -----------------------------
+
+    auto frontVec = m_camera.Front;
+    auto normalVec = glm::vec3(0,1,0);
+
+    if(glm::dot(frontVec,normalVec) != 0){
+        m_newObjectPos = m_camera.Position + m_camera.Front*(glm::dot((glm::vec3(0,0,0) - m_camera.Position),normalVec)) / (glm::dot(frontVec,normalVec));
+        m_newObjectPos += glm::vec3(0,m_newObjectScale.y * 0.5,0);
+    }
+
     // insert new creature ------------
     if(liveEnvInitialized){
         auto currentGenNum = m_evolver->getNumberGenerations();
@@ -194,7 +226,7 @@ int ivc::App::update() {
     }else{
         auto currentCreatureVec = m_evolver->getCurrentBestVector();
         if(!currentCreatureVec.empty()){
-            m_liveEnvironment->init(m_physicsBase, currentCreatureVec);
+            m_liveEnvironment->init(m_physicsBase, currentCreatureVec, m_evoConfig);
             m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getBestCreature());
             liveEnvInitialized = true;
         }
@@ -279,6 +311,7 @@ void ivc::App::initLiveWindow() {
     glfwMakeContextCurrent(m_liveWindow);
     glfwSetFramebufferSizeCallback(m_liveWindow, framebuffer_size_callback);
     glfwSetCursorPosCallback(m_liveWindow, mouse_callback);
+    glfwSetScrollCallback(m_liveWindow, scroll_callback);
 
     // Init GLAD
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -355,6 +388,14 @@ void ivc::App::drawLiveWindow() {
 
     drawShape(BOX, glm::vec3(0,0,-240),glm::quat(),glm::vec3(0.1,0.1,500.0), COLOR_RED, false);
     drawShape(BOX, glm::vec3(0,0,0),glm::quat(),glm::vec3(20.0,0.1,0.1), COLOR_RED, false);
+
+    // draw new object ----------------------
+
+    drawShape(BOX, m_newObjectPos,glm::quat(),m_newObjectScale, COLOR_RED, false);
+
+    for( auto pair : m_evoConfig->m_objVec){
+        drawShape(TEXTURED_BOX, pair.first, glm::quat(), pair.second, COLOR_RED, false);
+    }
 
     // PHYSX OBJECTS ----------
     for(auto bodyPair : m_liveEnvironment->getBodyParts()){
@@ -435,5 +476,18 @@ void ivc::App::drawPath(std::vector<PxVec3> posVec) {
     for(const auto& pos : posVec){
         drawShape(BOX, glm::vec3(pos.x,pos.y,pos.z),glm::quat(),glm::vec3(0.2,0.2,0.2), COLOR_YELLOW, false);
     }
+
+}
+
+void ivc::App::addToScale(glm::vec3 vec) {
+
+    m_newObjectScale += vec;
+
+    if(m_newObjectScale.x < 1)
+        m_newObjectScale = glm::vec3(1, m_newObjectScale.y, m_newObjectScale.z);
+    if(m_newObjectScale.y < 1)
+        m_newObjectScale = glm::vec3(m_newObjectScale.x, 1, m_newObjectScale.z);
+    if(m_newObjectScale.z < 1)
+        m_newObjectScale = glm::vec3(m_newObjectScale.x, m_newObjectScale.y, 1);
 
 }

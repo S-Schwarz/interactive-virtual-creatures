@@ -31,6 +31,7 @@ namespace ivc{
             unsigned int m_numThreads = 1;
 
             EvoConfig* m_config = nullptr;
+            unsigned int numObj = 0;
 
             std::vector<std::shared_ptr<EvoData>> m_dataVec;
 

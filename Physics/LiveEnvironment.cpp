@@ -4,14 +4,15 @@
 
 #include "LiveEnvironment.h"
 
-int ivc::LiveEnvironment::init(PhysicsBase* base, std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> nodeVec) {
+int ivc::LiveEnvironment::init(PhysicsBase* base, std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> nodeVec, EvoConfig* config) {
 
     m_base = base;
+    m_config = config;
 
     float bestDistance = -INFINITY;
     for(const auto& [node, pair] : nodeVec){
         auto liveScene = new PhysicsScene();
-        liveScene->init(m_base, node);
+        liveScene->init(m_base, node, m_config);
         m_sceneVec.push_back(liveScene);
         if(pair.first > bestDistance){
             m_currentBest = node;
@@ -100,7 +101,7 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
         for(int i = 0; i < nodeVec.size(); ++i){
             if(i >= m_sceneVec.size()){
                 auto liveScene = new PhysicsScene();
-                liveScene->init(m_base, nodeVec[i].first);
+                liveScene->init(m_base, nodeVec[i].first, m_config);
                 m_sceneVec.push_back(liveScene);
             }else{
                 m_sceneVec[i]->insertNewCreature(nodeVec[i].first);
@@ -167,4 +168,8 @@ void ivc::LiveEnvironment::resetCreaturePosition() {
 
 ivc::PhysicalCreature *ivc::LiveEnvironment::getBestCreature() {
     return m_bestScene->getCreature();
+}
+
+std::vector<PxRigidStatic *> ivc::LiveEnvironment::getObjVec() {
+    return m_bestScene->getObjVec();
 }

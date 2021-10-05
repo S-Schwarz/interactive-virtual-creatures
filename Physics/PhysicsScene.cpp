@@ -4,10 +4,11 @@
 
 #include "PhysicsScene.h"
 
-int ivc::PhysicsScene::init(PhysicsBase* base, std::shared_ptr<BaseNode> rootNode) {
+int ivc::PhysicsScene::init(PhysicsBase* base, std::shared_ptr<BaseNode> rootNode, EvoConfig* config) {
 
     m_base = base;
     m_rootNode = rootNode;
+    m_config = config;
 
     PxSceneDesc sceneDesc(m_base->getPhysics()->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
@@ -24,6 +25,17 @@ int ivc::PhysicsScene::init(PhysicsBase* base, std::shared_ptr<BaseNode> rootNod
 
     m_scene->addArticulation(*m_creature->getArticulation());
     m_creature->initCache();
+
+    for(auto pair : config->m_objVec){
+        PxVec3 halfExtents(pair.second.x/2,pair.second.y/2,pair.second.z/2);
+        auto boxShape = m_base->getPhysics()->createShape(PxBoxGeometry(halfExtents), *m_base->getMaterial());
+        PxTransform transform(PxVec3(pair.first.x, pair.first.y, pair.first.z));
+        auto body = m_base->getPhysics()->createRigidStatic(transform);
+        body->attachShape(*boxShape);
+        m_scene->addActor(*body);
+        boxShape->release();
+        m_objVec.push_back(body);
+    }
 
     m_isInitialized = true;
 
@@ -113,6 +125,17 @@ void ivc::PhysicsScene::insertNewCreature(std::shared_ptr<BaseNode> newNode) {
     m_scene->addArticulation(*m_creature->getArticulation());
     m_creature->initCache();
 
+    for(auto pair : m_config->m_objVec){
+        PxVec3 halfExtents(pair.second.x/2,pair.second.y/2,pair.second.z/2);
+        auto boxShape = m_base->getPhysics()->createShape(PxBoxGeometry(halfExtents), *m_base->getMaterial());
+        PxTransform transform(PxVec3(pair.first.x, pair.first.y, pair.first.z));
+        auto body = m_base->getPhysics()->createRigidStatic(transform);
+        body->attachShape(*boxShape);
+        m_scene->addActor(*body);
+        boxShape->release();
+        m_objVec.push_back(body);
+    }
+
     // set position and rotation of new creature equal to old creature
 
     /*auto newRoot = m_creature->getRootLink();
@@ -194,6 +217,17 @@ void ivc::PhysicsScene::rebuild() {
     m_scene->addArticulation(*m_creature->getArticulation());
     m_creature->initCache();
 
+    for(auto pair : m_config->m_objVec){
+        PxVec3 halfExtents(pair.second.x/2,pair.second.y/2,pair.second.z/2);
+        auto boxShape = m_base->getPhysics()->createShape(PxBoxGeometry(halfExtents), *m_base->getMaterial());
+        PxTransform transform(PxVec3(pair.first.x, pair.first.y, pair.first.z));
+        auto body = m_base->getPhysics()->createRigidStatic(transform);
+        body->attachShape(*boxShape);
+        m_scene->addActor(*body);
+        boxShape->release();
+        m_objVec.push_back(body);
+    }
+
 }
 
 ivc::PhysicalCreature *ivc::PhysicsScene::getCreature() {
@@ -202,4 +236,8 @@ ivc::PhysicalCreature *ivc::PhysicsScene::getCreature() {
 
 std::shared_ptr<ivc::BaseNode> ivc::PhysicsScene::getRootNode() {
     return m_rootNode;
+}
+
+std::vector<PxRigidStatic *> ivc::PhysicsScene::getObjVec() {
+    return m_objVec;
 }

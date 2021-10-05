@@ -140,7 +140,7 @@ void ivc::Evolver::createFirstGeneration() {
         auto newRootNode = std::make_shared<BaseNode>();
         newRootNode->init(true, nullptr, nullptr,m_config);
         auto newScene = std::make_shared<PhysicsScene>();
-        newScene->init(m_base, newRootNode);
+        newScene->init(m_base, newRootNode,m_config);
         m_testSceneVec.push_back(newScene);
     }
 }
@@ -152,7 +152,7 @@ void ivc::Evolver::createNewGenerationFromParents() {
 
     for(const auto&[node, amount] : m_nextParentVec){
         auto newScene = std::make_shared<PhysicsScene>();
-        newScene->init(m_base,node);
+        newScene->init(m_base,node, m_config);
         m_testSceneVec.push_back(newScene);
         for(int i = 0; i < amount; ++i){
             auto newRoot = node->copy();
@@ -163,7 +163,7 @@ void ivc::Evolver::createNewGenerationFromParents() {
             newRoot->mutateNewBodyAndNewNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
             newRoot->mutateNeuralConnections(m_config);
             newScene = std::make_shared<PhysicsScene>();
-            newScene->init(m_base,newRoot);
+            newScene->init(m_base,newRoot, m_config);
             m_testSceneVec.push_back(newScene);
         }
     }
@@ -238,6 +238,12 @@ void ivc::Evolver::calcFitness() {
     m_currentLargestDistance = -INFINITY;
     m_currentBestFitnessScore = -INFINITY;
     m_currentWorstFitnessScore = INFINITY;
+
+    if(numObj != m_config->m_objVec.size()){
+        numObj = m_config->m_objVec.size();
+        m_currentViableCreaturesVec = {};
+    }
+
     // normal fitness function
     auto sideMP = m_config->m_useSidewaysMP ? m_config->m_sidewaysMultiplier : 0.0f;
     for(auto const& [baseNode, posVec] : m_currentViableCreaturesVec){

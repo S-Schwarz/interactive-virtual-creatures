@@ -49,6 +49,7 @@ namespace ivc {
 
             LiveEnvironment* m_liveEnvironment = nullptr;
             Evolver* m_evolver = nullptr;
+            EvoConfig* m_evoConfig = nullptr;
             std::thread* m_evolutionThread = nullptr;
 
             const int c_WIDTH = 800, c_HEIGHT = 600;
@@ -68,6 +69,9 @@ namespace ivc {
 
             bool liveEnvInitialized = false;
             PhysicsBase* m_physicsBase = nullptr;
+
+            glm::vec3 m_newObjectPos = glm::vec3(0,0.5,0);
+            glm::vec3 m_newObjectScale = glm::vec3(1,1,1);
 
             void processInput();
             int drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe);
@@ -90,6 +94,7 @@ namespace ivc {
             void setLastMousePos(double,double);
             void setWindowSize(int w, int h);
             GLFWwindow* getLiveWindow();
+            void addToScale(glm::vec3);
     };
 
 }
