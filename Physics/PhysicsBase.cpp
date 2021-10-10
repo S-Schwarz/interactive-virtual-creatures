@@ -39,6 +39,7 @@ void ivc::PhysicsBase::destroy() {
     if(!m_isInitialized)
         return;
 
+    m_material->release();
     m_physics->release();
     m_foundation->release();
 }

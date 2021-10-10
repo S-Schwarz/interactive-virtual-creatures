@@ -58,10 +58,15 @@ void ivc::PhysicsScene::destroy() {
     if(!m_isInitialized)
         return;
 
+    for(auto obj : m_objVec){
+        obj->release();
+    }
+
     if(m_plane)
         m_plane->release();
 
     m_scene->release();
+
 }
 
 int ivc::PhysicsScene::simulate(bool brainSteps) {
@@ -99,6 +104,7 @@ std::vector<PxArticulationLink*> ivc::PhysicsScene::getBodyParts() {
 void ivc::PhysicsScene::insertNewCreature(std::shared_ptr<BaseNode> newNode) {
 
     m_rootNode = newNode;
+    destroy();
     //auto lastPos = m_creature->getPosition();
     //lastPos += PxVec3(0,0.5,0);
 
