@@ -8,13 +8,14 @@
 #include <random>
 #include "Constants.h"
 #include <stdexcept>
+#include <memory>
 
 namespace ivc{
     class Mutator{
         private:
 
         public:
-            static float mutateFloat(std::mt19937* gen, float old, float upperLimit, float lowerLimit){
+            static float mutateFloat(std::shared_ptr<std::mt19937> gen, float old, float upperLimit, float lowerLimit){
                 if(upperLimit <= lowerLimit)
                     throw std::invalid_argument("INVALID MUTATOR LIMITS");
 

@@ -67,7 +67,7 @@ void ivc::Neuron::step() {
     }
 }
 
-ivc::Gate* ivc::Neuron::getOutputGate() {
+std::shared_ptr<ivc::Gate> ivc::Neuron::getOutputGate() {
     return m_output;
 }
 
@@ -75,7 +75,7 @@ std::vector<unsigned long> ivc::Neuron::getGateIDs() {
     return m_inputIDs;
 }
 
-int ivc::Neuron::bindGates(std::vector<Gate *> gates) {
+int ivc::Neuron::bindGates(std::vector<std::shared_ptr<Gate >> gates) {
     if(gates.size() != m_numberInputs)
         return -1;
 
@@ -105,15 +105,15 @@ void ivc::Neuron::chooseRandomInputs(std::vector<unsigned long> possibleInputs) 
 
 }
 
-ivc::Neuron* ivc::Neuron::copy() {
-    return new Neuron(*this);
+std::shared_ptr<ivc::Neuron> ivc::Neuron::copy() {
+    return std::make_shared<Neuron>(*this);
 }
 
-void ivc::Neuron::setOutput(ivc::Gate * gate) {
+void ivc::Neuron::setOutput(std::shared_ptr<ivc::Gate> gate) {
     m_output = gate;
 }
 
-void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation, EvoConfig* config) {
+void ivc::Neuron::mutate(std::shared_ptr<std::mt19937> gen, bool forceMutation, std::shared_ptr<EvoConfig> config) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
@@ -147,7 +147,7 @@ void ivc::Neuron::mutate(std::mt19937* gen, bool forceMutation, EvoConfig* confi
 
 }
 
-ivc::Neuron::Neuron(std::mt19937* gen, EvoConfig* config) {
+ivc::Neuron::Neuron(std::shared_ptr<std::mt19937> gen, std::shared_ptr<EvoConfig> config) {
 
     std::uniform_int_distribution<> dis(0, COUNT-1);
     m_type = static_cast<NEURON_TYPE>(dis(*gen));
@@ -189,7 +189,7 @@ ivc::Neuron::Neuron(std::mt19937* gen, EvoConfig* config) {
     mutate(gen, true, config);
 }
 
-void ivc::Neuron::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs, EvoConfig* config) {
+void ivc::Neuron::mutateConnections(std::shared_ptr<std::mt19937> gen, std::vector<unsigned long> possibleInputs, std::shared_ptr<EvoConfig> config) {
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutate input connections

@@ -8,16 +8,17 @@
 #include "Gate.h"
 #include <vector>
 #include <random>
+#include <memory>
 
 namespace ivc{
     class ContactSensor {
         private:
-            std::vector<Gate*> m_outputGates;
+            std::vector<std::shared_ptr<Gate>> m_outputGates;
             std::vector<unsigned long> m_outputIDs;
             std::vector<bool> m_hasContact;
         public:
             void initContactVec();
-            void setOutputGates(std::vector<Gate*>);
+            void setOutputGates(std::vector<std::shared_ptr<Gate>>);
             void step();
             void swap();
             void setIDs(std::vector<unsigned long>);
@@ -25,7 +26,7 @@ namespace ivc{
 
             bool contains(std::string);
             void setState(std::string, bool);
-            std::vector<Gate*> getOutputGates();
+            std::vector<std::shared_ptr<Gate>> getOutputGates();
     };
 }
 

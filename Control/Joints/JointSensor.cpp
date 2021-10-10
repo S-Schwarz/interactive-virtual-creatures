@@ -26,7 +26,7 @@ unsigned long ivc::JointSensor::getOutputID() {
     return m_id_output;
 }
 
-void ivc::JointSensor::setOutputGate(Gate * gate) {
+void ivc::JointSensor::setOutputGate(std::shared_ptr<Gate> gate) {
 
     if(gate == nullptr)
         return;
@@ -43,6 +43,6 @@ void ivc::JointSensor::setLink(PxArticulationLink* link) {
     m_link = link;
 }
 
-ivc::Gate* ivc::JointSensor::getOutputGate() {
+std::shared_ptr<ivc::Gate> ivc::JointSensor::getOutputGate() {
     return m_output;
 }

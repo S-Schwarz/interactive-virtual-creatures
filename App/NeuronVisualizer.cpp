@@ -7,7 +7,7 @@
 
 
 
-ivc::NeuronVisualizer::NeuronVisualizer(GLFWwindow* w, Shader* s) {
+ivc::NeuronVisualizer::NeuronVisualizer(GLFWwindow* w, std::shared_ptr<Shader> s) {
     m_window = w;
     m_shader = s;
 
@@ -92,10 +92,10 @@ ivc::NeuronVisualizer::NeuronVisualizer(GLFWwindow* w, Shader* s) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    m_textShader = new Shader("../Res/text.vert", "../Res/text.frag");
+    m_textShader = std::make_shared<Shader>("../Res/text.vert", "../Res/text.frag");
 }
 
-void ivc::NeuronVisualizer::updateVisualizer(ivc::PhysicalCreature* c) {
+void ivc::NeuronVisualizer::updateVisualizer(std::shared_ptr<PhysicalCreature> c) {
     m_gatePosMap = {};
     m_neuronPosMap = {};
     m_sensorPosMap = {};
@@ -374,7 +374,7 @@ void ivc::NeuronVisualizer::draw() {
     glfwSwapBuffers(m_window);
 }
 
-void ivc::NeuronVisualizer::drawText(ivc::Neuron* neuron, glm::mat4 model) {
+void ivc::NeuronVisualizer::drawText(std::shared_ptr<Neuron> neuron, glm::mat4 model) {
     char toDraw = ' ';
 
     switch(neuron->getType()){

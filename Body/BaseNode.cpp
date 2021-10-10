@@ -69,7 +69,7 @@ PxVec3 ivc::BaseNode::getScale() {
     return m_scale;
 }
 
-ivc::IDHandler *ivc::BaseNode::getIDHandler() {
+std::shared_ptr<ivc::IDHandler> ivc::BaseNode::getIDHandler() {
     if(m_isRoot)
         return m_idHandler;
 
@@ -98,11 +98,11 @@ std::vector<unsigned long> ivc::BaseNode::getAllAdjacentOutputs() {
     return inputVec;
 }
 
-ivc::NeuronCluster *ivc::BaseNode::getLocalNeurons() {
+std::shared_ptr<ivc::NeuronCluster> ivc::BaseNode::getLocalNeurons() {
     return m_localNeurons;
 }
 
-ivc::NeuronCluster *ivc::BaseNode::getBrain() {
+std::shared_ptr<ivc::NeuronCluster> ivc::BaseNode::getBrain() {
     if(m_isRoot)
         return m_brain;
 
@@ -134,7 +134,7 @@ void ivc::BaseNode::addNeuralConnections() {
     m_localNeurons->randomizeConnections();
 }
 
-void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons, EvoConfig* config) {
+void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons, std::shared_ptr<EvoConfig> config) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
@@ -222,7 +222,7 @@ void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons, EvoConfig* config) {
 
 }
 
-void ivc::BaseNode::mutateNeuralConnections(EvoConfig* config) {
+void ivc::BaseNode::mutateNeuralConnections(std::shared_ptr<EvoConfig> config) {
 
     m_localNeurons->setPossibleInputs(getAllAdjacentOutputs());
 
@@ -251,15 +251,15 @@ void ivc::BaseNode::setParent(std::shared_ptr<BaseNode> parent) {
     m_parentNode = parent;
 }
 
-void ivc::BaseNode::setLocalNeurons(ivc::NeuronCluster * cluster) {
+void ivc::BaseNode::setLocalNeurons(std::shared_ptr<ivc::NeuronCluster> cluster) {
     m_localNeurons = cluster;
 }
 
-std::mt19937 *ivc::BaseNode::getGenerator() {
+std::shared_ptr<std::mt19937> ivc::BaseNode::getGenerator() {
     return m_generator;
 }
 
-void ivc::BaseNode::setGenerator(std::mt19937 *gen) {
+void ivc::BaseNode::setGenerator(std::shared_ptr<std::mt19937> gen) {
     m_generator = gen;
     m_localNeurons->setGenerator(gen);
     if(m_brain)
@@ -269,17 +269,7 @@ void ivc::BaseNode::setGenerator(std::mt19937 *gen) {
     }
 }
 
-ivc::BaseNode::~BaseNode() {
-
-    //std::cout << __FUNCTION__ << " at " << this << std::endl;
-
-    delete m_localNeurons;
-    delete m_brain;
-    delete m_idHandler;
-
-}
-
-void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons, EvoConfig* config) {
+void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons, std::shared_ptr<EvoConfig> config) {
 
     std::uniform_real_distribution<> dis(0, 1);
     static auto rng = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
@@ -528,7 +518,7 @@ std::string ivc::BaseNode::getParentSideAsString() {
         return "";
 }
 
-void ivc::BaseNode::setBrain(ivc::NeuronCluster* brain) {
+void ivc::BaseNode::setBrain(std::shared_ptr<ivc::NeuronCluster> brain) {
     m_brain = brain;
 }
 
@@ -536,7 +526,7 @@ std::shared_ptr<ivc::BaseNode> ivc::BaseNode::copy() {
     auto copiedNode = std::make_shared<BaseNode>(*this);
 
     if(m_idHandler)
-        copiedNode->m_idHandler = new IDHandler(*m_idHandler);
+        copiedNode->m_idHandler = std::make_shared<IDHandler>(*m_idHandler);
 
     std::vector<std::shared_ptr<BaseNode>> copiedChildren;
     for(auto child : m_childNodeVector){
@@ -553,22 +543,21 @@ std::shared_ptr<ivc::BaseNode> ivc::BaseNode::copy() {
     return copiedNode;
 }
 
-void ivc::BaseNode::init(bool root, std::mt19937* gen, std::shared_ptr<BaseNode> parent, EvoConfig* config) {
+void ivc::BaseNode::init(bool root, std::shared_ptr<std::mt19937> gen, std::shared_ptr<BaseNode> parent, std::shared_ptr<EvoConfig> config) {
     m_parentNode = parent;
     m_isRoot = root;
 
     if(m_isRoot){
         std::random_device rd;
-        std::mt19937 generator(rd());
-        m_generator = &generator;
+        m_generator = std::make_shared<std::mt19937>(rd());
 
-        m_idHandler = new IDHandler();
-        m_brain = new NeuronCluster(m_generator, true, m_isRoot, getIDHandler(),config);
+        m_idHandler = std::make_shared<IDHandler>();
+        m_brain = std::make_shared<NeuronCluster>(m_generator, true, m_isRoot, getIDHandler(),config);
     }else{
         m_generator = gen;
     }
 
-    m_localNeurons = new NeuronCluster(m_generator, false, m_isRoot, getIDHandler(),config);
+    m_localNeurons = std::make_shared<NeuronCluster>(m_generator, false, m_isRoot, getIDHandler(),config);
 
     if(!m_isRoot){
         m_parentAnchor = getAnchorPosition(m_generator);
@@ -597,7 +586,7 @@ void ivc::BaseNode::init(bool root, std::mt19937* gen, std::shared_ptr<BaseNode>
     mutateNeuralConnections(config);
 }
 
-PxVec3 ivc::BaseNode::getAnchorPosition(std::mt19937 *gen) {
+PxVec3 ivc::BaseNode::getAnchorPosition(std::shared_ptr<std::mt19937> gen) {
     std::uniform_real_distribution<> dis(0, 1);
     std::normal_distribution<> positions(0, 0.25);
 

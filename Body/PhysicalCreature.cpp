@@ -4,12 +4,12 @@
 
 #include "PhysicalCreature.h"
 
-ivc::PhysicalCreature::PhysicalCreature(std::shared_ptr<BaseNode> rootNode, PxVec3 pos, PhysicsBase* base) {
+ivc::PhysicalCreature::PhysicalCreature(std::shared_ptr<BaseNode> rootNode, PxVec3 pos, std::shared_ptr<PhysicsBase> base) {
 
     m_position = pos;
     m_physics = base->getPhysics();
     m_material = base->getMaterial();
-    m_reporter = new ContactReporter;
+    m_reporter = std::make_shared<ContactReporter>();
 
     m_articulation = m_physics->createArticulationReducedCoordinate();
 
@@ -32,14 +32,14 @@ ivc::PhysicalCreature::PhysicalCreature(std::shared_ptr<BaseNode> rootNode, PxVe
 
     //create output gates for neurons
     for(auto neuron : m_neuronVector){
-        auto newGate = new Gate();
+        auto newGate = std::make_shared<Gate>();
         neuron->setOutput(newGate);
         m_gateMap[neuron->getOutputID()] = newGate;
     }
     //and for sensors
     for(auto sensor : m_sensorVector){
         auto outID = sensor->getOutputID();
-        auto newGate = new Gate();
+        auto newGate = std::make_shared<Gate>();
         m_gateMap[outID] = newGate;
         sensor->setOutputGate(newGate);
     }
@@ -47,9 +47,9 @@ ivc::PhysicalCreature::PhysicalCreature(std::shared_ptr<BaseNode> rootNode, PxVe
     //and for contact Sensors
     for(auto contact : m_contactVector){
         auto outVec = contact->getOutputIDs();
-        std::vector<Gate*> newGates;
+        std::vector<std::shared_ptr<Gate>> newGates;
         for(auto id : outVec){
-            auto newGate = new Gate();
+            auto newGate = std::make_shared<Gate>();
             newGates.push_back(newGate);
             m_gateMap[id] = newGate;
         }
@@ -59,7 +59,7 @@ ivc::PhysicalCreature::PhysicalCreature(std::shared_ptr<BaseNode> rootNode, PxVe
     //connect inputs for neurons
     for(auto neuron : m_neuronVector){
         auto inputs = neuron->getGateIDs();
-        std::vector<Gate*> gateVec;
+        std::vector<std::shared_ptr<Gate>> gateVec;
         for(auto id : inputs){
             gateVec.push_back(m_gateMap[id]);
         }
@@ -68,7 +68,7 @@ ivc::PhysicalCreature::PhysicalCreature(std::shared_ptr<BaseNode> rootNode, PxVe
     //and effectors
     for(auto effector : m_effectorVector){
         auto inVec = effector->getGateIDs();
-        std::vector<Gate*> gateVec;
+        std::vector<std::shared_ptr<Gate>> gateVec;
         for(auto id : inVec){
             gateVec.push_back(m_gateMap[id]);
         }
@@ -280,7 +280,7 @@ void ivc::PhysicalCreature::updateContactStates() {
 
 }
 
-void ivc::PhysicalCreature::addContactTriggers(PxArticulationLink* link, PxVec3 halfExtents, ContactSensor* contactSensor) {
+void ivc::PhysicalCreature::addContactTriggers(PxArticulationLink* link, PxVec3 halfExtents, std::shared_ptr<ContactSensor> contactSensor) {
 
     std::vector<std::pair<PxVec3, PxTransform>> triggerVec = {
             {PxVec3(0.9f * halfExtents.x, 0.1f * halfExtents.y, 0.9f * halfExtents.z), PxTransform(PxVec3(0,halfExtents.y,0))},
@@ -316,36 +316,13 @@ void ivc::PhysicalCreature::addContactTriggers(PxArticulationLink* link, PxVec3 
 
 }
 
-ContactReporter *ivc::PhysicalCreature::getReporter() {
+std::shared_ptr<ContactReporter> ivc::PhysicalCreature::getReporter() {
     return m_reporter;
 }
 
 ivc::PhysicalCreature::~PhysicalCreature() {
 
-    for(auto neuron : m_neuronVector){
-        delete neuron;
-    }
-
-    for(auto sensor : m_sensorVector){
-        delete sensor;
-    }
-
-    for(auto effector : m_effectorVector){
-        delete effector;
-    }
-
-    for(auto contact : m_contactVector){
-        delete contact;
-    }
-
-    for(auto pair : m_gateMap){
-        delete pair.second;
-    }
-
-    delete m_cache;
     m_articulation->release();
-
-    delete m_reporter;
 
 }
 
@@ -363,31 +340,31 @@ void ivc::PhysicalCreature::updateCache() {
     m_articulation->copyInternalStateToCache(*m_cache, PxArticulationCache::ePOSITION);
 }
 
-PxArticulationReducedCoordinate *ivc::PhysicalCreature::getArticulation() {
+PxArticulationReducedCoordinate* ivc::PhysicalCreature::getArticulation() {
     return m_articulation;
 }
 
-PxArticulationLink *ivc::PhysicalCreature::getRootLink() {
+PxArticulationLink* ivc::PhysicalCreature::getRootLink() {
     return m_rootLink;
 }
 
-PxArticulationCache *ivc::PhysicalCreature::getCache() {
+PxArticulationCache* ivc::PhysicalCreature::getCache() {
     return m_cache;
 }
 
-std::vector<ivc::JointEffector *> ivc::PhysicalCreature::getJointEffectors() {
+std::vector<std::shared_ptr<ivc::JointEffector>> ivc::PhysicalCreature::getJointEffectors() {
     return m_effectorVector;
 }
 
-std::vector<ivc::Neuron *> ivc::PhysicalCreature::getActiveNeurons() {
+std::vector<std::shared_ptr<ivc::Neuron>> ivc::PhysicalCreature::getActiveNeurons() {
     return m_activeNeuronVector;
 }
 
-std::vector<std::pair<ivc::JointSensor*,unsigned long>> ivc::PhysicalCreature::getActiveJointSensors() {
+std::vector<std::pair<std::shared_ptr<ivc::JointSensor>,unsigned long>> ivc::PhysicalCreature::getActiveJointSensors() {
     return m_activeSensorVector;
 }
 
-std::vector<std::pair<ivc::ContactSensor*,std::vector<unsigned long>>> ivc::PhysicalCreature::getActiveContactSensors() {
+std::vector<std::pair<std::shared_ptr<ivc::ContactSensor>,std::vector<unsigned long>>> ivc::PhysicalCreature::getActiveContactSensors() {
     return m_activeContactVector;
 }
 
@@ -411,7 +388,7 @@ void ivc::PhysicalCreature::checkNeuronsForActivity() {
         toCheck.pop_back();
         checkedIDs.insert(id);
 
-        Neuron* neuron = nullptr;
+        std::shared_ptr<Neuron> neuron = nullptr;
         for(auto n : m_neuronVector){
             if(n->getOutputID() == id){
                 neuron = n;
@@ -456,10 +433,10 @@ void ivc::PhysicalCreature::checkNeuronsForActivity() {
 
 }
 
-std::vector<ivc::Neuron *> ivc::PhysicalCreature::getNeurons() {
+std::vector<std::shared_ptr<ivc::Neuron >> ivc::PhysicalCreature::getNeurons() {
     return m_neuronVector;
 }
 
-std::map<unsigned long, ivc::Gate *> ivc::PhysicalCreature::getGateMap() {
+std::map<unsigned long, std::shared_ptr<ivc::Gate >> ivc::PhysicalCreature::getGateMap() {
     return m_gateMap;
 }

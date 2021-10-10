@@ -12,6 +12,7 @@
 #include "../../Constants.h"
 #include "../../Mutator.h"
 #include "../../Evolution/EvoConfig.h"
+#include <memory>
 
 using namespace physx;
 
@@ -20,17 +21,17 @@ namespace ivc{
     private:
         PxArticulationCache* m_cache = nullptr;
         PxArticulationLink* m_link = nullptr;
-        Gate *m_output;
+        std::shared_ptr<Gate> m_output;
         unsigned long m_id_output;
     public:
-        void setOutputGate(Gate*);
+        void setOutputGate(std::shared_ptr<Gate>);
         void step();
         void swap();
         void setCache(PxArticulationCache*);
         void setLink(PxArticulationLink*);
         void setID(unsigned long);
         unsigned long getOutputID();
-        Gate* getOutputGate();
+        std::shared_ptr<Gate> getOutputGate();
     };
 }
 

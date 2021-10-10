@@ -10,14 +10,14 @@
 namespace ivc{
     class LiveEnvironment {
         private:
-            std::vector<PhysicsScene*> m_sceneVec;
+            std::vector<std::shared_ptr<PhysicsScene>> m_sceneVec;
             std::shared_ptr<BaseNode> m_currentBest = nullptr;
             std::vector<PxVec3> m_currentBestPath;
-            PhysicsScene* m_bestScene = nullptr;
-            PhysicsBase* m_base = nullptr;
-            EvoConfig* m_config = nullptr;
+            std::shared_ptr<PhysicsScene> m_bestScene = nullptr;
+            std::shared_ptr<PhysicsBase> m_base = nullptr;
+            std::shared_ptr<EvoConfig> m_config = nullptr;
         public:
-            int init(PhysicsBase*, std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>>,EvoConfig*);
+            int init(std::shared_ptr<PhysicsBase>, std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>>,std::shared_ptr<EvoConfig>);
             int simulate();
             void destroy();
 
@@ -29,7 +29,7 @@ namespace ivc{
             PxRigidStatic* getFloorPlane();
             void insertNewCreatures(std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>>);
 
-            PhysicalCreature* getBestCreature();
+            std::shared_ptr<PhysicalCreature> getBestCreature();
     };
 }
 

@@ -89,7 +89,7 @@ void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std
 
 }
 
-int ivc::Evolver::init(ivc::PhysicsBase *base, EvoConfig* config) {
+int ivc::Evolver::init(std::shared_ptr<ivc::PhysicsBase> base, std::shared_ptr<EvoConfig> config) {
 
     m_base = base;
     m_config = config;
@@ -157,8 +157,8 @@ void ivc::Evolver::createNewGenerationFromParents() {
         for(int i = 0; i < amount; ++i){
             auto newRoot = node->copy();
             std::random_device rd;
-            std::mt19937 generator(rd());
-            newRoot->setGenerator(&generator);
+            auto generator = std::make_shared<std::mt19937>(rd());
+            newRoot->setGenerator(generator);
             newRoot->mutateBodyAndNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
             newRoot->mutateNewBodyAndNewNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
             newRoot->mutateNeuralConnections(m_config);

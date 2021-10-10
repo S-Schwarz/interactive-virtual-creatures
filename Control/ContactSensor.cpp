@@ -4,7 +4,7 @@
 
 #include "ContactSensor.h"
 
-void ivc::ContactSensor::setOutputGates(std::vector<Gate *> gates) {
+void ivc::ContactSensor::setOutputGates(std::vector<std::shared_ptr<Gate >> gates) {
     if(gates.size() != 6)
         return;
     m_outputGates = gates;
@@ -59,6 +59,6 @@ void ivc::ContactSensor::setState(std::string id_string, bool state) {
     }
 }
 
-std::vector<ivc::Gate *> ivc::ContactSensor::getOutputGates() {
+std::vector<std::shared_ptr<ivc::Gate >> ivc::ContactSensor::getOutputGates() {
     return m_outputGates;
 }

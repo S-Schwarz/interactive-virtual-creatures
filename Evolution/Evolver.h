@@ -18,7 +18,7 @@
 namespace ivc{
     class Evolver {
         private:
-            PhysicsBase* m_base = nullptr;
+            std::shared_ptr<PhysicsBase> m_base = nullptr;
             std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> m_currentBestVector;
 
             float m_currentLargestDistance = -INFINITY;
@@ -30,7 +30,7 @@ namespace ivc{
 
             unsigned int m_numThreads = 1;
 
-            EvoConfig* m_config = nullptr;
+            std::shared_ptr<EvoConfig> m_config = nullptr;
             bool m_clearBestVec = false;
 
             std::vector<std::shared_ptr<EvoData>> m_dataVec;
@@ -55,7 +55,7 @@ namespace ivc{
             void createEvoData();
             void testCurrentGeneration();
         public:
-            int init(PhysicsBase*, EvoConfig*);
+            int init(std::shared_ptr<PhysicsBase>, std::shared_ptr<EvoConfig>);
             void startContinuousEvolution();
             void stopEvolution();
             std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> getCurrentBestVector();

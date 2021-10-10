@@ -4,14 +4,14 @@
 
 #include "LiveEnvironment.h"
 
-int ivc::LiveEnvironment::init(PhysicsBase* base, std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> nodeVec, EvoConfig* config) {
+int ivc::LiveEnvironment::init(std::shared_ptr<PhysicsBase> base, std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> nodeVec, std::shared_ptr<EvoConfig> config) {
 
     m_base = base;
     m_config = config;
 
     float bestDistance = -INFINITY;
     for(const auto& [node, pair] : nodeVec){
-        auto liveScene = new PhysicsScene();
+        auto liveScene = std::make_shared<PhysicsScene>();
         liveScene->init(m_base, node, m_config);
         m_sceneVec.push_back(liveScene);
         if(pair.first > bestDistance){
@@ -22,7 +22,7 @@ int ivc::LiveEnvironment::init(PhysicsBase* base, std::vector<std::pair<std::sha
         }
     }
 
-    std::vector<std::pair<PhysicsScene*,int>> stableVec;
+    std::vector<std::pair<std::shared_ptr<PhysicsScene>,int>> stableVec;
     for(auto scene : m_sceneVec){
         stableVec.push_back({scene,0});
     }
@@ -100,7 +100,7 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
     }else{
         for(int i = 0; i < nodeVec.size(); ++i){
             if(i >= m_sceneVec.size()){
-                auto liveScene = new PhysicsScene();
+                auto liveScene = std::make_shared<PhysicsScene>();
                 liveScene->init(m_base, nodeVec[i].first, m_config);
                 m_sceneVec.push_back(liveScene);
             }else{
@@ -114,7 +114,7 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
         }
     }
 
-    std::vector<std::pair<PhysicsScene*,int>> stableVec;
+    std::vector<std::pair<std::shared_ptr<PhysicsScene>,int>> stableVec;
     for(auto scene : m_sceneVec){
         stableVec.push_back({scene,0});
     }
@@ -139,7 +139,7 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
 
 void ivc::LiveEnvironment::resetCreaturePosition() {
 
-    std::vector<std::pair<PhysicsScene*,int>> stableVec;
+    std::vector<std::pair<std::shared_ptr<PhysicsScene>,int>> stableVec;
     for(auto scene : m_sceneVec){
         scene->resetCreaturePosition();
         stableVec.push_back({scene,0});
@@ -166,7 +166,7 @@ void ivc::LiveEnvironment::resetCreaturePosition() {
 
 }
 
-ivc::PhysicalCreature *ivc::LiveEnvironment::getBestCreature() {
+std::shared_ptr<ivc::PhysicalCreature> ivc::LiveEnvironment::getBestCreature() {
     return m_bestScene->getCreature();
 }
 

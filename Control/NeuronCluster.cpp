@@ -4,7 +4,7 @@
 
 #include "NeuronCluster.h"
 
-ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, IDHandler* idHandler, EvoConfig* config) {
+ivc::NeuronCluster::NeuronCluster(std::shared_ptr<std::mt19937> gen, bool isBrain,bool isRoot, std::shared_ptr<IDHandler> idHandler, std::shared_ptr<EvoConfig> config) {
 
     m_generator = gen;
 
@@ -15,7 +15,7 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, I
     auto numberNeurons = mean;
 
     for(int i = 0; i < numberNeurons; ++i){
-        auto newNeuron = new Neuron(m_generator, config);
+        auto newNeuron = std::make_shared<Neuron>(m_generator, config);
         auto newID = idHandler->getNewID();
         newNeuron->setID(newID);
         m_outputGates.push_back(newID);
@@ -23,7 +23,7 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, I
     }
 
     if(!isBrain){
-        m_contact = new ContactSensor();
+        m_contact = std::make_shared<ContactSensor>();
         std::vector<unsigned long> contactIDs;
         for(int i = 0; i < 6; ++i){
             auto newID = idHandler->getNewID();
@@ -32,12 +32,12 @@ ivc::NeuronCluster::NeuronCluster(std::mt19937* gen, bool isBrain,bool isRoot, I
         }
         m_contact->setIDs(contactIDs);
         if(!isRoot){
-            m_sensor = new JointSensor();
+            m_sensor = std::make_shared<JointSensor>();
             auto sensorID = idHandler->getNewID();
             m_outputGates.push_back(sensorID);
             m_sensor->setID(sensorID);
 
-            m_effector = new JointEffector();
+            m_effector = std::make_shared<JointEffector>();
         }
     }
 
@@ -64,19 +64,19 @@ void ivc::NeuronCluster::randomizeConnections() {
 
 }
 
-std::vector<ivc::Neuron *> ivc::NeuronCluster::getCopyOfNeurons() {
-    std::vector<Neuron*> copyVec;
+std::vector<std::shared_ptr<ivc::Neuron >> ivc::NeuronCluster::getCopyOfNeurons() {
+    std::vector<std::shared_ptr<Neuron>> copyVec;
     for(auto neuron : m_neuronVector){
         copyVec.push_back(neuron->copy());
     }
     return copyVec;
 }
 
-std::pair<ivc::JointSensor *, ivc::JointEffector *> ivc::NeuronCluster::getCopiesOfJointNeurons() {
-    return {new JointSensor(*m_sensor), new JointEffector(*m_effector)};
+std::pair<std::shared_ptr<ivc::JointSensor >, std::shared_ptr<ivc::JointEffector >> ivc::NeuronCluster::getCopiesOfJointNeurons() {
+    return {std::make_shared<JointSensor>(*m_sensor), std::make_shared<JointEffector>(*m_effector)};
 }
 
-void ivc::NeuronCluster::mutateNeurons(EvoConfig* config) {
+void ivc::NeuronCluster::mutateNeurons(std::shared_ptr<EvoConfig> config) {
     for(auto neuron : m_neuronVector){
         neuron->mutate(m_generator,false,config);
     }
@@ -85,7 +85,7 @@ void ivc::NeuronCluster::mutateNeurons(EvoConfig* config) {
     }
 }
 
-void ivc::NeuronCluster::mutateNewNeurons(ivc::IDHandler *idHandler, EvoConfig* config) {
+void ivc::NeuronCluster::mutateNewNeurons(std::shared_ptr<ivc::IDHandler> idHandler, std::shared_ptr<EvoConfig> config) {
     std::uniform_real_distribution<> dis(0, 1);
 
     //add remove neuron
@@ -104,7 +104,7 @@ void ivc::NeuronCluster::mutateNewNeurons(ivc::IDHandler *idHandler, EvoConfig* 
 
     //add new neuron
     if(dis(*m_generator) <= config->m_mutChance){
-        auto newNeuron = new Neuron(m_generator,config);
+        auto newNeuron = std::make_shared<Neuron>(m_generator,config);
         auto newID = idHandler->getNewID();
         newNeuron->setID(newID);
         m_outputGates.push_back(newID);
@@ -113,7 +113,7 @@ void ivc::NeuronCluster::mutateNewNeurons(ivc::IDHandler *idHandler, EvoConfig* 
 
 }
 
-void ivc::NeuronCluster::mutateConnections(EvoConfig* config) {
+void ivc::NeuronCluster::mutateConnections(std::shared_ptr<EvoConfig> config) {
     for(auto neuron : m_neuronVector){
         neuron->mutateConnections(m_generator,m_possibleInputGates,config);
     }
@@ -122,54 +122,42 @@ void ivc::NeuronCluster::mutateConnections(EvoConfig* config) {
     }
 }
 
-ivc::NeuronCluster *ivc::NeuronCluster::copy() {
-    auto copiedCluster = new NeuronCluster(*this);
+std::shared_ptr<ivc::NeuronCluster> ivc::NeuronCluster::copy() {
+    auto copiedCluster = std::make_shared<NeuronCluster>(*this);
 
     copiedCluster->setNeurons(getCopyOfNeurons());
     if(m_sensor != nullptr){
-        copiedCluster->setJointNeurons(new JointSensor(*m_sensor), new JointEffector(*m_effector));
+        copiedCluster->setJointNeurons(std::make_shared<JointSensor>(*m_sensor), std::make_shared<JointEffector>(*m_effector));
     }
     if(m_contact != nullptr){
-        copiedCluster->setContactSensor(new ContactSensor(*m_contact));
+        copiedCluster->setContactSensor(std::make_shared<ContactSensor>(*m_contact));
     }
 
     return copiedCluster;
 }
 
-void ivc::NeuronCluster::setNeurons(std::vector<Neuron *> neurons) {
+void ivc::NeuronCluster::setNeurons(std::vector<std::shared_ptr<Neuron >> neurons) {
     m_neuronVector = neurons;
 }
 
-void ivc::NeuronCluster::setJointNeurons(ivc::JointSensor * sensor, ivc::JointEffector* effector) {
+void ivc::NeuronCluster::setJointNeurons(std::shared_ptr<ivc::JointSensor > sensor, std::shared_ptr<ivc::JointEffector> effector) {
     m_sensor = sensor;
     m_effector = effector;
 }
 
-void ivc::NeuronCluster::setGenerator(std::mt19937 *gen) {
+void ivc::NeuronCluster::setGenerator(std::shared_ptr<std::mt19937> gen) {
     m_generator = gen;
 }
 
-ivc::ContactSensor *ivc::NeuronCluster::getCopyOfContactSensor() {
-    return new ContactSensor(*m_contact);
+std::shared_ptr<ivc::ContactSensor> ivc::NeuronCluster::getCopyOfContactSensor() {
+    return std::make_shared<ContactSensor>(*m_contact);
 }
 
-void ivc::NeuronCluster::setContactSensor(ContactSensor* sensor) {
+void ivc::NeuronCluster::setContactSensor(std::shared_ptr<ContactSensor> sensor) {
     m_contact = sensor;
 }
 
-ivc::NeuronCluster::~NeuronCluster() {
-
-    delete m_sensor;
-    delete m_effector;
-    delete m_contact;
-
-    for(auto neuron : m_neuronVector){
-        delete neuron;
-    }
-
-}
-
-void ivc::NeuronCluster::chooseNewNeuronIDs(std::map<unsigned long, unsigned long>* map,IDHandler* idHandler) {
+void ivc::NeuronCluster::chooseNewNeuronIDs(std::map<unsigned long, unsigned long>* map, std::shared_ptr<IDHandler> idHandler) {
 
     //new IDs for sensors
     auto oldSensorID = m_sensor->getOutputID();

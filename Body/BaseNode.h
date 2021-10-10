@@ -43,7 +43,7 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             PxVec3 m_parentAnchor = PxVec3(0,0,0);
             NODE_SIDE m_parentSide = NONE;
             PxVec3 m_scale = PxVec3(1,1,1);
-            NeuronCluster* m_localNeurons = nullptr;
+            std::shared_ptr<NeuronCluster> m_localNeurons = nullptr;
             std::shared_ptr<BaseNode> m_parentNode = nullptr;
             JOINT_TYPE m_jointType;
             std::pair<float,float> m_jointLimits= {-MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT};
@@ -52,30 +52,29 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             std::vector<NODE_SIDE> m_freeSides = {POS_X,NEG_X,POS_Y,NEG_Y,POS_Z,NEG_Z};
 
             bool m_reflect = false;
-            std::mt19937* m_generator = nullptr;
+            std::shared_ptr<std::mt19937> m_generator = nullptr;
 
-            NeuronCluster* m_brain = nullptr;
-            IDHandler* m_idHandler = nullptr;
+            std::shared_ptr<NeuronCluster> m_brain = nullptr;
+            std::shared_ptr<IDHandler> m_idHandler = nullptr;
 
             bool m_isRoot = false;
 
             void setJointType(JOINT_TYPE);
             void chooseNewJointType();
         public:
-            void init(bool, std::mt19937*, std::shared_ptr<BaseNode>, EvoConfig*);
+            void init(bool, std::shared_ptr<std::mt19937>, std::shared_ptr<BaseNode>, std::shared_ptr<EvoConfig>);
             std::shared_ptr<BaseNode> copy();
-            ~BaseNode();
 
             void setParent(std::shared_ptr<BaseNode>);
-            void setLocalNeurons(NeuronCluster*);
+            void setLocalNeurons(std::shared_ptr<NeuronCluster>);
             void setChildren(std::vector<std::shared_ptr<BaseNode>>);
             int setSideAsOccupied(NODE_SIDE);
             void setSideAsFree(NODE_SIDE);
             void setParentAnchor(PxVec3);
-            void setGenerator(std::mt19937*);
+            void setGenerator(std::shared_ptr<std::mt19937>);
             void setParentSide(NODE_SIDE);
             void setReflectionFlag();
-            void setBrain(NeuronCluster*);
+            void setBrain(std::shared_ptr<NeuronCluster>);
 
             unsigned int getNumberOfParts();
             std::vector<std::shared_ptr<BaseNode>> getChildren();
@@ -87,21 +86,21 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             PxVec3 getScale();
             std::pair<float,float> getJointLimits();
             JOINT_TYPE getJointType();
-            IDHandler* getIDHandler();
-            NeuronCluster* getLocalNeurons();
-            NeuronCluster* getBrain();
+            std::shared_ptr<IDHandler> getIDHandler();
+            std::shared_ptr<NeuronCluster> getLocalNeurons();
+            std::shared_ptr<NeuronCluster> getBrain();
             std::vector<unsigned long> getAllAdjacentOutputs();
             std::vector<unsigned long> getAllChildOutputs();
-            std::mt19937* getGenerator();
+            std::shared_ptr<std::mt19937> getGenerator();
             NODE_SIDE getParentSide();
             NODE_SIDE getOppositeSide(NODE_SIDE);
             std::string getParentSideAsString();
-            PxVec3 getAnchorPosition(std::mt19937* gen);
+            PxVec3 getAnchorPosition(std::shared_ptr<std::mt19937> gen);
             bool shouldBeReflected();
 
-            void mutateBodyAndNeurons(bool, EvoConfig*);
-            void mutateNewBodyAndNewNeurons(bool, EvoConfig*);
-            void mutateNeuralConnections(EvoConfig*);
+            void mutateBodyAndNeurons(bool, std::shared_ptr<EvoConfig>);
+            void mutateNewBodyAndNewNeurons(bool, std::shared_ptr<EvoConfig>);
+            void mutateNeuralConnections(std::shared_ptr<EvoConfig>);
             void addNeuralConnections();
 
             NODE_SIDE occupyRandomSide();

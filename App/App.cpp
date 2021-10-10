@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../Res/stb_image.h"
 
-void backgroundEvolution(ivc::Evolver* evo){
+void backgroundEvolution(std::shared_ptr<ivc::Evolver> evo){
     evo->startContinuousEvolution();
 }
 
@@ -146,18 +146,17 @@ int ivc::App::init(){
 
     //--------------
 
-    m_physicsBase = new PhysicsBase();
+    m_physicsBase = std::make_shared<PhysicsBase>();
     m_physicsBase->init();
 
-    m_evoConfig = new EvoConfig();
+    m_evoConfig = std::make_shared<EvoConfig>();
 
-    Evolver* evolver = new Evolver();
-    m_evolver = evolver;
-    evolver->init(m_physicsBase, m_evoConfig);
+    m_evolver = std::make_shared<Evolver>();
+    m_evolver->init(m_physicsBase, m_evoConfig);
 
-    m_evolutionThread = new std::thread(backgroundEvolution, evolver);
+    m_evolutionThread = new std::thread(backgroundEvolution, m_evolver);
 
-    m_liveEnvironment = new LiveEnvironment();
+    m_liveEnvironment = std::make_shared<LiveEnvironment>();
 
     initLiveWindow();
     initNeuronWindow();
@@ -165,7 +164,7 @@ int ivc::App::init(){
     m_guiWindow->setConfig(m_evoConfig);
     initShadersAndTextures();
 
-    m_neuronVisualizer = new NeuronVisualizer(m_neuronWindow,m_neuronShader);
+    m_neuronVisualizer = std::make_shared<NeuronVisualizer>(m_neuronWindow,m_neuronShader);
 
     m_isInitialized = true;
 
@@ -289,11 +288,9 @@ int ivc::App::close() {
     if(!m_isInitialized)
         return -1;
 
-    delete m_liveShader;
     m_evolver->stopEvolution();
     m_evolutionThread->join();
     m_liveEnvironment->destroy();
-    delete m_liveEnvironment;
     glfwTerminate();
 
     return 0;
@@ -336,7 +333,7 @@ void ivc::App::initLiveWindow() {
 void ivc::App::initShadersAndTextures() {
 
     glfwMakeContextCurrent(m_liveWindow);
-    m_liveShader = new Shader("../Res/shader.vert", "../Res/shader.frag");
+    m_liveShader = std::make_shared<Shader>("../Res/shader.vert", "../Res/shader.frag");
 
     //load textures
     glGenTextures(1,&m_blockTexture);
@@ -360,13 +357,13 @@ void ivc::App::initShadersAndTextures() {
     stbi_image_free(data);
 
     glfwMakeContextCurrent(m_neuronWindow);
-    m_neuronShader = new Shader("../Res/neuron.vert", "../Res/neuron.frag");
+    m_neuronShader = std::make_shared<Shader>("../Res/neuron.vert", "../Res/neuron.frag");
 
 }
 
 void ivc::App::initGUIWindow() {
 
-    m_guiWindow = new GUIWindow(c_WIDTH,c_HEIGHT);
+    m_guiWindow = std::make_shared<GUIWindow>(c_WIDTH,c_HEIGHT);
 
 }
 

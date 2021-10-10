@@ -17,10 +17,10 @@ using namespace physx;
 namespace ivc{
     class PhysicsScene {
         private:
-            PhysicsBase* m_base  = nullptr;
+            std::shared_ptr<PhysicsBase> m_base  = nullptr;
             PxScene* m_scene = nullptr;
-            PhysicalCreature* m_creature = nullptr;
-            EvoConfig* m_config = nullptr;
+            std::shared_ptr<PhysicalCreature> m_creature = nullptr;
+            std::shared_ptr<EvoConfig> m_config = nullptr;
 
             std::shared_ptr<BaseNode> m_rootNode = nullptr;
 
@@ -28,7 +28,7 @@ namespace ivc{
             std::vector<PxRigidStatic*> m_objVec;
             bool m_isInitialized = false;
         public:
-            int init(PhysicsBase*,std::shared_ptr<BaseNode>, EvoConfig*);
+            int init(std::shared_ptr<PhysicsBase>,std::shared_ptr<BaseNode>, std::shared_ptr<EvoConfig>);
             ~PhysicsScene(){destroy();};
             void destroy();
             int simulate(bool);
@@ -46,7 +46,7 @@ namespace ivc{
 
             std::shared_ptr<BaseNode> getRootNode();
 
-            PhysicalCreature* getCreature();
+            std::shared_ptr<PhysicalCreature> getCreature();
             std::vector<PxRigidStatic*> getObjVec();
 
     };

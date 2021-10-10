@@ -22,7 +22,7 @@ std::vector<unsigned long> ivc::JointEffector::getGateIDs() {
     return {m_id_input_0, m_id_input_1, m_id_input_2};
 }
 
-int ivc::JointEffector::bindGates(std::vector<Gate *> gates) {
+int ivc::JointEffector::bindGates(std::vector<std::shared_ptr<Gate>> gates) {
 
     if(gates.size() != 3)
         return -1;
@@ -34,7 +34,7 @@ int ivc::JointEffector::bindGates(std::vector<Gate *> gates) {
     return 0;
 }
 
-void ivc::JointEffector::setJoint(PxArticulationJointReducedCoordinate *joint) {
+void ivc::JointEffector::setJoint(PxArticulationJointReducedCoordinate* joint) {
     m_joint = joint;
 }
 
@@ -55,7 +55,7 @@ void ivc::JointEffector::chooseRandomInputs(std::vector<unsigned long> possibleI
     m_id_input_2 = possibleInputs[0];
 }
 
-void ivc::JointEffector::mutate(std::mt19937 *gen, EvoConfig* config) {
+void ivc::JointEffector::mutate(std::shared_ptr<std::mt19937> gen, std::shared_ptr<EvoConfig> config) {
 
     std::uniform_real_distribution<> dis(0, 1);
 
@@ -68,7 +68,7 @@ void ivc::JointEffector::mutate(std::mt19937 *gen, EvoConfig* config) {
         m_weight_2 = Mutator::mutateFloat(gen, m_weight_2, 1.0f, -1.0f);
 }
 
-void ivc::JointEffector::mutateConnections(std::mt19937 *gen, std::vector<unsigned long> possibleInputs, EvoConfig* config) {
+void ivc::JointEffector::mutateConnections(std::shared_ptr<std::mt19937> gen, std::vector<unsigned long> possibleInputs, std::shared_ptr<EvoConfig> config) {
     std::uniform_real_distribution<> dis(0, 1);
 
     //mutateBodyAndNeurons input connections

@@ -48,18 +48,19 @@ namespace ivc{
 
             nanogui::Label* m_fitnessFunctionLabel = nullptr;
 
-            EvoConfig* m_config = nullptr;
+            std::shared_ptr<EvoConfig> m_config = nullptr;
 
             void update();
             void updateIntBox(nanogui::IntBox<unsigned int>*, int, int, int);
             void updateFloatBox(nanogui::FloatBox<float>*, int, int, float);
         public:
             GUIWindow(int,int);
+            ~GUIWindow();
             void resize();
             void draw();
             nanogui::Screen* getScreen();
             void updateGraphs(std::vector<std::shared_ptr<EvoData>>);
-            void setConfig(EvoConfig*);
+            void setConfig(std::shared_ptr<EvoConfig>);
             nanogui::IntBox<unsigned int>* getCPGBox();
             void handleKeyInput(int,int);
     };

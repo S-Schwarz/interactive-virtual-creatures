@@ -4,7 +4,7 @@
 
 #include "PhysicsScene.h"
 
-int ivc::PhysicsScene::init(PhysicsBase* base, std::shared_ptr<BaseNode> rootNode, EvoConfig* config) {
+int ivc::PhysicsScene::init(std::shared_ptr<PhysicsBase> base, std::shared_ptr<BaseNode> rootNode, std::shared_ptr<EvoConfig> config) {
 
     m_base = base;
     m_rootNode = rootNode;
@@ -17,8 +17,8 @@ int ivc::PhysicsScene::init(PhysicsBase* base, std::shared_ptr<BaseNode> rootNod
 
     auto rootNodeHeight = m_rootNode->getHalfExtents().y;
 
-    m_creature = new PhysicalCreature(rootNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base);
-    sceneDesc.simulationEventCallback = m_creature->getReporter();
+    m_creature = std::make_shared<PhysicalCreature>(rootNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base);
+    sceneDesc.simulationEventCallback = m_creature->getReporter().get();
 
     m_scene = m_base->getPhysics()->createScene(sceneDesc);
     createPlane(PxVec3(0,1,0), 0, m_base->getMaterial());
@@ -42,7 +42,7 @@ int ivc::PhysicsScene::init(PhysicsBase* base, std::shared_ptr<BaseNode> rootNod
     return 0;
 }
 
-int ivc::PhysicsScene::createPlane(PxVec3 normalVec, float distance, PxMaterial *material) {
+int ivc::PhysicsScene::createPlane(PxVec3 normalVec, float distance, PxMaterial* material) {
     if(m_scene == nullptr)
         return -1;
 
@@ -57,8 +57,6 @@ int ivc::PhysicsScene::createPlane(PxVec3 normalVec, float distance, PxMaterial 
 void ivc::PhysicsScene::destroy() {
     if(!m_isInitialized)
         return;
-
-    delete m_creature;
 
     if(m_plane)
         m_plane->release();
@@ -86,7 +84,7 @@ int ivc::PhysicsScene::simulate(bool brainSteps) {
     return 0;
 }
 
-PxRigidStatic *ivc::PhysicsScene::getPlane() {
+PxRigidStatic* ivc::PhysicsScene::getPlane() {
     return m_plane;
 }
 
@@ -94,7 +92,7 @@ PxVec3 ivc::PhysicsScene::getCreaturePos() {
     return m_creature->getPosition();
 }
 
-std::vector<PxArticulationLink *> ivc::PhysicsScene::getBodyParts() {
+std::vector<PxArticulationLink*> ivc::PhysicsScene::getBodyParts() {
     return m_creature->getBodies();
 }
 
@@ -116,8 +114,8 @@ void ivc::PhysicsScene::insertNewCreature(std::shared_ptr<BaseNode> newNode) {
 
     auto rootNodeHeight = m_rootNode->getHalfExtents().y;
 
-    m_creature = new PhysicalCreature(newNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base);
-    sceneDesc.simulationEventCallback = m_creature->getReporter();
+    m_creature = std::make_shared<PhysicalCreature>(newNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base);
+    sceneDesc.simulationEventCallback = m_creature->getReporter().get();
 
     m_scene = m_base->getPhysics()->createScene(sceneDesc);
     createPlane(PxVec3(0,1,0), 0, m_base->getMaterial());
@@ -208,8 +206,8 @@ void ivc::PhysicsScene::rebuild() {
 
     auto rootNodeHeight = m_rootNode->getHalfExtents().y;
 
-    m_creature = new PhysicalCreature(m_rootNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base);
-    sceneDesc.simulationEventCallback = m_creature->getReporter();
+    m_creature = std::make_shared<PhysicalCreature>(m_rootNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base);
+    sceneDesc.simulationEventCallback = m_creature->getReporter().get();
 
     m_scene = m_base->getPhysics()->createScene(sceneDesc);
     createPlane(PxVec3(0,1,0), 0, m_base->getMaterial());
@@ -230,7 +228,7 @@ void ivc::PhysicsScene::rebuild() {
 
 }
 
-ivc::PhysicalCreature *ivc::PhysicsScene::getCreature() {
+std::shared_ptr<ivc::PhysicalCreature> ivc::PhysicsScene::getCreature() {
     return m_creature;
 }
 
@@ -238,6 +236,6 @@ std::shared_ptr<ivc::BaseNode> ivc::PhysicsScene::getRootNode() {
     return m_rootNode;
 }
 
-std::vector<PxRigidStatic *> ivc::PhysicsScene::getObjVec() {
+std::vector<PxRigidStatic*> ivc::PhysicsScene::getObjVec() {
     return m_objVec;
 }

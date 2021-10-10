@@ -28,18 +28,18 @@ namespace ivc{
         std::map<char, Character> Characters;
 
         GLFWwindow* m_window = nullptr;
-        Shader* m_shader = nullptr;
-        Shader* m_textShader = nullptr;
+        std::shared_ptr<Shader> m_shader = nullptr;
+        std::shared_ptr<Shader> m_textShader = nullptr;
         unsigned int text_VAO, text_VBO;
 
-        PhysicalCreature* m_creature = nullptr;
+        std::shared_ptr<PhysicalCreature> m_creature = nullptr;
 
         std::map<unsigned long, std::pair<glm::vec3, glm::vec3>> m_gatePosMap;
-        std::map<unsigned long, Gate*> m_gatePtrMap;
-        std::map<Neuron*, glm::vec3> m_neuronPosMap;
-        std::map<JointSensor*, glm::vec3> m_sensorPosMap;
-        std::map<ContactSensor*, glm::vec3> m_contactPosMap;
-        std::map<JointEffector*, glm::vec3> m_effectorPosMap;
+        std::map<unsigned long, std::shared_ptr<Gate>> m_gatePtrMap;
+        std::map<std::shared_ptr<Neuron>, glm::vec3> m_neuronPosMap;
+        std::map<std::shared_ptr<JointSensor>, glm::vec3> m_sensorPosMap;
+        std::map<std::shared_ptr<ContactSensor>, glm::vec3> m_contactPosMap;
+        std::map<std::shared_ptr<JointEffector>, glm::vec3> m_effectorPosMap;
 
         unsigned int m_lineVAO;
         unsigned int m_VBO;
@@ -48,10 +48,10 @@ namespace ivc{
         float m_ySize = 0;
         float m_xSize = 0;
 
-        void drawText(Neuron*,glm::mat4);
+        void drawText(std::shared_ptr<Neuron>,glm::mat4);
     public:
-        NeuronVisualizer(GLFWwindow*, Shader*);
-        void updateVisualizer(PhysicalCreature*);
+        NeuronVisualizer(GLFWwindow*, std::shared_ptr<Shader>);
+        void updateVisualizer(std::shared_ptr<PhysicalCreature>);
         void draw();
     };
 }

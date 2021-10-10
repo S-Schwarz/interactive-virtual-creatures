@@ -14,6 +14,7 @@
 #include <algorithm>
 #include "../../Mutator.h"
 #include "../../Evolution/EvoConfig.h"
+#include <memory>
 
 using namespace physx;
 
@@ -21,7 +22,7 @@ namespace ivc{
     class JointEffector {
     private:
         PxArticulationJointReducedCoordinate* m_joint = nullptr;
-        Gate *m_input_0, *m_input_1, *m_input_2;
+        std::shared_ptr<Gate> m_input_0, m_input_1, m_input_2;
         unsigned long m_id_input_0, m_id_input_1, m_id_input_2;
         float m_weight_0 = 1.0f;
         float m_weight_1 = 1.0f;
@@ -35,10 +36,10 @@ namespace ivc{
         void step();
         void setJoint(PxArticulationJointReducedCoordinate*);
         std::vector<unsigned long> getGateIDs();
-        int bindGates(std::vector<Gate*>);
+        int bindGates(std::vector<std::shared_ptr<Gate>>);
         void chooseRandomInputs(std::vector<unsigned long>);
-        void mutate(std::mt19937*,EvoConfig*);
-        void mutateConnections(std::mt19937*,std::vector<unsigned long>,EvoConfig*);
+        void mutate(std::shared_ptr<std::mt19937>, std::shared_ptr<EvoConfig>);
+        void mutateConnections(std::shared_ptr<std::mt19937> ,std::vector<unsigned long>,std::shared_ptr<EvoConfig>);
 
         std::vector<unsigned long> getInputs();
         void setInputs(std::vector<unsigned long>);

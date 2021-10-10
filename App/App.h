@@ -26,6 +26,7 @@
 #include "GUIWindow.h"
 
 #include <nanogui/nanogui.h>
+#include <memory>
 
 namespace ivc {
 
@@ -38,18 +39,18 @@ namespace ivc {
             bool m_physicsPaused = true;
             bool m_cursorDisabled = false;
 
-            Shader* m_liveShader = nullptr;
-            Shader* m_neuronShader = nullptr;
+            std::shared_ptr<Shader> m_liveShader = nullptr;
+            std::shared_ptr<Shader> m_neuronShader = nullptr;
 
-            NeuronVisualizer* m_neuronVisualizer = nullptr;
+            std::shared_ptr<NeuronVisualizer> m_neuronVisualizer = nullptr;
 
             GLFWwindow* m_neuronWindow = nullptr;
 
-            GUIWindow* m_guiWindow = nullptr;
+            std::shared_ptr<GUIWindow> m_guiWindow = nullptr;
 
-            LiveEnvironment* m_liveEnvironment = nullptr;
-            Evolver* m_evolver = nullptr;
-            EvoConfig* m_evoConfig = nullptr;
+            std::shared_ptr<LiveEnvironment> m_liveEnvironment = nullptr;
+            std::shared_ptr<Evolver> m_evolver = nullptr;
+            std::shared_ptr<EvoConfig> m_evoConfig = nullptr;
             std::thread* m_evolutionThread = nullptr;
 
             const int c_WIDTH = 800, c_HEIGHT = 600;
@@ -68,7 +69,7 @@ namespace ivc {
             unsigned int m_blockTexture;
 
             bool liveEnvInitialized = false;
-            PhysicsBase* m_physicsBase = nullptr;
+            std::shared_ptr<PhysicsBase> m_physicsBase = nullptr;
 
             glm::vec3 m_newObjectPos = glm::vec3(0,0.5,0);
             glm::vec3 m_newObjectScale = glm::vec3(1,1,1);

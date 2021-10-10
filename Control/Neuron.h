@@ -15,6 +15,7 @@
 #include "../Evolution/EvoConfig.h"
 #include <stdexcept>
 #include <cmath>
+#include <memory>
 
 namespace ivc{
     enum NEURON_TYPE{
@@ -45,12 +46,12 @@ namespace ivc{
         private:
             NEURON_TYPE m_type;
 
-            Gate* m_output;
+            std::shared_ptr<Gate> m_output;
             unsigned long m_outputID;
 
             unsigned int m_numberInputs;
             std::vector<unsigned long> m_inputIDs;
-            std::vector<Gate*> m_inputGates;
+            std::vector<std::shared_ptr<Gate>> m_inputGates;
             std::vector<float> m_inputWeights;
 
             //no inputs
@@ -74,19 +75,19 @@ namespace ivc{
                 //sum_threshold neuron
                 float m_threshold = 0.0f;
         public:
-            Neuron(std::mt19937*, EvoConfig*);
-            void setOutput(Gate*);
+            Neuron(std::shared_ptr<std::mt19937>, std::shared_ptr<EvoConfig>);
+            void setOutput(std::shared_ptr<Gate>);
             void swap();
             void step();
-            Neuron* copy();
-            Gate* getOutputGate();
+            std::shared_ptr<Neuron> copy();
+            std::shared_ptr<Gate> getOutputGate();
             std::vector<unsigned long> getGateIDs();
-            int bindGates(std::vector<Gate*>);
+            int bindGates(std::vector<std::shared_ptr<Gate>>);
             unsigned long getOutputID();
             void setID(unsigned long);
             void chooseRandomInputs(std::vector<unsigned long>);
-            void mutate(std::mt19937*,bool, EvoConfig*);
-            void mutateConnections(std::mt19937*,std::vector<unsigned long>,EvoConfig*);
+            void mutate(std::shared_ptr<std::mt19937>,bool, std::shared_ptr<EvoConfig>);
+            void mutateConnections(std::shared_ptr<std::mt19937>,std::vector<unsigned long>,std::shared_ptr<EvoConfig>);
 
             std::vector<unsigned long> getInputs();
             void setInputs(std::vector<unsigned long>);

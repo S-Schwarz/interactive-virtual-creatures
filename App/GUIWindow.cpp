@@ -305,7 +305,7 @@ void ivc::GUIWindow::resize() {
 
 }
 
-void ivc::GUIWindow::setConfig(ivc::EvoConfig* config) {
+void ivc::GUIWindow::setConfig(std::shared_ptr<EvoConfig> config) {
     m_config = config;
 }
 
@@ -358,4 +358,10 @@ void ivc::GUIWindow::updateFloatBox(nanogui::FloatBox<float>* box, int key, int 
                 box->set_value(box->value()-baseIncrement);
         }
     }
+}
+
+ivc::GUIWindow::~GUIWindow() {
+
+    delete m_guiScreen;
+
 }

@@ -35,45 +35,45 @@ namespace ivc{
 
             PxArticulationCache* m_cache = nullptr;
 
-            ContactReporter* m_reporter;
+            std::shared_ptr<ContactReporter> m_reporter;
 
-            std::vector<Neuron*> m_neuronVector;
-            std::vector<JointSensor*> m_sensorVector;
-            std::vector<JointEffector*> m_effectorVector;
-            std::vector<ContactSensor*> m_contactVector;
-            std::map<unsigned long, Gate*> m_gateMap;
+            std::vector<std::shared_ptr<Neuron>> m_neuronVector;
+            std::vector<std::shared_ptr<JointSensor>> m_sensorVector;
+            std::vector<std::shared_ptr<JointEffector>> m_effectorVector;
+            std::vector<std::shared_ptr<ContactSensor>> m_contactVector;
+            std::map<unsigned long, std::shared_ptr<Gate>> m_gateMap;
 
-            std::vector<Neuron*> m_activeNeuronVector;
-            std::vector<std::pair<JointSensor*,unsigned long>> m_activeSensorVector;
-            std::vector<std::pair<ContactSensor*,std::vector<unsigned long>>> m_activeContactVector;
+            std::vector<std::shared_ptr<Neuron>> m_activeNeuronVector;
+            std::vector<std::pair<std::shared_ptr<JointSensor>,unsigned long>> m_activeSensorVector;
+            std::vector<std::pair<std::shared_ptr<ContactSensor>,std::vector<unsigned long>>> m_activeContactVector;
 
             PxArticulationLink* createLink(PxArticulationLink*, PxVec3 , PxVec3 , PxVec3);
-            void addContactTriggers(PxArticulationLink*, PxVec3, ContactSensor*);
+            void addContactTriggers(PxArticulationLink*, PxVec3, std::shared_ptr<ContactSensor>);
             void buildChildNodes(std::shared_ptr<BaseNode>,PxVec3,PxVec3,PxVec3,PxArticulationLink*);
             void buildNode(std::shared_ptr<BaseNode>, PxVec3, PxVec3, PxVec3, PxArticulationLink*, PxVec3);
 
             void checkNeuronsForActivity();
         public:
             ~PhysicalCreature();
-            PhysicalCreature(std::shared_ptr<BaseNode>, PxVec3, PhysicsBase*);
+            PhysicalCreature(std::shared_ptr<BaseNode>, PxVec3, std::shared_ptr<PhysicsBase>);
             std::vector<PxArticulationLink*> getBodies();
             void updateContactStates();
             void performBrainStep();
             PxVec3 getPosition();
-            ContactReporter* getReporter();
+            std::shared_ptr<ContactReporter> getReporter();
             void initCache();
             void updateCache();
             PxArticulationReducedCoordinate* getArticulation();
             PxArticulationLink* getRootLink();
             PxArticulationCache* getCache();
 
-            std::vector<Neuron*> getActiveNeurons();
-            std::vector<std::pair<JointSensor*,unsigned long>> getActiveJointSensors();
-            std::vector<std::pair<ContactSensor*,std::vector<unsigned long>>> getActiveContactSensors();
-            std::vector<JointEffector*> getJointEffectors();
-            std::map<unsigned long, Gate*> getGateMap();
+            std::vector<std::shared_ptr<Neuron>> getActiveNeurons();
+            std::vector<std::pair<std::shared_ptr<JointSensor>,unsigned long>> getActiveJointSensors();
+            std::vector<std::pair<std::shared_ptr<ContactSensor>,std::vector<unsigned long>>> getActiveContactSensors();
+            std::vector<std::shared_ptr<JointEffector>> getJointEffectors();
+            std::map<unsigned long, std::shared_ptr<Gate>> getGateMap();
 
-            std::vector<Neuron*> getNeurons();
+            std::vector<std::shared_ptr<Neuron>> getNeurons();
 
     };
 
