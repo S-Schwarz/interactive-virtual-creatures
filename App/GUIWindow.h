@@ -66,6 +66,7 @@ namespace ivc{
             void setConfig(std::shared_ptr<EvoConfig>);
             nanogui::IntBox<unsigned int>* getCPGBox();
             void handleKeyInput(int,int);
+            void handleCharInput(unsigned int);
     };
 }
 

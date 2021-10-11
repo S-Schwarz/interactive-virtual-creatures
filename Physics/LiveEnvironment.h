@@ -30,6 +30,7 @@ namespace ivc{
             void insertNewCreatures(std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>>);
 
             std::shared_ptr<PhysicalCreature> getBestCreature();
+            std::shared_ptr<BaseNode> getBestNode();
     };
 }
 

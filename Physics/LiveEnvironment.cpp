@@ -177,3 +177,7 @@ void ivc::LiveEnvironment::clean() {
     m_currentBestPath = {};
     m_bestScene = nullptr;
 }
+
+std::shared_ptr<ivc::BaseNode> ivc::LiveEnvironment::getBestNode() {
+    return m_currentBest;
+}

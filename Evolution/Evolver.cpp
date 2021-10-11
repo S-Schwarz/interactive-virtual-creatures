@@ -539,3 +539,23 @@ void ivc::Evolver::clean() {
     m_currentNoveltyMap = {};
     m_nextParentVec = {};
 }
+
+void ivc::Evolver::loadStartNode(std::shared_ptr<BaseNode> node) {
+    auto newScene = std::make_shared<PhysicsScene>();
+    newScene->init(m_base,node, m_config);
+    m_testSceneVec.push_back(newScene);
+    for(int i = 0; i < m_config->m_creaturesPerGeneration; ++i){
+        std::random_device rd;
+        auto generator = std::make_shared<std::mt19937>(rd());
+        auto newRoot = node->copy();
+        newRoot->setGenerator(generator);
+        newRoot->mutateBodyAndNeurons(m_config->m_lockMorph, m_config);
+        newRoot->mutateNewBodyAndNewNeurons(m_config->m_lockMorph, m_config);
+        newRoot->mutateNeuralConnections(m_config);
+        newScene = std::make_shared<PhysicsScene>();
+        newScene->init(m_base,newRoot, m_config);
+        m_testSceneVec.push_back(newScene);
+    }
+
+
+}

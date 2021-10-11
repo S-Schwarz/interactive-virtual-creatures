@@ -33,6 +33,16 @@ void gui_key_event_callback(GLFWwindow* window, int key, int scancode, int actio
 
 }
 
+void gui_character_callback(GLFWwindow* window, unsigned int codepoint)
+{
+    glfwMakeContextCurrent(window);
+
+    auto winPtr = (ivc::GUIWindow*)glfwGetWindowUserPointer(window);
+    winPtr->handleCharInput(codepoint);
+
+}
+
+
 ivc::GUIWindow::GUIWindow(int width, int height) {
     // Create Window
     m_guiWindow = glfwCreateWindow(width, height, "Interactive Virtual Creatures", nullptr, nullptr);
@@ -53,6 +63,7 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     );
     glfwSetKeyCallback(m_guiWindow, gui_key_event_callback);
     glfwSetWindowUserPointer(m_guiWindow, this);
+    glfwSetCharCallback(m_guiWindow, gui_character_callback);
 
     // GUI -------------
 
@@ -92,13 +103,24 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     });
 
     m_saveButton = m_buttonWidget->add<nanogui::Button>("Save");
-    m_saveButton->set_callback([this]{});
+    m_saveButton->set_callback([this]{
+        m_config->m_shouldSave = true;
+        m_config->m_shouldEnd = true;
+        this->m_startButton->set_caption("Start");
+        m_config->m_fileName = m_fileNameBox->value();
+    });
 
     m_loadButton = m_buttonWidget->add<nanogui::Button>("Load");
-    m_loadButton->set_callback([this]{});
+    m_loadButton->set_callback([this]{
+        m_config->m_shouldLoad = true;
+        m_config->m_shouldStart = true;
+        this->m_startButton->set_caption("End");
+        m_config->m_fileName = m_fileNameBox->value();
+    });
 
-    m_fileNameBox = m_buttonWidget->add<nanogui::TextBox>();
-    m_fileNameBox->set_editable(true);
+    m_fileNameBox = m_buttonWidget->add<nanogui::TextBox>("");
+    m_fileNameBox->set_editable(false);
+    m_fileNameBox->set_fixed_size(nanogui::Vector2i(300, 50));
 
     auto topLayout =
             new nanogui::GridLayout(nanogui::Orientation::Horizontal, 3,
@@ -260,7 +282,6 @@ void ivc::GUIWindow::update() {
     m_config->m_noveltyInterval = m_noveltyIntevallBox->value();
     m_config->m_onlyUseEndPos = m_noveltyArchiveCheckbox->checked();
     m_config->m_noveltyWidth = m_noveltyWidthBox->value();
-    m_config->m_fileName = m_fileNameBox->value();
 
     if(!m_config->m_useNoveltySearch){
         std::string fitnessFunc = "Fitness function: ";
@@ -339,6 +360,16 @@ void ivc::GUIWindow::handleKeyInput(int key, int action) {
     updateIntBox(m_neighborsBox,key,action,1);
     updateIntBox(m_noveltyIntevallBox,key,action,10);
 
+    if(m_fileNameBox->focused()){
+        if(key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS){
+            auto val = m_fileNameBox->value();
+            if(val.size() > 0){
+                val.pop_back();
+                m_fileNameBox->set_value(val);
+            }
+        }
+    }
+
 }
 
 void ivc::GUIWindow::updateIntBox(nanogui::IntBox<unsigned int>* box, int key, int action, int baseIncrement) {
@@ -378,5 +409,13 @@ void ivc::GUIWindow::updateFloatBox(nanogui::FloatBox<float>* box, int key, int 
 ivc::GUIWindow::~GUIWindow() {
 
     delete m_guiScreen;
+
+}
+
+void ivc::GUIWindow::handleCharInput(unsigned int codepoint) {
+
+    if(m_fileNameBox->focused()){
+        m_fileNameBox->set_value(m_fileNameBox->value() + (char)codepoint);
+    }
 
 }

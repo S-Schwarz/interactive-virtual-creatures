@@ -191,16 +191,34 @@ int ivc::App::update() {
     processInput();
 
     if(m_evoConfig->m_shouldStart){
+        if(m_evoConfig->m_shouldLoad){
+            auto fileName = m_evoConfig->m_fileName;
+            if (!fileName.empty()) {
+                auto loadedNode = loadFrom(fileName);
+                if(loadedNode){
+                    m_evolver->loadStartNode(loadedNode);
+                }
+            }
+        }
         m_evolutionThread = new std::thread(backgroundEvolution, m_evolver);
         m_evoConfig->m_running = true;
         m_evoConfig->m_shouldStart = false;
+        m_evoConfig->m_shouldLoad = false;
     }
 
     if(m_evoConfig->m_shouldEnd){
         m_evolutionThread->join();
         m_evolver->clean();
+
+        if(m_evoConfig->m_shouldSave) {
+            auto fileName = m_evoConfig->m_fileName;
+            if (!fileName.empty()) {
+                saveTo(m_liveEnvironment->getBestNode().get(), fileName);
+            }
+        }
         m_liveEnvironment->clean();
 
+        m_evoConfig->m_shouldSave = false;
         m_evoConfig->m_running = false;
         m_evoConfig->m_shouldEnd = false;
     }

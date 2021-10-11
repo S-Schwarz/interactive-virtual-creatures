@@ -68,6 +68,7 @@ namespace ivc{
             std::vector<std::shared_ptr<EvoData>> getEvoDataVec();
             void clearBestVec();
             std::vector<std::vector<PxVec3>> getNoveltyArchive();
+            void loadStartNode(std::shared_ptr<BaseNode>);
 
 
     };
