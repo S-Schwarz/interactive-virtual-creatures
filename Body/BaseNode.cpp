@@ -32,7 +32,7 @@ PxVec3 ivc::BaseNode::getParentAnchor() {
     return m_parentAnchor;
 }
 
-std::shared_ptr<ivc::BaseNode> ivc::BaseNode::getParentNode() {
+ivc::BaseNode* ivc::BaseNode::getParentNode() {
     return m_parentNode;
 }
 
@@ -247,7 +247,7 @@ void ivc::BaseNode::setChildren(std::vector<std::shared_ptr<BaseNode>> children)
     m_childNodeVector = children;
 }
 
-void ivc::BaseNode::setParent(std::shared_ptr<BaseNode> parent) {
+void ivc::BaseNode::setParent(BaseNode* parent) {
     m_parentNode = parent;
 }
 
@@ -302,7 +302,7 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons, std::shared_ptr
         //add child node
         if(dis(*m_generator) <= config->m_mutChance && !m_freeSides.empty()){
             auto newChild = std::make_shared<BaseNode>();
-            newChild->init(false, m_generator, shared_from_this(), config);
+            newChild->init(false, m_generator, this, config);
             m_childNodeVector.emplace_back(newChild);
         }
 
@@ -531,7 +531,7 @@ std::shared_ptr<ivc::BaseNode> ivc::BaseNode::copy() {
     std::vector<std::shared_ptr<BaseNode>> copiedChildren;
     for(auto child : m_childNodeVector){
         auto newChild = child->copy();
-        newChild->setParent(copiedNode);
+        newChild->setParent(copiedNode.get());
         copiedChildren.push_back(newChild);
     }
     copiedNode->setChildren(copiedChildren);
@@ -543,7 +543,7 @@ std::shared_ptr<ivc::BaseNode> ivc::BaseNode::copy() {
     return copiedNode;
 }
 
-void ivc::BaseNode::init(bool root, std::shared_ptr<std::mt19937> gen, std::shared_ptr<BaseNode> parent, std::shared_ptr<EvoConfig> config) {
+void ivc::BaseNode::init(bool root, std::shared_ptr<std::mt19937> gen, BaseNode* parent, std::shared_ptr<EvoConfig> config) {
     m_parentNode = parent;
     m_isRoot = root;
 
@@ -571,7 +571,7 @@ void ivc::BaseNode::init(bool root, std::shared_ptr<std::mt19937> gen, std::shar
         for(int i = 0; i < MAX_CHILDREN; ++i){
             if(dis(*m_generator) < CHILD_CHANCE && !m_freeSides.empty()){
                 auto newChild = std::make_shared<BaseNode>();
-                newChild->init(false, m_generator, shared_from_this(), config);
+                newChild->init(false, m_generator, this, config);
                 m_childNodeVector.emplace_back(newChild);
             }
         }

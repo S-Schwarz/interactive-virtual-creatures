@@ -44,7 +44,7 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             NODE_SIDE m_parentSide = NONE;
             PxVec3 m_scale = PxVec3(1,1,1);
             std::shared_ptr<NeuronCluster> m_localNeurons = nullptr;
-            std::shared_ptr<BaseNode> m_parentNode = nullptr;
+            BaseNode* m_parentNode;
             JOINT_TYPE m_jointType;
             std::pair<float,float> m_jointLimits= {-MEAN_JOINT_LIMIT, MEAN_JOINT_LIMIT};
             //children
@@ -62,10 +62,10 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             void setJointType(JOINT_TYPE);
             void chooseNewJointType();
         public:
-            void init(bool, std::shared_ptr<std::mt19937>, std::shared_ptr<BaseNode>, std::shared_ptr<EvoConfig>);
+            void init(bool, std::shared_ptr<std::mt19937>, BaseNode*, std::shared_ptr<EvoConfig>);
             std::shared_ptr<BaseNode> copy();
 
-            void setParent(std::shared_ptr<BaseNode>);
+            void setParent(BaseNode*);
             void setLocalNeurons(std::shared_ptr<NeuronCluster>);
             void setChildren(std::vector<std::shared_ptr<BaseNode>>);
             int setSideAsOccupied(NODE_SIDE);
@@ -82,7 +82,7 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             PxVec3 getHalfExtents();
             PxVec3 getOrientationInDegrees();
             PxVec3 getParentAnchor();
-            std::shared_ptr<BaseNode> getParentNode();
+            BaseNode* getParentNode();
             PxVec3 getScale();
             std::pair<float,float> getJointLimits();
             JOINT_TYPE getJointType();
