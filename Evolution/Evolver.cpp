@@ -171,8 +171,8 @@ void ivc::Evolver::createNewGenerationFromParents() {
 
                 auto newRoot = node->copy();
                 newRoot->setGenerator(generator);
-                newRoot->mutateBodyAndNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
-                newRoot->mutateNewBodyAndNewNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
+                newRoot->mutateBodyAndNeurons(m_config->m_lockMorph, m_config);
+                newRoot->mutateNewBodyAndNewNeurons(m_config->m_lockMorph, m_config);
                 newRoot->mutateNeuralConnections(m_config);
                 newScene = std::make_shared<PhysicsScene>();
                 newScene->init(m_base,newRoot, m_config);
@@ -337,6 +337,8 @@ void ivc::Evolver::calcNovelty() {
         m_noveltyArchive.push_back(noveltyVec);
     }
 
+    m_noveltyArchiveCopy = m_noveltyArchive;
+
     // novelty fitness
     // assign novelty score to current gen
     for(auto const& [baseNode, noveltyVec] : m_currentViableCreaturesVec){
@@ -351,7 +353,7 @@ void ivc::Evolver::calcNovelty() {
 
             float diff = 0;
 
-            if(noveltyVec.back().z >= 0 && noveltyVec.back().x > -(float(m_config->m_noveltyWidth)/2) && noveltyVec.back().x < float(m_config->m_noveltyWidth)/2){
+            if(noveltyVec.back().z <= 0 && noveltyVec.back().x > -(float(m_config->m_noveltyWidth)/2) && noveltyVec.back().x < float(m_config->m_noveltyWidth)/2){
                 diff += std::pow((noveltyVec.back().x - noveltyVecNeighbor.back().x),2);
                 diff += std::pow((noveltyVec.back().z - noveltyVecNeighbor.back().z),2);
                 diff = std::sqrt(diff);
@@ -510,4 +512,8 @@ void ivc::Evolver::graft(std::shared_ptr<BaseNode> base, std::shared_ptr<BaseNod
     auto parentNode = toReplace->getParentNode();
     parentNode->replaceChild(toReplace, replacement);
 
+}
+
+std::vector<std::vector<PxVec3>> ivc::Evolver::getNoveltyArchive() {
+    return m_noveltyArchiveCopy;
 }

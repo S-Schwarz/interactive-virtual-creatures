@@ -385,8 +385,25 @@ void ivc::App::drawLiveWindow() {
 
     //-------------------------
 
-    drawShape(BOX, glm::vec3(0,0,-240),glm::quat(),glm::vec3(0.1,0.1,500.0), COLOR_RED, false);
-    drawShape(BOX, glm::vec3(0,0,0),glm::quat(),glm::vec3(20.0,0.1,0.1), COLOR_RED, false);
+    if(m_evoConfig->m_useNoveltySearch){
+        // draw novelty search box
+        auto archive = m_evolver->getNoveltyArchive();
+        auto width = (float)m_evoConfig->m_noveltyWidth;
+
+        for(auto vec : archive){
+            auto pos = vec.back();
+            drawShape(BOX, glm::vec3(pos.x,pos.y,pos.z),glm::quat(),glm::vec3(0.2,0.2,0.2), COLOR_RED, false);
+        }
+
+        drawShape(BOX, glm::vec3(-width / 2, 0, -250), glm::quat(), glm::vec3(0.1, 0.1, 500.0), COLOR_RED, false);
+        drawShape(BOX, glm::vec3(width / 2, 0, -250), glm::quat(), glm::vec3(0.1, 0.1, 500.0), COLOR_RED, false);
+
+        drawShape(BOX, glm::vec3(0, 0, 0), glm::quat(), glm::vec3(width, 0.1, 0.1), COLOR_RED, false);
+
+    }else {
+        drawShape(BOX, glm::vec3(0, 0, -240), glm::quat(), glm::vec3(0.1, 0.1, 500.0), COLOR_RED, false);
+        drawShape(BOX, glm::vec3(0, 0, 0), glm::quat(), glm::vec3(20.0, 0.1, 0.1), COLOR_RED, false);
+    }
 
     // draw new object ----------------------
 

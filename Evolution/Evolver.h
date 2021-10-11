@@ -43,13 +43,12 @@ namespace ivc{
             std::vector<std::shared_ptr<PhysicsScene>> m_testSceneVec;
             std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>> m_testPosMap;
             std::vector<std::vector<PxVec3>> m_noveltyArchive;
+            std::vector<std::vector<PxVec3>> m_noveltyArchiveCopy;
 
             std::vector<std::pair<std::shared_ptr<BaseNode>, std::vector<PxVec3>>> m_currentViableCreaturesVec;
             std::map<std::shared_ptr<BaseNode>, float> m_currentFitnessMap;
             std::map<std::shared_ptr<BaseNode>, float> m_currentNoveltyMap;
             std::vector<std::pair<std::shared_ptr<BaseNode>, unsigned int>> m_nextParentVec;
-
-
 
             void createFirstGeneration();
             void createNewGenerationFromParents();
@@ -67,6 +66,7 @@ namespace ivc{
             unsigned int getNumberGenerations();
             std::vector<std::shared_ptr<EvoData>> getEvoDataVec();
             void clearBestVec();
+            std::vector<std::vector<PxVec3>> getNoveltyArchive();
 
 
     };
