@@ -20,8 +20,12 @@ namespace ivc{
             nanogui::Graph* m_fitnessGraph = nullptr;
             nanogui::Graph* m_noveltyGraph = nullptr;
 
+            nanogui::Widget* m_buttonWidget = nullptr;
             nanogui::Button* m_updateButton = nullptr;
             nanogui::Button* m_startButton = nullptr;
+            nanogui::Button* m_saveButton = nullptr;
+            nanogui::Button* m_loadButton = nullptr;
+            nanogui::TextBox* m_fileNameBox = nullptr;
 
             nanogui::Widget* m_configurationWidget = nullptr;
 

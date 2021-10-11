@@ -70,11 +70,17 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
 
     m_fitnessFunctionLabel = m_guiScreen->add<nanogui::Label>("Fitness function: ");
 
-    m_updateButton = m_guiScreen->add<nanogui::Button>("Update");
-    m_updateButton->set_callback([this]{this->update();});
-    m_updateButton->set_tooltip("Update the configuration");
+    auto buttonLayout =
+            new nanogui::GridLayout(nanogui::Orientation::Horizontal, 5,
+                                    nanogui::Alignment::Middle, 0, 0);
 
-    m_startButton = m_guiScreen->add<nanogui::Button>("Start");
+    m_buttonWidget = m_guiScreen->add<nanogui::Widget>();
+    m_buttonWidget->set_layout(buttonLayout);
+
+    m_updateButton = m_buttonWidget->add<nanogui::Button>("Update");
+    m_updateButton->set_callback([this]{this->update();});
+
+    m_startButton = m_buttonWidget->add<nanogui::Button>("Start");
     m_startButton->set_callback([this]{
         if(this->m_config->m_running){
             this->m_config->m_shouldEnd = true;
@@ -84,6 +90,15 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
             this->m_startButton->set_caption("End");
         }
     });
+
+    m_saveButton = m_buttonWidget->add<nanogui::Button>("Save");
+    m_saveButton->set_callback([this]{});
+
+    m_loadButton = m_buttonWidget->add<nanogui::Button>("Load");
+    m_loadButton->set_callback([this]{});
+
+    m_fileNameBox = m_buttonWidget->add<nanogui::TextBox>();
+    m_fileNameBox->set_editable(true);
 
     auto topLayout =
             new nanogui::GridLayout(nanogui::Orientation::Horizontal, 3,
@@ -245,6 +260,7 @@ void ivc::GUIWindow::update() {
     m_config->m_noveltyInterval = m_noveltyIntevallBox->value();
     m_config->m_onlyUseEndPos = m_noveltyArchiveCheckbox->checked();
     m_config->m_noveltyWidth = m_noveltyWidthBox->value();
+    m_config->m_fileName = m_fileNameBox->value();
 
     if(!m_config->m_useNoveltySearch){
         std::string fitnessFunc = "Fitness function: ";
@@ -290,20 +306,15 @@ void ivc::GUIWindow::resize() {
     m_fitnessFunctionLabel->set_position(funcLabelPos);
     m_fitnessFunctionLabel->set_font_size(funcLabelSize.y() / 2);
 
-    auto updateButtonSize = nanogui::Vector2i(screenWidth/4, screenHeight/16);
-    auto updateButtonPos = nanogui::Vector2i(screenWidth/4, funcLabelPos.y() - (int)(updateButtonSize.y() * 1.5));
-    m_updateButton->set_fixed_size(updateButtonSize);
-    m_updateButton->set_position(updateButtonPos);
-
-    auto startButtonSize = nanogui::Vector2i(screenWidth/4, screenHeight/16);
-    auto startButtonPos = nanogui::Vector2i(updateButtonPos.x() + updateButtonSize.x(), funcLabelPos.y() - (int)(startButtonSize.y() * 1.5));
-    m_startButton->set_fixed_size(startButtonSize);
-    m_startButton->set_position(startButtonPos);
-
     auto configurationWidgetSize = nanogui::Vector2i(screenWidth, screenHeight/2);
     auto configurationWidgetPos = nanogui::Vector2i(0, 0);
     m_configurationWidget->set_fixed_size(configurationWidgetSize);
     m_configurationWidget->set_position(configurationWidgetPos);
+
+    auto buttonWidgetSize = nanogui::Vector2i(screenWidth, screenHeight/4);
+    auto buttonWidgetPos = nanogui::Vector2i(0, (int)(configurationWidgetSize.y() * 1));
+    m_buttonWidget->set_fixed_size(buttonWidgetSize);
+    m_buttonWidget->set_position(buttonWidgetPos);
 
     m_guiScreen->perform_layout();
 

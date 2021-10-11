@@ -7,6 +7,7 @@
 
 #include "../Constants.h"
 #include <vector>
+#include <string>
 
 namespace ivc{
     class EvoConfig {
@@ -31,6 +32,10 @@ namespace ivc{
         bool m_shouldStart = false;
         bool m_shouldEnd = false;
         bool m_running = false;
+
+        bool m_shouldSave = false;
+        bool m_shouldLoad = false;
+        std::string m_fileName = "";
 
         std::vector<std::pair<glm::vec3, glm::vec3>> m_objVec;
 

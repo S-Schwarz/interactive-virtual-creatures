@@ -110,7 +110,7 @@ void ivc::Evolver::startContinuousEvolution() {
         m_testPosMap = {};
         calcDistanceTravelled();
 
-        if(m_currentViableCreaturesVec.empty() || m_currentLargestDistance == 0){
+        if(m_currentViableCreaturesVec.empty()){
             m_testSceneVec = {};
             createFirstGeneration();
         }else{

@@ -679,6 +679,10 @@ void ivc::BaseNode::chooseNewJointType() {
 
 void ivc::BaseNode::chooseNewAnchorSide() {
 
+    if(m_parentNode->m_freeSides.empty()){
+        return;
+    }
+
     std::vector<NODE_SIDE> newSideVec;
     std::sample(m_parentNode->m_freeSides.begin(), m_parentNode->m_freeSides.end(), std::back_inserter(newSideVec), 1, *m_generator);
 
