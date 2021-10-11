@@ -198,6 +198,9 @@ int ivc::App::update() {
 
     if(m_evoConfig->m_shouldEnd){
         m_evolutionThread->join();
+        m_evolver->clean();
+        m_liveEnvironment->clean();
+
         m_evoConfig->m_running = false;
         m_evoConfig->m_shouldEnd = false;
     }
@@ -467,17 +470,20 @@ void ivc::App::drawLiveWindow() {
     }
 
     // PLANE ------------------
-    //TODO: ???
-    auto rigidStatic = m_liveEnvironment->getFloorPlane();
-    PxPlane* plane = (PxPlane*)rigidStatic;
-    auto transformA = rigidStatic->getGlobalPose();
-    auto transformB = PxTransformFromPlaneEquation(*plane);
 
-    glm::vec3 posVec = glm::vec3(transformA.p.x, transformA.p.y, transformA.p.z);
+    if(m_liveEnvironment->getBestCreature() != nullptr){
+        //TODO: ???
+        auto rigidStatic = m_liveEnvironment->getFloorPlane();
+        PxPlane* plane = (PxPlane*)rigidStatic;
+        auto transformA = rigidStatic->getGlobalPose();
+        auto transformB = PxTransformFromPlaneEquation(*plane);
 
-    glm::quat rotQuat = glm::quat(transformB.q.w, transformB.q.x, transformB.q.y, transformB.q.z);
+        glm::vec3 posVec = glm::vec3(transformA.p.x, transformA.p.y, transformA.p.z);
 
-    drawShape(PLANE, posVec, rotQuat, glm::vec3(1000.0f, 0.0f, 1000.0f), COLOR_PLANE, false);
+        glm::quat rotQuat = glm::quat(transformB.q.w, transformB.q.x, transformB.q.y, transformB.q.z);
+
+        drawShape(PLANE, posVec, rotQuat, glm::vec3(1000.0f, 0.0f, 1000.0f), COLOR_PLANE, false);
+    }
 
     glfwSwapBuffers(m_liveWindow);
 }

@@ -22,6 +22,7 @@ namespace ivc{
 
             void setInactiveTime(unsigned int);
             void resetCreaturePosition();
+            void clean();
 
             std::vector<std::pair<std::vector<PxArticulationLink*>, std::vector<PxVec3>>> getBodyParts();
             std::vector<PxRigidStatic*> getObjVec();

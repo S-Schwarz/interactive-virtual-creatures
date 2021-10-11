@@ -61,6 +61,7 @@ namespace ivc{
             void graft(std::shared_ptr<BaseNode>, std::shared_ptr<BaseNode>, std::shared_ptr<std::mt19937>);
         public:
             int init(std::shared_ptr<PhysicsBase>, std::shared_ptr<EvoConfig>);
+            void clean();
             void startContinuousEvolution();
             std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> getCurrentBestVector();
             unsigned int getNumberGenerations();

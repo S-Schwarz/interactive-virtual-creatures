@@ -110,8 +110,9 @@ void ivc::Evolver::startContinuousEvolution() {
         m_testPosMap = {};
         calcDistanceTravelled();
 
-        if(m_currentViableCreaturesVec.empty()){
+        if(m_currentViableCreaturesVec.empty() || m_currentLargestDistance == 0){
             m_testSceneVec = {};
+            printf("Generating new Population\n");
             createFirstGeneration();
         }else{
             calcFitness();
@@ -522,4 +523,19 @@ void ivc::Evolver::calcDistanceTravelled() {
             }
         }
     }
+}
+
+void ivc::Evolver::clean() {
+    m_numberGenerations = 1;
+    m_currentBestVector = {};
+    m_dataVec = {};
+
+    m_testSceneVec = {};
+    m_testPosMap = {};
+    m_noveltyArchive = {};
+    m_noveltyArchiveCopy = {};
+    m_currentViableCreaturesVec = {};
+    m_currentFitnessMap = {};
+    m_currentNoveltyMap = {};
+    m_nextParentVec = {};
 }

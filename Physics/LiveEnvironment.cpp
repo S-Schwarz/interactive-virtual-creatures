@@ -93,8 +93,8 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
         m_sceneVec.resize(nodeVec.size());
     }else{
         for(int i = 0; i < nodeVec.size(); ++i){
+            auto liveScene = std::make_shared<PhysicsScene>();
             if(i >= m_sceneVec.size()){
-                auto liveScene = std::make_shared<PhysicsScene>();
                 liveScene->init(m_base, nodeVec[i].first, m_config);
                 m_sceneVec.push_back(liveScene);
             }else{
@@ -103,6 +103,7 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
             if(nodeVec[i].second.first > bestDistance){
                 m_currentBest = nodeVec[i].first;
                 m_currentBestPath = nodeVec[i].second.second;
+                m_bestScene = liveScene;
                 bestDistance = nodeVec[i].second.first;
             }
         }
@@ -161,9 +162,18 @@ void ivc::LiveEnvironment::resetCreaturePosition() {
 }
 
 std::shared_ptr<ivc::PhysicalCreature> ivc::LiveEnvironment::getBestCreature() {
+    if(m_bestScene == nullptr)
+        return nullptr;
     return m_bestScene->getCreature();
 }
 
 std::vector<PxRigidStatic *> ivc::LiveEnvironment::getObjVec() {
     return m_bestScene->getObjVec();
+}
+
+void ivc::LiveEnvironment::clean() {
+    m_sceneVec = {};
+    m_currentBest = nullptr;
+    m_currentBestPath = {};
+    m_bestScene = nullptr;
 }
