@@ -14,6 +14,7 @@
 #include "../Evolution/EvoConfig.h"
 #include <map>
 #include <memory>
+#include <set>
 
 using namespace physx;
 
@@ -61,6 +62,10 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
 
             void setJointType(JOINT_TYPE);
             void chooseNewJointType();
+            std::vector<std::shared_ptr<Neuron>> collectNeuronCopies();
+            std::vector<std::shared_ptr<JointEffector>> collectEffectorCopies();
+            std::vector<std::shared_ptr<JointSensor>> collectJointSensorCopies();
+            std::vector<std::shared_ptr<ContactSensor>> collectContactSensorCopies();
         public:
             void init(bool, std::shared_ptr<std::mt19937>, BaseNode*, std::shared_ptr<EvoConfig>);
             std::shared_ptr<BaseNode> copy();
@@ -77,6 +82,7 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             void setBrain(std::shared_ptr<NeuronCluster>);
 
             unsigned int getNumberOfParts();
+            std::vector<unsigned int> getNeuronActivity();
             std::vector<std::shared_ptr<BaseNode>> getChildren();
             PxVec3 getDimensions();
             PxVec3 getHalfExtents();

@@ -774,3 +774,155 @@ void ivc::BaseNode::replaceChild(std::shared_ptr<BaseNode> toReplace, std::share
     replacement->rewireInputs(&newOutputIDs);
 
 }
+
+std::vector<unsigned int> ivc::BaseNode::getNeuronActivity() {
+
+    std::vector<std::shared_ptr<Neuron>> activeNeuronsVec;
+    std::vector<std::shared_ptr<Neuron>> activeBrainNeuronsVec;
+    std::vector<std::pair<std::shared_ptr<JointSensor>,unsigned long>>  activeJointSensorsVec;
+    std::vector<std::pair<std::shared_ptr<ContactSensor>,std::vector<unsigned long>>>  activeContactSensorsVec;
+
+    if(m_isRoot){
+        std::vector<std::shared_ptr<Neuron>> neuronVec = collectNeuronCopies();
+        std::vector<std::shared_ptr<Neuron>> brainNeuronVec = m_brain->getCopyOfNeurons();
+        std::vector<std::shared_ptr<JointSensor>> jointSensorVec = collectJointSensorCopies();
+        std::vector<std::shared_ptr<ContactSensor>> contactSensorVec = collectContactSensorCopies();
+        std::vector<std::shared_ptr<JointEffector>> effectorVec = collectEffectorCopies();
+
+        // find all neurons, sensors that connect to effectors
+        std::set<unsigned long> activeIDs;
+        std::vector<unsigned long> toCheck;
+        std::set<unsigned long> checkedIDs;
+
+        for(auto effector : effectorVec){
+            auto inVec = effector->getInputs();
+            for(auto id : inVec){
+                activeIDs.insert(id);
+                toCheck.push_back(id);
+            }
+        }
+
+        while(!toCheck.empty()){
+            auto id = toCheck.back();
+            toCheck.pop_back();
+            checkedIDs.insert(id);
+
+            std::shared_ptr<Neuron> neuron = nullptr;
+            for(auto n : neuronVec){
+                if(n->getOutputID() == id){
+                    neuron = n;
+                    break;
+                }
+            }
+
+            for(auto n : brainNeuronVec){
+                if(n->getOutputID() == id){
+                    neuron = n;
+                    break;
+                }
+            }
+
+            if(neuron != nullptr){
+                auto inVec = neuron->getInputs();
+                for(auto inID : inVec){
+                    activeIDs.insert(inID);
+                    if(checkedIDs.find(inID) == checkedIDs.end())
+                        toCheck.push_back(inID);
+                }
+            }
+
+        }
+
+        //fill vectors
+        for(auto neuron : neuronVec){
+            auto id = neuron->getOutputID();
+            if(activeIDs.find(id) != activeIDs.end())
+                activeNeuronsVec.push_back(neuron);
+        }
+
+        for(auto neuron : brainNeuronVec){
+            auto id = neuron->getOutputID();
+            if(activeIDs.find(id) != activeIDs.end())
+                activeBrainNeuronsVec.push_back(neuron);
+        }
+
+        for(auto sensor : jointSensorVec){
+            auto id = sensor->getOutputID();
+            if(activeIDs.find(id) != activeIDs.end())
+                activeJointSensorsVec.push_back({sensor,id});
+        }
+
+        for(auto contact : contactSensorVec){
+            auto idVec = contact->getOutputIDs();
+            std::vector<unsigned long> activeOuts;
+            for(auto id : idVec){
+                if(activeIDs.find(id) != activeIDs.end())
+                    activeOuts.push_back(id);
+            }
+            if(activeOuts.size() > 0)
+                activeContactSensorsVec.push_back({contact,activeOuts});
+        }
+
+        unsigned int numContact = 0;
+
+        for(auto pair : activeContactSensorsVec){
+            numContact += pair.second.size();
+        }
+
+        return {(unsigned int)activeNeuronsVec.size(), (unsigned int)activeBrainNeuronsVec.size(), (unsigned int)activeJointSensorsVec.size(), numContact};
+    }
+
+    return {0,0,0,0};
+
+}
+
+std::vector<std::shared_ptr<ivc::Neuron>> ivc::BaseNode::collectNeuronCopies() {
+
+    std::vector<std::shared_ptr<ivc::Neuron>> retVec = m_localNeurons->getCopyOfNeurons();
+
+    for(auto child : m_childNodeVector){
+        auto childVec = child->collectNeuronCopies();
+        retVec.insert(retVec.end(), childVec.begin(), childVec.end());
+    }
+
+    return retVec;
+}
+
+std::vector<std::shared_ptr<ivc::JointEffector>> ivc::BaseNode::collectEffectorCopies() {
+    std::vector<std::shared_ptr<ivc::JointEffector>> retVec;
+
+    if(!m_isRoot)
+        retVec.push_back(m_localNeurons->getCopiesOfJointNeurons().second);
+
+    for(auto child : m_childNodeVector){
+        auto childVec = child->collectEffectorCopies();
+        retVec.insert(retVec.end(), childVec.begin(), childVec.end());
+    }
+
+    return retVec;
+}
+
+std::vector<std::shared_ptr<ivc::JointSensor>> ivc::BaseNode::collectJointSensorCopies() {
+    std::vector<std::shared_ptr<ivc::JointSensor>> retVec;
+
+    if(!m_isRoot)
+        retVec.push_back(m_localNeurons->getCopiesOfJointNeurons().first);
+
+    for(auto child : m_childNodeVector){
+        auto childVec = child->collectJointSensorCopies();
+        retVec.insert(retVec.end(), childVec.begin(), childVec.end());
+    }
+
+    return retVec;
+}
+
+std::vector<std::shared_ptr<ivc::ContactSensor>> ivc::BaseNode::collectContactSensorCopies() {
+    std::vector<std::shared_ptr<ivc::ContactSensor>> retVec = {m_localNeurons->getCopyOfContactSensor()};
+
+    for(auto child : m_childNodeVector){
+        auto childVec = child->collectContactSensorCopies();
+        retVec.insert(retVec.end(), childVec.begin(), childVec.end());
+    }
+
+    return retVec;
+}

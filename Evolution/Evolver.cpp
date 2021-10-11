@@ -122,6 +122,10 @@ void ivc::Evolver::startContinuousEvolution() {
             calcFitness();
             calcNovelty();
             printf("Largest distance: %f\n", m_currentLargestDistance);
+            printf("NEURONS OVERALL: %u\n", m_currentBestVector[0].first->getNeuronActivity()[0] + m_currentBestVector[0].first->getNeuronActivity()[1]);
+            printf("NEURONS BRAIN: %u\n", m_currentBestVector[0].first->getNeuronActivity()[1]);
+            printf("JOINT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[2]);
+            printf("CONTACT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[3]);
             chooseParents();
             createNewGenerationFromParents();
             createEvoData();
