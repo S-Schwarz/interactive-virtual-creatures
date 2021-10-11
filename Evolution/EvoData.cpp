@@ -180,3 +180,15 @@ void ivc::EvoData::setWorstFitnessScore(float val) {
 void ivc::EvoData::setAverageFitnessScore(float val) {
     m_averageFitnessScore = val;
 }
+
+void ivc::EvoData::setBestNoveltyScore(float val) {
+    m_bestNoveltyScore = val;
+}
+
+void ivc::EvoData::setWorstNoveltyScore(float val) {
+    m_worstNoveltyScore = val;
+}
+
+void ivc::EvoData::setAverageNoveltyScore(float val) {
+    m_averageNoveltyScore = val;
+}

@@ -42,8 +42,11 @@ namespace ivc{
             void setAverageFitnessScore(float);
 
             float getBestNoveltyScore();
+            void setBestNoveltyScore(float);
             float getWorstNoveltyScore();
+            void setWorstNoveltyScore(float);
             float getAverageNoveltyScore();
+            void setAverageNoveltyScore(float);
 
             std::vector<std::pair<std::shared_ptr<BaseNode>, unsigned int>> getParentVec();
             std::vector<std::shared_ptr<BaseNode>> getParents();

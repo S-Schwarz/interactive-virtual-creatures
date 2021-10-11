@@ -120,6 +120,7 @@ void ivc::Evolver::startContinuousEvolution() {
             createFirstGeneration();
         }else{
             calcFitness();
+            calcNovelty();
             printf("Largest distance: %f\n", m_currentLargestDistance);
             chooseParents();
             createNewGenerationFromParents();
@@ -128,6 +129,9 @@ void ivc::Evolver::startContinuousEvolution() {
             m_currentViableCreaturesVec = {};
             m_currentFitnessMap = {};
             m_currentNoveltyMap = {};
+
+            if(!m_config->m_useNoveltySearch)
+                m_noveltyArchive = {};
 
             m_numberGenerations += 1;
         }
@@ -329,13 +333,13 @@ void ivc::Evolver::calcFitness() {
 void ivc::Evolver::calcNovelty() {
 
     // copy current gen into overall archive
-    for(auto const& [baseNode, noveltyVec] : m_currentGenNoveltyArchive){
+    for(auto const& [baseNode, noveltyVec] : m_currentViableCreaturesVec){
         m_noveltyArchive.push_back(noveltyVec);
     }
 
     // novelty fitness
     // assign novelty score to current gen
-    for(auto const& [baseNode, noveltyVec] : m_currentGenNoveltyArchive){
+    for(auto const& [baseNode, noveltyVec] : m_currentViableCreaturesVec){
         std::vector<float> nearestNeighborsDifferenceVec;
         // skip itself
         bool skipped = false;
@@ -388,11 +392,14 @@ void ivc::Evolver::calcNovelty() {
 
         float averageDistance = sumDiff / nearestNeighborsDifferenceVec.size();
 
+        if(averageDistance > m_currentBestNoveltyScore)
+            m_currentBestNoveltyScore = averageDistance;
+        if(averageDistance < m_currentWorstNoveltyScore)
+            m_currentWorstNoveltyScore = averageDistance;
+
         m_currentNoveltyMap[baseNode] = averageDistance;
 
     }
-
-    m_currentGenNoveltyArchive.clear();
 
 }
 
@@ -405,24 +412,35 @@ void ivc::Evolver::chooseParents() {
     }
     m_currentAverageFitnessScore = scoreSum / m_currentFitnessMap.size();
 
+    // calculate average novelty
+    float noveltySum = 0;
+    for(const auto &[node, score] : m_currentNoveltyMap){
+        noveltySum += score;
+    }
+    m_currentAverageNoveltyScore = noveltySum / m_currentNoveltyMap.size();
+
     // normalize scores
     std::vector<std::pair<std::shared_ptr<BaseNode>, float>> normalizedScores;
-    for(const auto &[node, score] : m_currentFitnessMap){
-        if(m_currentBestFitnessScore == m_currentWorstFitnessScore){
-            normalizedScores.emplace_back(node,1.0f);
-        }else{
-            normalizedScores.emplace_back(node, Mutator::normalize(score, m_currentWorstFitnessScore, m_currentBestFitnessScore));
+    if(m_config->m_useNoveltySearch){
+        for(const auto &[node, score] : m_currentNoveltyMap){
+            if(m_currentBestNoveltyScore == m_currentWorstNoveltyScore){
+                normalizedScores.emplace_back(node,1.0f);
+            }else{
+                normalizedScores.emplace_back(node, Mutator::normalize(score, m_currentWorstNoveltyScore, m_currentBestNoveltyScore));
+            }
+        }
+    }else{
+        for(const auto &[node, score] : m_currentFitnessMap){
+            if(m_currentBestFitnessScore == m_currentWorstFitnessScore){
+                normalizedScores.emplace_back(node,1.0f);
+            }else{
+                normalizedScores.emplace_back(node, Mutator::normalize(score, m_currentWorstFitnessScore, m_currentBestFitnessScore));
+            }
         }
     }
-/*
-    //choose best creatures
-    std::vector<std::pair<std::shared_ptr<BaseNode>,float>> bestVec;
-    for(const auto&[node, score] : normalizedScores){
-        if(score > EVOLUTION_MIN_SCORE){
-            bestVec.emplace_back(node,score);
-        }
-    }
-*/
+
+
+
     //sort by score
     std::sort(normalizedScores.begin(), normalizedScores.end(), [](auto &left, auto &right) {
         return left.second > right.second;
@@ -456,9 +474,15 @@ void ivc::Evolver::createEvoData() {
     auto newData = std::make_shared<EvoData>();
     newData->setGeneration(m_numberGenerations);
     newData->setLargestDistance(m_currentLargestDistance);
+
     newData->setBestFitnessScore(m_currentBestFitnessScore);
     newData->setWorstFitnessScore(m_currentWorstFitnessScore);
     newData->setAverageFitnessScore(m_currentAverageFitnessScore);
+
+    newData->setBestNoveltyScore(m_currentBestNoveltyScore);
+    newData->setWorstNoveltyScore(m_currentWorstNoveltyScore);
+    newData->setAverageNoveltyScore(m_currentAverageNoveltyScore);
+
     m_dataVec.push_back(newData);
 
 }
