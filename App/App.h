@@ -74,6 +74,8 @@ namespace ivc {
             glm::vec3 m_newObjectPos = glm::vec3(0,0.5,0);
             glm::vec3 m_newObjectScale = glm::vec3(1,1,1);
 
+            bool m_inBuildMode = false;
+
             void processInput();
             int drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe);
             void initLiveWindow();

@@ -45,13 +45,22 @@ void ivc::App::processInput()
     if (glfwGetKey(m_liveWindow, GLFW_KEY_R) == GLFW_PRESS)
         m_liveEnvironment->resetCreaturePosition();
 
-    static int oldPlaceState = GLFW_RELEASE;
-    int newPlaceState = glfwGetKey(m_liveWindow, GLFW_KEY_SPACE);
-    if(newPlaceState == GLFW_RELEASE && oldPlaceState == GLFW_PRESS){
-        m_evoConfig->m_objVec.emplace_back(m_newObjectPos, m_newObjectScale);
-        m_evolver->clearBestVec();
+    static int oldBuildModeState = GLFW_RELEASE;
+    int newBuildModeState = glfwGetKey(m_liveWindow, GLFW_KEY_B);
+    if(newBuildModeState == GLFW_RELEASE && oldBuildModeState == GLFW_PRESS){
+        m_inBuildMode = !m_inBuildMode;
     }
-    oldPlaceState = newPlaceState;
+    oldBuildModeState = newBuildModeState;
+
+    if(m_inBuildMode){
+        static int oldPlaceState = GLFW_RELEASE;
+        int newPlaceState = glfwGetKey(m_liveWindow, GLFW_KEY_SPACE);
+        if(newPlaceState == GLFW_RELEASE && oldPlaceState == GLFW_PRESS){
+            m_evoConfig->m_objVec.emplace_back(m_newObjectPos, m_newObjectScale);
+            m_evolver->clearBestVec();
+        }
+        oldPlaceState = newPlaceState;
+    }
 
     static int oldPauseState = GLFW_RELEASE;
     int newPauseState = glfwGetKey(m_liveWindow, GLFW_KEY_P);
@@ -407,7 +416,8 @@ void ivc::App::drawLiveWindow() {
 
     // draw new object ----------------------
 
-    drawShape(BOX, m_newObjectPos,glm::quat(),m_newObjectScale, COLOR_RED, false);
+    if(m_inBuildMode)
+        drawShape(BOX, m_newObjectPos,glm::quat(),m_newObjectScale, COLOR_RED, true);
 
     for( auto pair : m_evoConfig->m_objVec){
         drawShape(TEXTURED_BOX, pair.first, glm::quat(), pair.second, COLOR_RED, false);
@@ -497,13 +507,15 @@ void ivc::App::drawPath(std::vector<PxVec3> posVec) {
 
 void ivc::App::addToScale(glm::vec3 vec) {
 
-    m_newObjectScale += vec;
+    if(m_inBuildMode){
+        m_newObjectScale += vec;
 
-    if(m_newObjectScale.x < 1)
-        m_newObjectScale = glm::vec3(1, m_newObjectScale.y, m_newObjectScale.z);
-    if(m_newObjectScale.y < 1)
-        m_newObjectScale = glm::vec3(m_newObjectScale.x, 1, m_newObjectScale.z);
-    if(m_newObjectScale.z < 1)
-        m_newObjectScale = glm::vec3(m_newObjectScale.x, m_newObjectScale.y, 1);
+        if(m_newObjectScale.x < 1)
+            m_newObjectScale = glm::vec3(1, m_newObjectScale.y, m_newObjectScale.z);
+        if(m_newObjectScale.y < 1)
+            m_newObjectScale = glm::vec3(m_newObjectScale.x, 1, m_newObjectScale.z);
+        if(m_newObjectScale.z < 1)
+            m_newObjectScale = glm::vec3(m_newObjectScale.x, m_newObjectScale.y, 1);
+    }
 
 }
