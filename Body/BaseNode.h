@@ -111,6 +111,7 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             void rewireInputs(std::map<unsigned long,unsigned long>*);
             PxVec3 flipAnchor(PxVec3);
             void reflectAlongAxis(NODE_SIDE);
+            void chooseNewAnchorSide()
 
     };
 

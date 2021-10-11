@@ -197,6 +197,11 @@ void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons, std::shared_ptr<EvoCo
             }
 
             //mutateBodyAndNeurons parent anchor
+
+            if(dis(*m_generator) <= config->m_mutChance){
+                chooseNewAnchorSide();
+            }
+
             if(m_parentSide == POS_X || m_parentSide == NEG_X){
                 if(dis(*m_generator) <= config->m_mutChance)
                     m_parentAnchor.y = Mutator::mutateFloat(m_generator,m_parentAnchor.y,0.99,0.01);
@@ -684,6 +689,46 @@ void ivc::BaseNode::chooseNewJointType() {
         }else{
             setJointType(SWING2);
         }
+    }
+
+}
+
+void ivc::BaseNode::chooseNewAnchorSide() {
+
+    std::vector<NODE_SIDE> newSideVec;
+    std::sample(m_parentNode->m_freeSides.begin(), m_parentNode->m_freeSides.end(), std::back_inserter(newSideVec), 1, m_generator);
+
+    if(newSideVec.empty()){
+        return;
+    }
+
+    m_parentNode->setSideAsFree(m_parentSide);
+    m_parentNode->setSideAsOccupied(newSideVec[0]);
+    m_parentSide = newSideVec[0];
+
+    m_parentAnchor = PxVec3(std::clamp(m_parentAnchor.x,0.01f,0.99f), std::clamp(m_parentAnchor.y,0.01f,0.99f), std::clamp(m_parentAnchor.z,0.01f,0.99f));
+
+    switch(m_parentSide){
+        case(POS_X):
+            m_parentAnchor = PxVec3(1, m_parentAnchor.y, m_parentAnchor.z);
+            break;
+        case(POS_Y):
+            m_parentAnchor = PxVec3(m_parentAnchor.x, 1, m_parentAnchor.z);
+            break;
+        case(POS_Z):
+            m_parentAnchor = PxVec3(m_parentAnchor.x, m_parentAnchor.y, 1);
+            break;
+        case(NEG_X):
+            m_parentAnchor = PxVec3(-1, m_parentAnchor.y, m_parentAnchor.z);
+            break;
+        case(NEG_Y):
+            m_parentAnchor = PxVec3(m_parentAnchor.x, -1, m_parentAnchor.z);
+            break;
+        case(NEG_Z):
+            m_parentAnchor = PxVec3(m_parentAnchor.x, m_parentAnchor.y, -1);
+            break;
+        case NONE:
+            throw std::invalid_argument("INVALID NODE SIDE");
     }
 
 }
