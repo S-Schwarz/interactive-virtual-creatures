@@ -28,6 +28,8 @@
 #include <nanogui/nanogui.h>
 #include <memory>
 
+#include "../DNA.h"
+
 namespace ivc {
 
     class App {
@@ -75,6 +77,9 @@ namespace ivc {
             glm::vec3 m_newObjectScale = glm::vec3(1,1,1);
 
             bool m_inBuildMode = false;
+
+            void saveTo(BaseNode*, std::string);
+            std::shared_ptr<BaseNode> loadFrom(std::string);
 
             void processInput();
             int drawShape(Shape shape, glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec4 color, bool wireframe);

@@ -30,9 +30,13 @@ namespace ivc {
         std::shared_ptr<std::mt19937> m_generator = nullptr;
 
     public:
+        NeuronCluster()=default;
         NeuronCluster(std::shared_ptr<std::mt19937>,bool,bool,std::shared_ptr<IDHandler>,std::shared_ptr<EvoConfig>);
         std::vector<unsigned long> getOutputGates();
         void setPossibleInputs(std::vector<unsigned long>);
+        void setPossibleInputsDirectly(std::vector<unsigned long>);
+        std::vector<unsigned long> getPossibleInputs();
+        void setOutputGates(std::vector<unsigned long>);
         void randomizeConnections();
         std::vector<std::shared_ptr<Neuron>> getCopyOfNeurons();
         std::pair<std::shared_ptr<JointSensor>,std::shared_ptr<JointEffector>> getCopiesOfJointNeurons();

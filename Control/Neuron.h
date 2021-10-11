@@ -17,6 +17,11 @@
 #include <cmath>
 #include <memory>
 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/vector.hpp>
+
 namespace ivc{
     enum NEURON_TYPE{
         //no input
@@ -74,7 +79,15 @@ namespace ivc{
             //two inputs
                 //sum_threshold neuron
                 float m_threshold = 0.0f;
+
+            friend class boost::serialization::access;
+            template<class Archive>
+            void serialize(Archive &a, const unsigned version){
+                a & m_type & m_outputID & m_numberInputs & m_inputIDs & m_inputWeights &
+                m_constant & m_amplitude & m_period & m_phase & m_vertical & m_osci_stepSize & m_osci_offset & m_delayed_input & m_threshold;
+            }
         public:
+            Neuron()=default;
             Neuron(std::shared_ptr<std::mt19937>, std::shared_ptr<EvoConfig>);
             void setOutput(std::shared_ptr<Gate>);
             void swap();

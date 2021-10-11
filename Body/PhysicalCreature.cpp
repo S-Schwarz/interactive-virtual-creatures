@@ -97,7 +97,7 @@ void ivc::PhysicalCreature::buildChildNodes(std::shared_ptr<BaseNode> parentNode
 
 void ivc::PhysicalCreature::buildNode(std::shared_ptr<BaseNode> child, PxVec3 parentPos, PxVec3 parentScale, PxVec3 parentRotation, PxArticulationLink* parentLink, PxVec3 parentHalfExtents) {
 
-    PxVec3 scale = child->getScale();
+    PxVec3 scale = PxVec3(1,1,1);
     PxVec3 childScale = PxVec3(parentScale.x * scale.x, parentScale.y * scale.y, parentScale.z * scale.z);
 
     PxVec3 childSize = child->getHalfExtents();

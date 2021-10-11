@@ -226,3 +226,15 @@ void ivc::NeuronCluster::rewireInputs(std::map<unsigned long, unsigned long>* ma
     }
 
 }
+
+void ivc::NeuronCluster::setOutputGates(std::vector<unsigned long> vec) {
+    m_outputGates = vec;
+}
+
+void ivc::NeuronCluster::setPossibleInputsDirectly(std::vector<unsigned long> vec) {
+    m_possibleInputGates = vec;
+}
+
+std::vector<unsigned long> ivc::NeuronCluster::getPossibleInputs() {
+    return m_possibleInputGates;
+}

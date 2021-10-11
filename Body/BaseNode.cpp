@@ -65,10 +65,6 @@ int ivc::BaseNode::setSideAsOccupied(NODE_SIDE side) {
     return -1;
 }
 
-PxVec3 ivc::BaseNode::getScale() {
-    return m_scale;
-}
-
 std::shared_ptr<ivc::IDHandler> ivc::BaseNode::getIDHandler() {
     if(m_isRoot)
         return m_idHandler;
@@ -156,20 +152,6 @@ void ivc::BaseNode::mutateBodyAndNeurons(bool onlyNeurons, std::shared_ptr<EvoCo
             newZ = Mutator::mutateFloat(m_generator, m_dimension.z, INFINITY, MIN_PART_SIZE);
 
         m_dimension = PxVec3(newX,newY,newZ);
-
-        //mutateBodyAndNeurons scale
-        newX = m_scale.x;
-        newY = m_scale.y;
-        newZ = m_scale.z;
-
-        if(dis(*m_generator) <= config->m_mutChance)
-            newX = Mutator::mutateFloat(m_generator, m_scale.x, INFINITY, MIN_SCALE);
-        if(dis(*m_generator) <= config->m_mutChance)
-            newY = Mutator::mutateFloat(m_generator, m_scale.y, INFINITY, MIN_SCALE);
-        if(dis(*m_generator) <= config->m_mutChance)
-            newZ = Mutator::mutateFloat(m_generator, m_scale.z, INFINITY, MIN_SCALE);
-
-        m_scale = PxVec3(newX,newY,newZ);
 
         //mutate orientation
         newX = m_orientation.x;
@@ -925,4 +907,44 @@ std::vector<std::shared_ptr<ivc::ContactSensor>> ivc::BaseNode::collectContactSe
     }
 
     return retVec;
+}
+
+PxVec3 ivc::BaseNode::getOrientationInRadians() {
+    return m_orientation;
+}
+
+std::vector<ivc::NODE_SIDE> ivc::BaseNode::getFreeSides() {
+    return m_freeSides;
+}
+
+bool ivc::BaseNode::isRoot() {
+    return m_isRoot;
+}
+
+void ivc::BaseNode::addChild(std::shared_ptr<BaseNode> newChild) {
+    m_childNodeVector.push_back(newChild);
+}
+
+void ivc::BaseNode::setOrientation(PxVec3 vec) {
+    m_orientation = vec;
+}
+
+void ivc::BaseNode::setDimension(PxVec3 vec) {
+    m_dimension = vec;
+}
+
+void ivc::BaseNode::setJointLimits(float low, float high) {
+    m_jointLimits = {low, high};
+}
+
+void ivc::BaseNode::emptyFreeSideVector() {
+    m_freeSides = {};
+}
+
+void ivc::BaseNode::setAsRoot() {
+    m_isRoot = true;
+}
+
+void ivc::BaseNode::setIDHandler(std::shared_ptr<ivc::IDHandler> handler) {
+    m_idHandler = handler;
 }

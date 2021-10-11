@@ -519,3 +519,19 @@ void ivc::App::addToScale(glm::vec3 vec) {
     }
 
 }
+
+void ivc::App::saveTo(ivc::BaseNode* node, std::string fileName) {
+    auto bestDNA = DNA(node);
+    std::ofstream outfile(fileName);
+    boost::archive::text_oarchive archive(outfile);
+    archive << bestDNA;
+}
+
+std::shared_ptr<ivc::BaseNode> ivc::App::loadFrom(std::string fileName) {
+    DNA loadedDNA;
+    std::ifstream infile(fileName);
+    boost::archive::text_iarchive archive(infile);
+    archive >> loadedDNA;
+
+    return loadedDNA.toRootNode();
+}

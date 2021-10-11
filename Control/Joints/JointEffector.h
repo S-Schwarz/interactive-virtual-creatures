@@ -16,6 +16,11 @@
 #include "../../Evolution/EvoConfig.h"
 #include <memory>
 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/vector.hpp>
+
 using namespace physx;
 
 namespace ivc{
@@ -32,6 +37,12 @@ namespace ivc{
 
         void addToHistory(PxVec3);
         PxVec3 getAverageValue();
+
+        friend class boost::serialization::access;
+        template<class Archive>
+        void serialize(Archive &a, const unsigned version){
+            a & m_id_input_0 & m_id_input_1 & m_id_input_2 & m_weight_0 & m_weight_1 & m_weight_2;
+        }
     public:
         void step();
         void setJoint(PxArticulationJointReducedCoordinate*);

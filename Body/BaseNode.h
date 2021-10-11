@@ -43,7 +43,6 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             PxVec3 m_dimension = PxVec3(MEAN_PART_SIZE,MEAN_PART_SIZE,MEAN_PART_SIZE);
             PxVec3 m_parentAnchor = PxVec3(0,0,0);
             NODE_SIDE m_parentSide = NONE;
-            PxVec3 m_scale = PxVec3(1,1,1);
             std::shared_ptr<NeuronCluster> m_localNeurons = nullptr;
             BaseNode* m_parentNode;
             JOINT_TYPE m_jointType;
@@ -60,7 +59,6 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
 
             bool m_isRoot = false;
 
-            void setJointType(JOINT_TYPE);
             void chooseNewJointType();
             std::vector<std::shared_ptr<Neuron>> collectNeuronCopies();
             std::vector<std::shared_ptr<JointEffector>> collectEffectorCopies();
@@ -80,6 +78,14 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             void setParentSide(NODE_SIDE);
             void setReflectionFlag();
             void setBrain(std::shared_ptr<NeuronCluster>);
+            void addChild(std::shared_ptr<BaseNode>);
+            void setOrientation(PxVec3);
+            void setDimension(PxVec3);
+            void setJointType(JOINT_TYPE);
+            void setJointLimits(float,float);
+            void setAsRoot();
+            void emptyFreeSideVector();
+            void setIDHandler(std::shared_ptr<IDHandler>);
 
             unsigned int getNumberOfParts();
             std::vector<unsigned int> getNeuronActivity();
@@ -87,9 +93,9 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             PxVec3 getDimensions();
             PxVec3 getHalfExtents();
             PxVec3 getOrientationInDegrees();
+            PxVec3 getOrientationInRadians();
             PxVec3 getParentAnchor();
             BaseNode* getParentNode();
-            PxVec3 getScale();
             std::pair<float,float> getJointLimits();
             JOINT_TYPE getJointType();
             std::shared_ptr<IDHandler> getIDHandler();
@@ -102,7 +108,9 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             NODE_SIDE getOppositeSide(NODE_SIDE);
             std::string getParentSideAsString();
             PxVec3 getAnchorPosition(std::shared_ptr<std::mt19937> gen);
+            std::vector<NODE_SIDE> getFreeSides();
             bool shouldBeReflected();
+            bool isRoot();
 
             void mutateBodyAndNeurons(bool, std::shared_ptr<EvoConfig>);
             void mutateNewBodyAndNewNeurons(bool, std::shared_ptr<EvoConfig>);
