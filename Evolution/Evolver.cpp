@@ -348,16 +348,17 @@ void ivc::Evolver::calcNovelty() {
                 skipped = true;
                 continue;
             }
+
             float diff = 0;
 
-            if(m_config->m_onlyUseEndPos){
-                float diff_back = 0;
-                if(m_config->m_useXAxis)
-                    diff_back += std::sqrt(std::pow((noveltyVec.back().x - noveltyVecNeighbor.back().x),2));
-                if(m_config->m_useZAxis)
-                    diff_back += std::sqrt(std::pow((noveltyVec.back().z - noveltyVecNeighbor.back().z),2));
-                diff = std::sqrt(diff_back);
-            }else{
+            if(noveltyVec.back().z >= 0 && noveltyVec.back().x > -(float(m_config->m_noveltyWidth)/2) && noveltyVec.back().x < float(m_config->m_noveltyWidth)/2){
+                diff += std::pow((noveltyVec.back().x - noveltyVecNeighbor.back().x),2);
+                diff += std::pow((noveltyVec.back().z - noveltyVecNeighbor.back().z),2);
+                diff = std::sqrt(diff);
+            }
+
+            /*
+            else{
                 for(int i = 0; i < noveltyVec.size(); ++i){
                     auto posVec = noveltyVec[i];
                     auto posVecNeighbor = noveltyVecNeighbor[i];
@@ -371,7 +372,7 @@ void ivc::Evolver::calcNovelty() {
                     diff += std::sqrt(diff_i);
                 }
             }
-
+            */
             if(nearestNeighborsDifferenceVec.size() < m_config->m_noveltyNearestNeighbors){
                 nearestNeighborsDifferenceVec.push_back(diff);
             }else{
