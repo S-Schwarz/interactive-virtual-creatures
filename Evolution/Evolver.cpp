@@ -33,6 +33,10 @@ void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std
         if(!resting)
             continue;
 
+        auto currentTransform = scene->getCreature()->getRootLink()->getGlobalPose();
+        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0));
+        scene->getCreature()->getArticulation()->teleportRootLink(newTrans, true);
+
         auto startPos = scene->getCreaturePos();
 
         if(startPos.y < 0)

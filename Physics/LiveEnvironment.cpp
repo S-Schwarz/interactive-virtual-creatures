@@ -43,6 +43,12 @@ int ivc::LiveEnvironment::init(std::shared_ptr<PhysicsBase> base, std::vector<st
         }
     }
 
+    for(auto scene : m_sceneVec){
+        auto currentTransform = scene->getCreature()->getRootLink()->getGlobalPose();
+        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0));
+        scene->getCreature()->getArticulation()->teleportRootLink(newTrans, true);
+    }
+
     return 0;
 }
 
@@ -130,6 +136,14 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
         }
     }
 
+    for(auto scene : m_sceneVec){
+        auto currentTransform = scene->getCreature()->getRootLink()->getGlobalPose();
+        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0));
+        scene->getCreature()->getArticulation()->teleportRootLink(newTrans, true);
+    }
+
+
+
 }
 
 void ivc::LiveEnvironment::resetCreaturePosition() {
@@ -157,6 +171,12 @@ void ivc::LiveEnvironment::resetCreaturePosition() {
         }
         if(f == FALL_DOWN_STEPS-1)
             printf("TEST\n");
+    }
+
+    for(auto scene : m_sceneVec){
+        auto currentTransform = scene->getCreature()->getRootLink()->getGlobalPose();
+        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0));
+        scene->getCreature()->getArticulation()->teleportRootLink(newTrans, true);
     }
 
 }
