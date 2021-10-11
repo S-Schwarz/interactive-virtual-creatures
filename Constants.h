@@ -21,7 +21,9 @@ const float MUTATE_REFLECTION_FLAG_CHANCE = 0.1f;
 const float EVOLUTION_MIN_SCORE = 0.99;
 const int EVOLUTION_MAX_PARENTS = 100;
 const int AMOUNT_STEPS_DELTA = 100;
-const float MAX_ALLOWED_HEIGHT = 10;
+const float MAX_ALLOWED_HEIGHT = 20;
+const float MIN_NOVELTY_VAL = 5;
+const int FIRST_MUTATION_NUM = 4;
 
 //simulation
 const float SIMULATION_STEP_SIZE = 0.01f;
@@ -29,7 +31,7 @@ const int CREATURES_PER_GENERATION = 500;
 const int NUMBER_OF_GENERATIONS = 100;
 const int STEPS_PER_GENERATION = 2500;
 
-const int FALL_DOWN_STEPS = 500;
+const int FALL_DOWN_STEPS = 400;
 const float ROOT_STARTING_HEIGHT_FACTOR = 1.2f;
 
 //body nodes
@@ -52,7 +54,7 @@ const float MAX_JOINT_VELOCITY = 4.0f;
 
 const int NUMBER_SAVED_EFFECTOR_VALUES = 60;
 
-const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 0.75f;
+const float EFFECTOR_MAXIMUM_STRENGTH_FACTOR = 1.0f;
 
 //neurons
 const int MEAN_LOCAL_NEURONS = 2;
