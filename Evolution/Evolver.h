@@ -52,6 +52,7 @@ namespace ivc{
 
             void createFirstGeneration();
             void createNewGenerationFromParents();
+            void calcDistanceTravelled();
             void calcFitness();
             void calcNovelty();
             void chooseParents();

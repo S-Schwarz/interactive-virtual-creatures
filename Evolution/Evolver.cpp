@@ -109,18 +109,19 @@ void ivc::Evolver::startContinuousEvolution() {
 
     }
     while(!m_config->m_paused){
-        printf("---------------------------\n");
-        printf("GENERATION #%i:\n", m_numberGenerations);
-
         testCurrentGeneration();
-        m_testSceneVec = {};
         m_testPosMap = {};
+        calcDistanceTravelled();
 
-        if(m_currentViableCreaturesVec.empty()){
+        if(m_currentViableCreaturesVec.empty() || m_currentLargestDistance == 0){
             createFirstGeneration();
         }else{
             calcFitness();
             calcNovelty();
+            printf("---------------------------\n");
+            printf("GENERATION #%i:\n", m_numberGenerations);
+            printf("Size: %lu\n", m_testSceneVec.size());
+            m_testSceneVec = {};
             printf("Largest distance: %f\n", m_currentLargestDistance);
             //printf("NEURONS OVERALL: %u\n", m_currentBestVector[0].first->getNeuronActivity()[0] + m_currentBestVector[0].first->getNeuronActivity()[1]);
             //printf("NEURONS BRAIN: %u\n", m_currentBestVector[0].first->getNeuronActivity()[1]);
@@ -227,8 +228,6 @@ void ivc::Evolver::testCurrentGeneration() {
 
     void (*testFuncPtr)(std::vector<std::shared_ptr<PhysicsScene>>,std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>>*, int, int) = testCreatures;
 
-    printf("Size: %lu\n", m_testSceneVec.size());
-
     //fitness test all creatures
     //divide scenes among threads
     std::vector<std::unique_ptr<std::thread>> allThreads;
@@ -272,44 +271,14 @@ void ivc::Evolver::testCurrentGeneration() {
 
 void ivc::Evolver::calcFitness() {
 
-    m_currentLargestDistance = -INFINITY;
     m_currentBestFitnessScore = -INFINITY;
     m_currentWorstFitnessScore = INFINITY;
-
-    if(m_clearBestVec){
-        m_currentBestVector = {};
-        m_clearBestVec = false;
-    }
 
     // normal fitness function
     auto sideMP = m_config->m_useSidewaysMP ? m_config->m_sidewaysMultiplier : 0.0f;
     for(auto const& [baseNode, posVec] : m_currentViableCreaturesVec){
         auto startPos = posVec.front();
         auto endPos = posVec.back();
-
-        // calc distance travelled
-        auto distanceTravelled = startPos.z - endPos.z;
-        if(distanceTravelled > m_currentLargestDistance){
-            m_currentLargestDistance = distanceTravelled;
-        }
-
-        // is this creature better than the current best creatures?
-        if(m_currentBestVector.size() < m_config->m_numberDisplayedCreatures){
-                m_currentBestVector.push_back({baseNode, {distanceTravelled, posVec}});
-        }else{
-            int toReplaceIndex = -1;
-            float worstDistance = INFINITY;
-            for(int i = 0; i < m_currentBestVector.size(); ++i){
-                float oldDistance = m_currentBestVector[i].second.first;
-                if(distanceTravelled > oldDistance && worstDistance > oldDistance){
-                    toReplaceIndex = i;
-                    worstDistance = oldDistance;
-                }
-            }
-            if(toReplaceIndex > -1){
-                m_currentBestVector[toReplaceIndex] = {baseNode, {distanceTravelled, posVec}};
-            }
-        }
 
         // calculate and save fitness
         float fitness = 0;
@@ -520,4 +489,43 @@ void ivc::Evolver::graft(std::shared_ptr<BaseNode> base, std::shared_ptr<BaseNod
 
 std::vector<std::vector<PxVec3>> ivc::Evolver::getNoveltyArchive() {
     return m_noveltyArchiveCopy;
+}
+
+void ivc::Evolver::calcDistanceTravelled() {
+
+    m_currentLargestDistance = -INFINITY;
+
+    if(m_clearBestVec){
+        m_currentBestVector = {};
+        m_clearBestVec = false;
+    }
+
+    for(auto const& [baseNode, posVec] : m_currentViableCreaturesVec) {
+        auto startPos = posVec.front();
+        auto endPos = posVec.back();
+
+        // calc distance travelled
+        auto distanceTravelled = startPos.z - endPos.z;
+        if (distanceTravelled > m_currentLargestDistance) {
+            m_currentLargestDistance = distanceTravelled;
+        }
+
+        // is this creature better than the current best creatures?
+        if (m_currentBestVector.size() < m_config->m_numberDisplayedCreatures) {
+            m_currentBestVector.push_back({baseNode, {distanceTravelled, posVec}});
+        } else {
+            int toReplaceIndex = -1;
+            float worstDistance = INFINITY;
+            for (int i = 0; i < m_currentBestVector.size(); ++i) {
+                float oldDistance = m_currentBestVector[i].second.first;
+                if (distanceTravelled > oldDistance && worstDistance > oldDistance) {
+                    toReplaceIndex = i;
+                    worstDistance = oldDistance;
+                }
+            }
+            if (toReplaceIndex > -1) {
+                m_currentBestVector[toReplaceIndex] = {baseNode, {distanceTravelled, posVec}};
+            }
+        }
+    }
 }
