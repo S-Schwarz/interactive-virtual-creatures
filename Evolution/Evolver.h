@@ -62,7 +62,6 @@ namespace ivc{
         public:
             int init(std::shared_ptr<PhysicsBase>, std::shared_ptr<EvoConfig>);
             void startContinuousEvolution();
-            void stopEvolution();
             std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> getCurrentBestVector();
             unsigned int getNumberGenerations();
             std::vector<std::shared_ptr<EvoData>> getEvoDataVec();

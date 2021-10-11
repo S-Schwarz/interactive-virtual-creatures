@@ -75,7 +75,15 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_updateButton->set_tooltip("Update the configuration");
 
     m_startButton = m_guiScreen->add<nanogui::Button>("Start");
-    m_startButton->set_callback([this]{this->m_config->m_paused = false;});
+    m_startButton->set_callback([this]{
+        if(this->m_config->m_running){
+            this->m_config->m_shouldEnd = true;
+            this->m_startButton->set_caption("Start");
+        }else{
+            this->m_config->m_shouldStart = true;
+            this->m_startButton->set_caption("End");
+        }
+    });
 
     auto topLayout =
             new nanogui::GridLayout(nanogui::Orientation::Horizontal, 3,

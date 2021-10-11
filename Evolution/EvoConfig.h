@@ -28,7 +28,9 @@ namespace ivc{
         bool m_onlyUseEndPos = true;
         int m_noveltyWidth = 30;
 
-        bool m_paused = true;
+        bool m_shouldStart = false;
+        bool m_shouldEnd = false;
+        bool m_running = false;
 
         std::vector<std::pair<glm::vec3, glm::vec3>> m_objVec;
 

@@ -105,15 +105,13 @@ int ivc::Evolver::init(std::shared_ptr<ivc::PhysicsBase> base, std::shared_ptr<E
 
 void ivc::Evolver::startContinuousEvolution() {
 
-    while(m_config->m_paused){
-
-    }
-    while(!m_config->m_paused){
+    while(!m_config->m_shouldEnd){
         testCurrentGeneration();
         m_testPosMap = {};
         calcDistanceTravelled();
 
         if(m_currentViableCreaturesVec.empty() || m_currentLargestDistance == 0){
+            m_testSceneVec = {};
             createFirstGeneration();
         }else{
             calcFitness();
@@ -206,10 +204,6 @@ void ivc::Evolver::createNewGenerationFromParents() {
         }
     }
 
-}
-
-void ivc::Evolver::stopEvolution() {
-    m_config->m_paused = true;
 }
 
 std::vector<std::pair<std::shared_ptr<ivc::BaseNode>,std::pair<float, std::vector<PxVec3>>>> ivc::Evolver::getCurrentBestVector() {

@@ -163,8 +163,6 @@ int ivc::App::init(){
     m_evolver = std::make_shared<Evolver>();
     m_evolver->init(m_physicsBase, m_evoConfig);
 
-    m_evolutionThread = new std::thread(backgroundEvolution, m_evolver);
-
     m_liveEnvironment = std::make_shared<LiveEnvironment>();
 
     initLiveWindow();
@@ -191,6 +189,18 @@ int ivc::App::update() {
     }
 
     processInput();
+
+    if(m_evoConfig->m_shouldStart){
+        m_evolutionThread = new std::thread(backgroundEvolution, m_evolver);
+        m_evoConfig->m_running = true;
+        m_evoConfig->m_shouldStart = false;
+    }
+
+    if(m_evoConfig->m_shouldEnd){
+        m_evolutionThread->join();
+        m_evoConfig->m_running = false;
+        m_evoConfig->m_shouldEnd = false;
+    }
 
     float currentTime = glfwGetTime();
     m_deltaTime = currentTime - m_lastTime;
@@ -297,7 +307,6 @@ int ivc::App::close() {
     if(!m_isInitialized)
         return -1;
 
-    m_evolver->stopEvolution();
     m_evolutionThread->join();
     delete m_evolutionThread;
     glfwTerminate();
