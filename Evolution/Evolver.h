@@ -54,6 +54,7 @@ namespace ivc{
             void chooseParents();
             void createEvoData();
             void testCurrentGeneration();
+            void graft(std::shared_ptr<BaseNode>, std::shared_ptr<BaseNode>, std::shared_ptr<std::mt19937>);
         public:
             int init(std::shared_ptr<PhysicsBase>, std::shared_ptr<EvoConfig>);
             void startContinuousEvolution();

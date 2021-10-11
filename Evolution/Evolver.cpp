@@ -151,20 +151,49 @@ void ivc::Evolver::createNewGenerationFromParents() {
     printf("Choose %zu parents from this generation\n", m_nextParentVec.size());
 
     for(const auto&[node, amount] : m_nextParentVec){
+        // add the parent unchanged
         auto newScene = std::make_shared<PhysicsScene>();
         newScene->init(m_base,node, m_config);
         m_testSceneVec.push_back(newScene);
         for(int i = 0; i < amount; ++i){
-            auto newRoot = node->copy();
+            // add mutated children
             std::random_device rd;
             auto generator = std::make_shared<std::mt19937>(rd());
-            newRoot->setGenerator(generator);
-            newRoot->mutateBodyAndNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
-            newRoot->mutateNewBodyAndNewNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
-            newRoot->mutateNeuralConnections(m_config);
-            newScene = std::make_shared<PhysicsScene>();
-            newScene->init(m_base,newRoot, m_config);
-            m_testSceneVec.push_back(newScene);
+
+            std::uniform_real_distribution<> dis(0, 1);
+
+            if(dis(*generator) < 0.5){
+                // asexual reproduction
+
+                auto newRoot = node->copy();
+                newRoot->setGenerator(generator);
+                newRoot->mutateBodyAndNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
+                newRoot->mutateNewBodyAndNewNeurons(m_config->m_useNoveltySearch || m_config->m_lockMorph, m_config);
+                newRoot->mutateNeuralConnections(m_config);
+                newScene = std::make_shared<PhysicsScene>();
+                newScene->init(m_base,newRoot, m_config);
+                m_testSceneVec.push_back(newScene);
+
+            }else{
+                // sexual reproduction
+                std::vector<std::pair<std::shared_ptr<BaseNode>, unsigned int>> otherParentVec;
+                while(otherParentVec.empty() || otherParentVec[0].first == node){
+                    otherParentVec.clear();
+                    std::sample(m_nextParentVec.begin(), m_nextParentVec.end(), std::back_inserter(otherParentVec), 1, *generator);
+                }
+
+                auto newRoot = node->copy(); // first parent
+                auto partnerRoot = otherParentVec[0].first->copy(); // second parent
+                graft(newRoot, partnerRoot, generator);
+
+                newRoot->setGenerator(generator);
+                // mutate connections to integrate new body part
+                newRoot->mutateNeuralConnections(m_config);
+                newScene = std::make_shared<PhysicsScene>();
+                newScene->init(m_base,newRoot, m_config);
+                m_testSceneVec.push_back(newScene);
+
+            }
         }
     }
 
@@ -436,4 +465,24 @@ void ivc::Evolver::createEvoData() {
 
 void ivc::Evolver::clearBestVec() {
     m_clearBestVec = true;
+}
+
+void ivc::Evolver::graft(std::shared_ptr<BaseNode> base, std::shared_ptr<BaseNode> partner, std::shared_ptr<std::mt19937> gen) {
+
+    // if nothing to graft from or to return
+    if(base->getChildren().empty() || partner->getChildren().empty())
+        return;
+
+    auto toReplace = base->getRandomNode(gen);
+    while(toReplace == nullptr)
+        toReplace = base->getRandomNode(gen);
+    auto replacement = partner->getRandomNode(gen);
+    while(replacement == nullptr)
+        replacement = partner->getRandomNode(gen);
+
+    replacement->changeAnchorSideTo(toReplace->getParentSide());
+
+    auto parentNode = toReplace->getParentNode();
+    parentNode->replaceChild(toReplace, replacement);
+
 }

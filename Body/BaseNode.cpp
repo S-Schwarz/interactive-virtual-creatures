@@ -696,15 +696,21 @@ void ivc::BaseNode::chooseNewJointType() {
 void ivc::BaseNode::chooseNewAnchorSide() {
 
     std::vector<NODE_SIDE> newSideVec;
-    std::sample(m_parentNode->m_freeSides.begin(), m_parentNode->m_freeSides.end(), std::back_inserter(newSideVec), 1, m_generator);
+    std::sample(m_parentNode->m_freeSides.begin(), m_parentNode->m_freeSides.end(), std::back_inserter(newSideVec), 1, *m_generator);
 
     if(newSideVec.empty()){
         return;
     }
 
+    changeAnchorSideTo(newSideVec[0]);
+
+}
+
+void ivc::BaseNode::changeAnchorSideTo(ivc::NODE_SIDE newSide) {
+
     m_parentNode->setSideAsFree(m_parentSide);
-    m_parentNode->setSideAsOccupied(newSideVec[0]);
-    m_parentSide = newSideVec[0];
+    m_parentNode->setSideAsOccupied(newSide);
+    m_parentSide = newSide;
 
     m_parentAnchor = PxVec3(std::clamp(m_parentAnchor.x,0.01f,0.99f), std::clamp(m_parentAnchor.y,0.01f,0.99f), std::clamp(m_parentAnchor.z,0.01f,0.99f));
 
@@ -730,5 +736,41 @@ void ivc::BaseNode::chooseNewAnchorSide() {
         case NONE:
             throw std::invalid_argument("INVALID NODE SIDE");
     }
+
+}
+
+std::shared_ptr<ivc::BaseNode> ivc::BaseNode::getRandomNode(std::shared_ptr<std::mt19937> gen) {
+
+    if(m_childNodeVector.empty())
+        return nullptr;
+
+    std::vector<std::shared_ptr<BaseNode>> randomChildVec;
+    std::sample(m_childNodeVector.begin(), m_childNodeVector.end(), std::back_inserter(randomChildVec), 1, *m_generator);
+
+    std::uniform_real_distribution<> dis(0, 1);
+
+    if(dis(*gen) < 0.25){
+        // return
+        return randomChildVec[0];
+    }else{
+        //go deeper
+        return randomChildVec[0]->getRandomNode(gen);
+    }
+
+}
+
+void ivc::BaseNode::replaceChild(std::shared_ptr<BaseNode> toReplace, std::shared_ptr<BaseNode> replacement) {
+
+    m_childNodeVector.erase(std::remove(m_childNodeVector.begin(), m_childNodeVector.end(), toReplace), m_childNodeVector.end());
+    m_childNodeVector.push_back(replacement);
+
+    replacement->setParent(this);
+
+    //choose new outputs recursively
+    std::map<unsigned long,unsigned long> newOutputIDs;
+    replacement->chooseNewNeuronIDs(&newOutputIDs);
+
+    //rewire inputs recursively
+    replacement->rewireInputs(&newOutputIDs);
 
 }

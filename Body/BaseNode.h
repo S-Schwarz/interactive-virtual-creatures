@@ -111,7 +111,11 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             void rewireInputs(std::map<unsigned long,unsigned long>*);
             PxVec3 flipAnchor(PxVec3);
             void reflectAlongAxis(NODE_SIDE);
-            void chooseNewAnchorSide()
+            void chooseNewAnchorSide();
+            void changeAnchorSideTo(NODE_SIDE);
+
+            void replaceChild(std::shared_ptr<BaseNode>, std::shared_ptr<BaseNode>);
+            std::shared_ptr<BaseNode> getRandomNode(std::shared_ptr<std::mt19937>);
 
     };
 
