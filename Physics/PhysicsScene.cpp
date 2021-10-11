@@ -61,6 +61,7 @@ void ivc::PhysicsScene::destroy() {
     for(auto obj : m_objVec){
         obj->release();
     }
+    m_objVec.clear();
 
     if(m_plane)
         m_plane->release();

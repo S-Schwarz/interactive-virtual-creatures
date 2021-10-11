@@ -19,7 +19,6 @@ namespace ivc{
         public:
             int init(std::shared_ptr<PhysicsBase>, std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>>,std::shared_ptr<EvoConfig>);
             int simulate();
-            void destroy();
 
             void setInactiveTime(unsigned int);
             void resetCreaturePosition();

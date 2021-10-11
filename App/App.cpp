@@ -290,7 +290,7 @@ int ivc::App::close() {
 
     m_evolver->stopEvolution();
     m_evolutionThread->join();
-    m_liveEnvironment->destroy();
+    delete m_evolutionThread;
     glfwTerminate();
 
     return 0;

@@ -74,12 +74,6 @@ PxRigidStatic *ivc::LiveEnvironment::getFloorPlane() {
     return m_bestScene->getPlane();
 }
 
-void ivc::LiveEnvironment::destroy() {
-    for(auto scene : m_sceneVec){
-        scene->destroy();
-    }
-}
-
 void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> nodeVec) {
 
     float bestDistance = -INFINITY;

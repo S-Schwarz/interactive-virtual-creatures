@@ -322,6 +322,7 @@ std::shared_ptr<ContactReporter> ivc::PhysicalCreature::getReporter() {
 
 ivc::PhysicalCreature::~PhysicalCreature() {
 
+    delete m_cache;
     m_articulation->release();
 
 }
