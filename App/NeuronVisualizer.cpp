@@ -426,6 +426,12 @@ void ivc::NeuronVisualizer::drawText(std::shared_ptr<Neuron> neuron, glm::mat4 m
         case IF_THEN_ELSE:
             toDraw = '?';
             break;
+        case SIGMOID:
+            toDraw = '1';
+            break;
+        case TANH:
+            toDraw = '2';
+            break;
         default:
             throw std::invalid_argument("INVALID NEURON TYPE");
     }

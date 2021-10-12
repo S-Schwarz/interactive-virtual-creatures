@@ -102,8 +102,6 @@ int ivc::Evolver::init(std::shared_ptr<ivc::PhysicsBase> base, std::shared_ptr<E
     m_numThreads = std::thread::hardware_concurrency();
     printf("AVAILABLE THREADS: %i\n", m_numThreads);
 
-    createFirstGeneration();
-
     return 0;
 }
 

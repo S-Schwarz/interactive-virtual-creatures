@@ -41,6 +41,7 @@ namespace ivc{
             nanogui::FloatBox<float>* m_sidewaysBox = nullptr;
             nanogui::CheckBox* m_ForceDiversityCheckbox = nullptr;
             nanogui::CheckBox* m_lockMorphCheckbox = nullptr;
+            nanogui::CheckBox* m_useGeneralNeurons = nullptr;
 
             nanogui::Widget* m_noveltyConfigWidget = nullptr;
             nanogui::CheckBox* m_noveltyCheckbox = nullptr;

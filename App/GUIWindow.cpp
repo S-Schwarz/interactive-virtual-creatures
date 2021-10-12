@@ -185,6 +185,9 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     auto lockMorphLabel = m_fitnessConfigWidget->add<nanogui::Label>("Lock morphology");
     m_lockMorphCheckbox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
 
+    auto generalLabel = m_fitnessConfigWidget->add<nanogui::Label>("Only general neurons");
+    m_useGeneralNeurons = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
+
     m_noveltyConfigWidget = m_configurationWidget->add<nanogui::Widget>();
     m_noveltyConfigWidget->set_layout(layout);
 
@@ -282,6 +285,7 @@ void ivc::GUIWindow::update() {
     m_config->m_noveltyInterval = m_noveltyIntevallBox->value();
     m_config->m_onlyUseEndPos = m_noveltyArchiveCheckbox->checked();
     m_config->m_noveltyWidth = m_noveltyWidthBox->value();
+    m_config->m_useGeneralNeurons = m_useGeneralNeurons->checked();
 
     if(!m_config->m_useNoveltySearch){
         std::string fitnessFunc = "Fitness function: ";

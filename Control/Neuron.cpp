@@ -62,6 +62,12 @@ void ivc::Neuron::step() {
         case IF_THEN_ELSE:
             if_then_else();
             break;
+        case SIGMOID:
+            sigmoid();
+            break;
+        case TANH:
+            tanh();
+            break;
         default:
             throw std::invalid_argument("INVALID NEURON TYPE");
     }
@@ -145,12 +151,29 @@ void ivc::Neuron::mutate(std::shared_ptr<std::mt19937> gen, bool forceMutation, 
     if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_threshold = Mutator::mutateFloat(gen,m_threshold, INFINITY, -INFINITY);
 
+    //mutate general param
+    if(forceMutation || dis(*gen) <= config->m_mutChance)
+        m_genParam = Mutator::mutateFloat(gen, m_genParam, 3.f / 2.f, -3.f / 2.f);
+
 }
 
 ivc::Neuron::Neuron(std::shared_ptr<std::mt19937> gen, std::shared_ptr<EvoConfig> config) {
 
-    std::uniform_int_distribution<> dis(0, COUNT-1);
-    m_type = static_cast<NEURON_TYPE>(dis(*gen));
+    if(config->m_useGeneralNeurons){
+        std::uniform_real_distribution<> dis(0, 1);
+        auto val = dis(*gen);
+        if(val < 0.4f){
+            m_type = SIGMOID;
+        }else if(val < 0.8f){
+            m_type = TANH;
+        }else{
+            m_type = CONSTANT;
+        }
+    }else{
+        std::uniform_int_distribution<> dis(0, COUNT-1);
+        m_type = static_cast<NEURON_TYPE>(dis(*gen));
+    }
+
 
     switch (m_type){
         case CONSTANT:
@@ -175,6 +198,8 @@ ivc::Neuron::Neuron(std::shared_ptr<std::mt19937> gen, std::shared_ptr<EvoConfig
             m_numberInputs = 2;
             break;
         case IF_THEN_ELSE:
+        case SIGMOID:
+        case TANH:
             m_numberInputs = 3;
             break;
         default:
@@ -356,6 +381,26 @@ void ivc::Neuron::delay() {
     m_output->setValue(last);
 }
 
+void ivc::Neuron::sigmoid() {
+    float val_0 = m_inputWeights[0] * m_inputGates[0]->getValue();
+    float val_1 = m_inputWeights[1] * m_inputGates[1]->getValue();
+    float val_2 = m_inputWeights[2] * m_inputGates[2]->getValue();
+
+    float sum = val_0 + val_1 + val_2 + m_genParam;
+
+    m_output->setValue(1 / (1+std::exp(-sum)));
+}
+
+void ivc::Neuron::tanh() {
+    float val_0 = m_inputWeights[0] * m_inputGates[0]->getValue();
+    float val_1 = m_inputWeights[1] * m_inputGates[1]->getValue();
+    float val_2 = m_inputWeights[2] * m_inputGates[2]->getValue();
+
+    float sum = val_0 + val_1 + val_2 + m_genParam;
+
+    m_output->setValue(std::tanh(sum));
+}
+
 std::vector<unsigned long> ivc::Neuron::getInputs() {
     return m_inputIDs;
 }
@@ -370,3 +415,4 @@ void ivc::Neuron::setInputs(std::vector<unsigned long> newInputs) {
 ivc::NEURON_TYPE ivc::Neuron::getType() {
     return m_type;
 }
+

@@ -44,7 +44,9 @@ namespace ivc{
         GREATER_THAN,
         //three inputs
         IF_THEN_ELSE,
-        COUNT
+        COUNT,
+        SIGMOID,
+        TANH
     };
 
     class Neuron {
@@ -79,6 +81,9 @@ namespace ivc{
             //two inputs
                 //sum_threshold neuron
                 float m_threshold = 0.0f;
+
+            // general neurons
+                float m_genParam = 1.0f;
 
             friend class boost::serialization::access;
             template<class Archive>
@@ -126,6 +131,8 @@ namespace ivc{
             void greater_than();
             //three inputs
             void if_then_else();
+            void sigmoid();
+            void tanh();
     };
 
 }
