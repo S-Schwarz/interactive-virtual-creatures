@@ -305,26 +305,13 @@ void ivc::Evolver::calcFitness() {
 }
 
 void ivc::Evolver::calcNovelty() {
-
-    // copy current gen into overall archive
-    for(auto const& [baseNode, noveltyVec] : m_currentViableCreaturesVec){
-        m_noveltyArchive.push_back(noveltyVec);
-    }
-
-    m_noveltyArchiveCopy = m_noveltyArchive;
-
     // novelty fitness
     // assign novelty score to current gen
     for(auto const& [baseNode, noveltyVec] : m_currentViableCreaturesVec){
         std::vector<float> nearestNeighborsDifferenceVec;
         // skip itself
-        bool skipped = false;
-        for(auto noveltyVecNeighbor : m_noveltyArchive){
-            if(!skipped && noveltyVecNeighbor == noveltyVec){
-                skipped = true;
-                continue;
-            }
 
+        for(auto noveltyVecNeighbor : m_noveltyArchive){
             float diff = 0;
 
             if(noveltyVec.back().z <= 0 && noveltyVec.back().x > -(float(m_config->m_noveltyWidth)/2) && noveltyVec.back().x < float(m_config->m_noveltyWidth)/2){
@@ -332,23 +319,6 @@ void ivc::Evolver::calcNovelty() {
                 diff += std::pow((noveltyVec.back().z - noveltyVecNeighbor.back().z),2);
                 diff = std::sqrt(diff);
             }
-
-            /*
-            else{
-                for(int i = 0; i < noveltyVec.size(); ++i){
-                    auto posVec = noveltyVec[i];
-                    auto posVecNeighbor = noveltyVecNeighbor[i];
-
-                    float diff_i = 0;
-                    if(m_config->m_useXAxis)
-                        diff_i += std::pow((posVec.x - posVecNeighbor.x),2);
-                    if(m_config->m_useZAxis)
-                        diff_i += std::pow((posVec.z - posVecNeighbor.z),2);
-
-                    diff += std::sqrt(diff_i);
-                }
-            }
-            */
             if(nearestNeighborsDifferenceVec.size() < m_config->m_noveltyNearestNeighbors){
                 nearestNeighborsDifferenceVec.push_back(diff);
             }else{
@@ -359,6 +329,30 @@ void ivc::Evolver::calcNovelty() {
                     }
                 }
             }
+        }
+        bool skipped = false;
+        for(auto const& [baseNode, noveltyVecNeighbor] : m_currentViableCreaturesVec){
+            if(!skipped && noveltyVecNeighbor == noveltyVec){
+                skipped = true;
+                continue;
+            }
+            float diff = 0;
+            if(noveltyVec.back().z <= 0 && noveltyVec.back().x > -(float(m_config->m_noveltyWidth)/2) && noveltyVec.back().x < float(m_config->m_noveltyWidth)/2){
+                diff += std::pow((noveltyVec.back().x - noveltyVecNeighbor.back().x),2);
+                diff += std::pow((noveltyVec.back().z - noveltyVecNeighbor.back().z),2);
+                diff = std::sqrt(diff);
+            }
+            if(nearestNeighborsDifferenceVec.size() < m_config->m_noveltyNearestNeighbors){
+                nearestNeighborsDifferenceVec.push_back(diff);
+            }else{
+                for(int k = 0; k < nearestNeighborsDifferenceVec.size(); ++k){
+                    if(nearestNeighborsDifferenceVec[k] > diff){
+                        nearestNeighborsDifferenceVec[k] = diff;
+                        break;
+                    }
+                }
+            }
+
         }
 
         // calc average distance
@@ -376,7 +370,13 @@ void ivc::Evolver::calcNovelty() {
 
         m_currentNoveltyMap[baseNode] = averageDistance;
 
+        if(averageDistance > MIN_NOVELTY_VAL){
+            m_noveltyArchive.push_back(noveltyVec);
+        }
+
     }
+
+    m_noveltyArchiveCopy = m_noveltyArchive;
 
 }
 
