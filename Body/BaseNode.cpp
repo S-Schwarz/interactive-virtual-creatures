@@ -694,6 +694,9 @@ void ivc::BaseNode::chooseNewAnchorSide() {
 
 void ivc::BaseNode::changeAnchorSideTo(ivc::NODE_SIDE newSide) {
 
+    if(newSide == m_parentSide)
+        return;
+
     m_parentNode->setSideAsFree(m_parentSide);
     m_parentNode->setSideAsOccupied(newSide);
     m_parentSide = newSide;
@@ -728,10 +731,10 @@ void ivc::BaseNode::changeAnchorSideTo(ivc::NODE_SIDE newSide) {
 std::shared_ptr<ivc::BaseNode> ivc::BaseNode::getRandomNode(std::shared_ptr<std::mt19937> gen) {
 
     if(m_childNodeVector.empty())
-        return nullptr;
+        return shared_from_this();
 
     std::vector<std::shared_ptr<BaseNode>> randomChildVec;
-    std::sample(m_childNodeVector.begin(), m_childNodeVector.end(), std::back_inserter(randomChildVec), 1, *m_generator);
+    std::sample(m_childNodeVector.begin(), m_childNodeVector.end(), std::back_inserter(randomChildVec), 1, *gen);
 
     std::uniform_real_distribution<> dis(0, 1);
 
@@ -951,4 +954,27 @@ void ivc::BaseNode::setAsRoot() {
 
 void ivc::BaseNode::setIDHandler(std::shared_ptr<ivc::IDHandler> handler) {
     m_idHandler = handler;
+}
+
+std::shared_ptr<ivc::BaseNode> ivc::BaseNode::getRandomChild(std::shared_ptr<std::mt19937> gen) {
+    if(m_childNodeVector.empty())
+        return nullptr;
+
+    std::vector<std::shared_ptr<BaseNode>> randomChildVec;
+    std::sample(m_childNodeVector.begin(), m_childNodeVector.end(), std::back_inserter(randomChildVec), 1, *gen);
+
+    return randomChildVec[0];
+
+}
+
+ivc::NODE_SIDE ivc::BaseNode::getRandomFreeSide(std::shared_ptr<std::mt19937> gen){
+
+    if(m_freeSides.empty())
+        return NONE;
+
+    std::vector<NODE_SIDE> randomSideVec;
+    std::sample(m_freeSides.begin(), m_freeSides.end(), std::back_inserter(randomSideVec), 1, *gen);
+
+    return randomSideVec[0];
+
 }

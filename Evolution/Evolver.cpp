@@ -174,7 +174,7 @@ void ivc::Evolver::createNewGenerationFromParents() {
 
             std::uniform_real_distribution<> dis(0, 1);
 
-            if(dis(*generator) < 0.5){
+            if(dis(*generator) < 0.5f || m_nextParentVec.size() == 1){
                 // asexual reproduction
 
                 auto newRoot = node->copy();
@@ -189,7 +189,7 @@ void ivc::Evolver::createNewGenerationFromParents() {
             }else{
                 // sexual reproduction
                 std::vector<std::pair<std::shared_ptr<BaseNode>, unsigned int>> otherParentVec;
-                while(otherParentVec.empty() || otherParentVec[0].first == node){
+                while(otherParentVec.empty() || otherParentVec[0].first == node || otherParentVec[0].first->getChildren().empty()){
                     otherParentVec.clear();
                     std::sample(m_nextParentVec.begin(), m_nextParentVec.end(), std::back_inserter(otherParentVec), 1, *generator);
                 }
@@ -468,21 +468,33 @@ void ivc::Evolver::clearBestVec() {
 
 void ivc::Evolver::graft(std::shared_ptr<BaseNode> base, std::shared_ptr<BaseNode> partner, std::shared_ptr<std::mt19937> gen) {
 
-    // if nothing to graft from or to return
-    if(base->getChildren().empty() || partner->getChildren().empty())
-        return;
+    std::uniform_real_distribution<> dis(0, 1);
 
-    auto toReplace = base->getRandomNode(gen);
-    while(toReplace == nullptr)
-        toReplace = base->getRandomNode(gen);
-    auto replacement = partner->getRandomNode(gen);
-    while(replacement == nullptr)
-        replacement = partner->getRandomNode(gen);
+    auto nodeInBase = base->getRandomNode(gen);
 
-    replacement->changeAnchorSideTo(toReplace->getParentSide());
+    auto nodeInPartner = partner->getRandomNode(gen);
+    // cant attach root
+    while(nodeInPartner == partner)
+        nodeInPartner = partner->getRandomNode(gen);
 
-    auto parentNode = toReplace->getParentNode();
-    parentNode->replaceChild(toReplace, replacement);
+    //decide to attach or replace
+    if(dis(*gen) < 1.f/(float)(nodeInBase->getChildren().size()+1)){
+        //attach
+        auto attachSide = nodeInBase->getRandomFreeSide(gen);
+
+        nodeInPartner->setParent(nodeInBase.get());
+        nodeInPartner->changeAnchorSideTo(attachSide);
+
+        nodeInBase->setSideAsOccupied(attachSide);
+        nodeInBase->addChild(nodeInPartner);
+    }else{
+        //replace
+        auto toReplace = nodeInBase->getRandomChild(gen);
+        nodeInPartner->changeAnchorSideTo(toReplace->getParentSide());
+
+        auto parentNode = toReplace->getParentNode();
+        parentNode->replaceChild(toReplace, nodeInPartner);
+    }
 
 }
 

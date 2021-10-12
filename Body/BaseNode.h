@@ -130,6 +130,8 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
 
             void replaceChild(std::shared_ptr<BaseNode>, std::shared_ptr<BaseNode>);
             std::shared_ptr<BaseNode> getRandomNode(std::shared_ptr<std::mt19937>);
+            std::shared_ptr<BaseNode> getRandomChild(std::shared_ptr<std::mt19937>);
+            NODE_SIDE getRandomFreeSide(std::shared_ptr<std::mt19937>);
 
     };
 
