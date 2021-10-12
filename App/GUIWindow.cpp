@@ -359,6 +359,7 @@ void ivc::GUIWindow::handleKeyInput(int key, int action) {
     updateFloatBox(m_sidewaysBox,key,action,0.05f);
     updateIntBox(m_neighborsBox,key,action,1);
     updateIntBox(m_noveltyIntevallBox,key,action,10);
+    updateIntBox(m_noveltyWidthBox,key,action,1);
 
     if(m_fileNameBox->focused()){
         if(key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS){
