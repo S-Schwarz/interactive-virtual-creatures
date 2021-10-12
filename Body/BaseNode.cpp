@@ -567,10 +567,8 @@ void ivc::BaseNode::init(bool root, std::shared_ptr<std::mt19937> gen, BaseNode*
         setJointType(static_cast<JOINT_TYPE>(jointDis(*m_generator)));
     }
 
-    for(int i = 0; i < FIRST_MUTATION_NUM; ++i){
-        mutateBodyAndNeurons(false, config);
-        mutateNewBodyAndNewNeurons(false, config);
-    }
+    mutateBodyAndNeurons(false, config);
+    mutateNewBodyAndNewNeurons(false, config);
     addNeuralConnections();
     mutateNeuralConnections(config);
 }
