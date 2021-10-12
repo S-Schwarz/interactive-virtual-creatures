@@ -27,6 +27,7 @@ namespace ivc{
             PxRigidStatic* m_plane = nullptr;
             std::vector<PxRigidStatic*> m_objVec;
             bool m_isInitialized = false;
+            PxDefaultCpuDispatcher* m_cpuDispatcher = nullptr;
         public:
             int init(std::shared_ptr<PhysicsBase>,std::shared_ptr<BaseNode>, std::shared_ptr<EvoConfig>);
             ~PhysicsScene(){destroy();};

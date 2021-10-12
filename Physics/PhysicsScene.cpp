@@ -13,7 +13,8 @@ int ivc::PhysicsScene::init(std::shared_ptr<PhysicsBase> base, std::shared_ptr<B
     PxSceneDesc sceneDesc(m_base->getPhysics()->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
     sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-    sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
+    m_cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
+    sceneDesc.cpuDispatcher = m_cpuDispatcher;
 
     auto rootNodeHeight = m_rootNode->getHalfExtents().y;
 
@@ -67,6 +68,7 @@ void ivc::PhysicsScene::destroy() {
         m_plane->release();
 
     m_scene->release();
+    m_cpuDispatcher->release();
 
 }
 
@@ -117,7 +119,8 @@ void ivc::PhysicsScene::insertNewCreature(std::shared_ptr<BaseNode> newNode) {
     PxSceneDesc sceneDesc(m_base->getPhysics()->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
     sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-    sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
+    m_cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
+    sceneDesc.cpuDispatcher = m_cpuDispatcher;
 
     auto rootNodeHeight = m_rootNode->getHalfExtents().y;
 
@@ -209,7 +212,8 @@ void ivc::PhysicsScene::rebuild() {
     PxSceneDesc sceneDesc(m_base->getPhysics()->getTolerancesScale());
     sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
     sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-    sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
+    m_cpuDispatcher = PxDefaultCpuDispatcherCreate(0);
+    sceneDesc.cpuDispatcher = m_cpuDispatcher;
 
     auto rootNodeHeight = m_rootNode->getHalfExtents().y;
 
