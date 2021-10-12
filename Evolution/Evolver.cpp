@@ -116,7 +116,6 @@ void ivc::Evolver::startContinuousEvolution() {
 
         if(m_currentViableCreaturesVec.empty() || m_currentLargestDistance == 0){
             m_testSceneVec = {};
-            printf("Generating new Population\n");
             createFirstGeneration();
         }else{
             calcFitness();
@@ -148,6 +147,8 @@ void ivc::Evolver::startContinuousEvolution() {
 }
 
 void ivc::Evolver::createFirstGeneration() {
+    printf("Generating new Population\n");
+    m_config->m_mutChance *= 3;
     for(int i = 0; i < m_config->m_creaturesPerGeneration; ++i){
         auto newRootNode = std::make_shared<BaseNode>();
         newRootNode->init(true, nullptr, nullptr,m_config);
@@ -155,6 +156,7 @@ void ivc::Evolver::createFirstGeneration() {
         newScene->init(m_base, newRootNode,m_config);
         m_testSceneVec.push_back(newScene);
     }
+    m_config->m_mutChance /= 3;
 }
 
 
