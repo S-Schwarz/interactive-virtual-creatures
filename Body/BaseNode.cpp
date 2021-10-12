@@ -858,7 +858,7 @@ std::vector<unsigned int> ivc::BaseNode::getNeuronActivity() {
             numContact += pair.second.size();
         }
 
-        return {(unsigned int)activeNeuronsVec.size(), (unsigned int)activeBrainNeuronsVec.size(), (unsigned int)activeJointSensorsVec.size(), numContact};
+        return {(unsigned int)activeNeuronsVec.size() + (unsigned int)activeBrainNeuronsVec.size(), (unsigned int)activeBrainNeuronsVec.size(), (unsigned int)activeJointSensorsVec.size(), numContact};
     }
 
     return {0,0,0,0};

@@ -125,18 +125,6 @@ unsigned int ivc::EvoData::getGeneration() {
     return  m_generationNumber;
 }
 
-float ivc::EvoData::getBestFitnessScore() {
-    return m_bestFitnessScore;
-}
-
-float ivc::EvoData::getWorstFitnessScore() {
-    return m_worstFitnessScore;
-}
-
-float ivc::EvoData::getAverageFitnessScore() {
-    return m_averageFitnessScore;
-}
-
 std::vector<std::pair<std::shared_ptr<ivc::BaseNode>, unsigned int>> ivc::EvoData::getParentVec() {
     return m_parentVec;
 }
@@ -147,48 +135,4 @@ std::vector<std::shared_ptr<ivc::BaseNode>> ivc::EvoData::getParents() {
         parents.push_back(pair.first);
     }
     return parents;
-}
-
-float ivc::EvoData::getBestNoveltyScore() {
-    return m_bestNoveltyScore;
-}
-
-float ivc::EvoData::getWorstNoveltyScore() {
-    return m_worstNoveltyScore;
-}
-
-float ivc::EvoData::getAverageNoveltyScore() {
-    return m_averageNoveltyScore;
-}
-
-void ivc::EvoData::setLargestDistance(float distance) {
-    m_largestDistanceTravelled = distance;
-}
-
-float ivc::EvoData::getLargestDistance() {
-    return m_largestDistanceTravelled;
-}
-
-void ivc::EvoData::setBestFitnessScore(float val) {
-    m_bestFitnessScore = val;
-}
-
-void ivc::EvoData::setWorstFitnessScore(float val) {
-    m_worstFitnessScore = val;
-}
-
-void ivc::EvoData::setAverageFitnessScore(float val) {
-    m_averageFitnessScore = val;
-}
-
-void ivc::EvoData::setBestNoveltyScore(float val) {
-    m_bestNoveltyScore = val;
-}
-
-void ivc::EvoData::setWorstNoveltyScore(float val) {
-    m_worstNoveltyScore = val;
-}
-
-void ivc::EvoData::setAverageNoveltyScore(float val) {
-    m_averageNoveltyScore = val;
 }

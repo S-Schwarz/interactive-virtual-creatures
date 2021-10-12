@@ -239,30 +239,30 @@ void ivc::GUIWindow::updateGraphs(std::vector<std::shared_ptr<EvoData>> dataVec)
     float bestNoveltyScore = -INFINITY;
     float worstNoveltyScore = INFINITY;
     for(auto data : dataVec){
-        if(data->getLargestDistance() > bestLargestDistance)
-            bestLargestDistance = data->getLargestDistance();
-        if(data->getLargestDistance() < worstLargestDistance)
-            worstLargestDistance = data->getLargestDistance();
+        if(data->m_largestDistanceTravelled > bestLargestDistance)
+            bestLargestDistance = data->m_largestDistanceTravelled;
+        if(data->m_largestDistanceTravelled < worstLargestDistance)
+            worstLargestDistance = data->m_largestDistanceTravelled;
 
-        if(data->getBestFitnessScore() > bestFitnessScore)
-            bestFitnessScore = data->getBestFitnessScore();
-        if(data->getBestFitnessScore() < worstFitnessScore)
-            worstFitnessScore = data->getBestFitnessScore();
+        if(data->m_bestFitnessScore > bestFitnessScore)
+            bestFitnessScore = data->m_bestFitnessScore;
+        if(data->m_bestFitnessScore < worstFitnessScore)
+            worstFitnessScore = data->m_bestFitnessScore;
 
-        if(data->getBestNoveltyScore() > bestNoveltyScore)
-            bestNoveltyScore = data->getBestNoveltyScore();
-        if(data->getBestNoveltyScore() < worstNoveltyScore)
-            worstNoveltyScore = data->getBestNoveltyScore();
+        if(data->m_bestNoveltyScore > bestNoveltyScore)
+            bestNoveltyScore = data->m_bestNoveltyScore;
+        if(data->m_bestNoveltyScore < worstNoveltyScore)
+            worstNoveltyScore = data->m_bestNoveltyScore;
     }
     std::vector<float> distanceValueVec;
     std::vector<float> fitnessValueVec;
     std::vector<float> noveltyValueVec;
     for(auto data : dataVec){
-        auto normalized = Mutator::normalize(data->getLargestDistance(), worstLargestDistance, bestLargestDistance);
+        auto normalized = Mutator::normalize(data->m_largestDistanceTravelled, worstLargestDistance, bestLargestDistance);
         distanceValueVec.push_back(normalized);
-        normalized = Mutator::normalize(data->getBestFitnessScore(), worstFitnessScore, bestFitnessScore);
+        normalized = Mutator::normalize(data->m_bestFitnessScore, worstFitnessScore, bestFitnessScore);
         fitnessValueVec.push_back(normalized);
-        normalized = Mutator::normalize(data->getBestNoveltyScore(), worstNoveltyScore, bestNoveltyScore);
+        normalized = Mutator::normalize(data->m_bestNoveltyScore, worstNoveltyScore, bestNoveltyScore);
         noveltyValueVec.push_back(normalized);
     }
     m_distanceGraph->set_values(distanceValueVec);

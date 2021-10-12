@@ -111,6 +111,7 @@ void ivc::Evolver::startContinuousEvolution() {
         testCurrentGeneration();
         m_testPosMap = {};
         calcDistanceTravelled();
+        calcStats();
 
         if(m_currentViableCreaturesVec.empty() || m_currentLargestDistance == 0){
             m_testSceneVec = {};
@@ -272,6 +273,7 @@ void ivc::Evolver::calcFitness() {
 
     m_currentBestFitnessScore = -INFINITY;
     m_currentWorstFitnessScore = INFINITY;
+    m_currentAverageFitnessScore = 0;
 
     // normal fitness function
     auto sideMP = m_config->m_useSidewaysMP ? m_config->m_sidewaysMultiplier : 0.0f;
@@ -303,6 +305,11 @@ void ivc::Evolver::calcFitness() {
 }
 
 void ivc::Evolver::calcNovelty() {
+
+    m_currentBestNoveltyScore = -INFINITY;
+    m_currentWorstNoveltyScore = INFINITY;
+    m_currentAverageNoveltyScore = 0;
+
     // novelty fitness
     // assign novelty score to current gen
     for(auto const& [baseNode, noveltyVec] : m_currentViableCreaturesVec){
@@ -448,15 +455,43 @@ void ivc::Evolver::createEvoData() {
 
     auto newData = std::make_shared<EvoData>();
     newData->setGeneration(m_numberGenerations);
-    newData->setLargestDistance(m_currentLargestDistance);
+    newData->m_largestDistanceTravelled = m_currentLargestDistance;
+    newData->m_worstDistanceTravelled = m_currentWorstDistance;
+    newData->m_averageDistanceTravelled = m_currentAverageDistance;
 
-    newData->setBestFitnessScore(m_currentBestFitnessScore);
-    newData->setWorstFitnessScore(m_currentWorstFitnessScore);
-    newData->setAverageFitnessScore(m_currentAverageFitnessScore);
+    newData->m_bestFitnessScore = m_currentBestFitnessScore;
+    newData->m_worstFitnessScore = m_currentWorstFitnessScore;
+    newData->m_averageFitnessScore = m_currentAverageFitnessScore;
 
-    newData->setBestNoveltyScore(m_currentBestNoveltyScore);
-    newData->setWorstNoveltyScore(m_currentWorstNoveltyScore);
-    newData->setAverageNoveltyScore(m_currentAverageNoveltyScore);
+    newData->m_bestNoveltyScore = m_currentBestNoveltyScore;
+    newData->m_worstNoveltyScore = m_currentWorstNoveltyScore;
+    newData->m_averageNoveltyScore = m_currentAverageNoveltyScore;
+
+    newData->m_highestComplexity = m_currentHighestComplexity;
+    newData->m_lowestComplexity = m_currentLowestComplexity;
+    newData->m_averageComplexity = m_currentAverageComplexity;
+
+    newData->m_mostActiveNeurons = m_currentMostActiveNeurons;
+    newData->m_leastActiveNeurons = m_currentLeastActiveNeurons;
+    newData->m_averageActiveNeurons = m_currentAverageActiveNeurons;
+
+    newData->m_mostActiveBrainNeurons = m_currentMostActiveBrainNeurons;
+    newData->m_leastActiveBrainNeurons = m_currentLeastActiveBrainNeurons;
+    newData->m_averageActiveBrainNeurons = m_currentAverageActiveBrainNeurons;
+
+    newData->m_mostActiveJointSensors = m_currentMostActiveJointSensors;
+    newData->m_leastActiveJointSensors = m_currentLeastActiveJointSensors;
+    newData->m_averageActiveJointSensors = m_currentAverageActiveJointSensors;
+
+    newData->m_mostActiveContactSensors = m_currentMostActiveContactSensors;
+    newData->m_leastActiveContactSensors = m_currentLeastActiveContactSensors;
+    newData->m_averageActiveContactSensors = m_currentAverageActiveContactSensors;
+
+    newData->m_complexityOfCurrentBest = m_complexityOfCurrentBest;
+    newData->m_neuronsOfCurrentBest = m_neuronsOfCurrentBest;
+    newData->m_brainOfCurrentBest = m_brainOfCurrentBest;
+    newData->m_jointsOfCurrentBest = m_jointsOfCurrentBest;
+    newData->m_contactsOfCurrentBest = m_contactsOfCurrentBest;
 
     m_dataVec.push_back(newData);
 
@@ -505,6 +540,8 @@ std::vector<std::vector<PxVec3>> ivc::Evolver::getNoveltyArchive() {
 void ivc::Evolver::calcDistanceTravelled() {
 
     m_currentLargestDistance = -INFINITY;
+    m_currentWorstDistance = INFINITY;
+    m_currentAverageDistance = 0;
 
     if(m_clearBestVec){
         m_currentBestVector = {};
@@ -538,6 +575,7 @@ void ivc::Evolver::calcDistanceTravelled() {
                 m_currentBestVector[toReplaceIndex] = {baseNode, {distanceTravelled, posVec}};
             }
         }
+
     }
 }
 
@@ -573,5 +611,89 @@ void ivc::Evolver::loadStartNode(std::shared_ptr<BaseNode> node) {
         m_testSceneVec.push_back(newScene);
     }
 
+
+}
+
+void ivc::Evolver::calcStats() {
+
+    m_currentHighestComplexity = -INFINITY;
+    m_currentLowestComplexity = INFINITY;
+    m_currentAverageComplexity = 0;
+
+    m_currentMostActiveNeurons = -INFINITY;
+    m_currentLeastActiveNeurons= INFINITY;
+    m_currentAverageActiveNeurons = 0;
+
+    m_currentMostActiveBrainNeurons = -INFINITY;
+    m_currentLeastActiveBrainNeurons= INFINITY;
+    m_currentAverageActiveBrainNeurons = 0;
+
+    m_currentMostActiveJointSensors = -INFINITY;
+    m_currentLeastActiveJointSensors= INFINITY;
+    m_currentAverageActiveJointSensors = 0;
+
+    m_currentMostActiveContactSensors = -INFINITY;
+    m_currentLeastActiveContactSensors= INFINITY;
+    m_currentAverageActiveContactSensors = 0;
+
+    for(auto const& [baseNode, posVec] : m_currentViableCreaturesVec) {
+
+        auto complexity = baseNode->getNumberOfParts();
+        auto neuronStats = baseNode->getNeuronActivity();
+        auto neurons = neuronStats[0];
+        auto brainNeurons = neuronStats[1];
+        auto jointSensors = neuronStats[2];
+        auto contactSensors = neuronStats[3];
+
+        if(complexity > m_currentHighestComplexity)
+            m_currentHighestComplexity = complexity;
+        if(complexity < m_currentLowestComplexity)
+            m_currentLowestComplexity = complexity;
+        m_currentAverageComplexity += complexity;
+
+        if(neurons > m_currentMostActiveNeurons)
+            m_currentMostActiveNeurons = neurons;
+        if(neurons < m_currentLeastActiveNeurons)
+            m_currentLeastActiveNeurons = neurons;
+        m_currentAverageActiveNeurons += neurons;
+
+        if(brainNeurons > m_currentMostActiveBrainNeurons)
+            m_currentMostActiveBrainNeurons = brainNeurons;
+        if(brainNeurons < m_currentLeastActiveBrainNeurons)
+            m_currentLeastActiveBrainNeurons = brainNeurons;
+        m_currentAverageActiveBrainNeurons += brainNeurons;
+
+        if(jointSensors > m_currentMostActiveJointSensors)
+            m_currentMostActiveJointSensors = jointSensors;
+        if(jointSensors < m_currentLeastActiveJointSensors)
+            m_currentLeastActiveJointSensors = jointSensors;
+        m_currentAverageActiveJointSensors += jointSensors;
+
+        if(contactSensors > m_currentMostActiveContactSensors)
+            m_currentMostActiveContactSensors = contactSensors;
+        if(contactSensors < m_currentLeastActiveContactSensors)
+            m_currentLeastActiveContactSensors = contactSensors;
+        m_currentAverageActiveContactSensors += contactSensors;
+
+        auto startPos = posVec.front();
+        auto endPos = posVec.back();
+        // calc distance travelled
+        auto distanceTravelled = startPos.z - endPos.z;
+
+        if(distanceTravelled == m_currentLargestDistance){
+            m_complexityOfCurrentBest = complexity;
+            m_neuronsOfCurrentBest = neurons;
+            m_brainOfCurrentBest = brainNeurons;
+            m_jointsOfCurrentBest = jointSensors;
+            m_contactsOfCurrentBest = contactSensors;
+        }
+
+    }
+
+    m_currentAverageComplexity /= (float)m_currentViableCreaturesVec.size();
+    m_currentAverageActiveNeurons /= (float)m_currentViableCreaturesVec.size();
+    m_currentAverageActiveBrainNeurons /= (float)m_currentViableCreaturesVec.size();
+    m_currentAverageActiveJointSensors /= (float)m_currentViableCreaturesVec.size();
+    m_currentAverageActiveContactSensors /= (float)m_currentViableCreaturesVec.size();
 
 }
