@@ -24,7 +24,7 @@ const float MIN_NOVELTY_VAL = 2;
 
 //simulation
 const float SIMULATION_STEP_SIZE = 0.01f;
-const int CREATURES_PER_GENERATION = 500;
+const int CREATURES_PER_GENERATION = 300;
 const int STEPS_PER_GENERATION = 3000;
 
 const int FALL_DOWN_STEPS = 400;

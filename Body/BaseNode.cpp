@@ -978,3 +978,7 @@ ivc::NODE_SIDE ivc::BaseNode::getRandomFreeSide(std::shared_ptr<std::mt19937> ge
     return randomSideVec[0];
 
 }
+
+void ivc::BaseNode::setJointTypeDirectly(JOINT_TYPE type) {
+    m_jointType = type;
+}

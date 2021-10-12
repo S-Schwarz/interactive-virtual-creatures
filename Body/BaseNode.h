@@ -82,6 +82,7 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             void setOrientation(PxVec3);
             void setDimension(PxVec3);
             void setJointType(JOINT_TYPE);
+            void setJointTypeDirectly(JOINT_TYPE);
             void setJointLimits(float,float);
             void setAsRoot();
             void emptyFreeSideVector();

@@ -132,7 +132,7 @@ std::shared_ptr<ivc::BaseNode> ivc::NodeDNA::toNode() {
     newNode->setDimension(PxVec3(dimX, dimY, dimZ));
     newNode->setParentAnchor(PxVec3(anchorX, anchorY, anchorZ));
     newNode->setParentSide((NODE_SIDE)pSide);
-    newNode->setJointType((JOINT_TYPE)joint);
+    newNode->setJointTypeDirectly((JOINT_TYPE)joint);
     newNode->setJointLimits(jointLimLow, jointLimHigh);
     newNode->emptyFreeSideVector();
     for(auto side : free){
