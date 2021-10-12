@@ -55,8 +55,6 @@ namespace ivc{
             float m_jointsOfCurrentBest = 0;
             float m_contactsOfCurrentBest = 0;
 
-            void calculateScoreData(std::vector<std::pair<std::shared_ptr<BaseNode>, float>>, int, bool, std::vector<std::pair<std::shared_ptr<BaseNode>, float>>, bool);
-
             unsigned int getGeneration();
             void setGeneration(unsigned int);
 

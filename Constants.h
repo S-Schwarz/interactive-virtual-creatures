@@ -18,18 +18,14 @@ const float STANDARD_VALUE_FLIP_CHANCE = 0.05f;
 const float MUTATE_REFLECTION_FLAG_CHANCE = 0.1f;
 
 //evolution
-const float EVOLUTION_MIN_SCORE = 0.99;
-const int EVOLUTION_MAX_PARENTS = 100;
 const int AMOUNT_STEPS_DELTA = 100;
-const float MAX_ALLOWED_HEIGHT = 20;
-const float MIN_NOVELTY_VAL = 5;
-const int FIRST_MUTATION_NUM = 4;
+const float MAX_ALLOWED_HEIGHT = 10;
+const float MIN_NOVELTY_VAL = 2;
 
 //simulation
 const float SIMULATION_STEP_SIZE = 0.01f;
 const int CREATURES_PER_GENERATION = 500;
-const int NUMBER_OF_GENERATIONS = 100;
-const int STEPS_PER_GENERATION = 2500;
+const int STEPS_PER_GENERATION = 3000;
 
 const int FALL_DOWN_STEPS = 400;
 const float ROOT_STARTING_HEIGHT_FACTOR = 1.2f;
