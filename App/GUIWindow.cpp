@@ -188,6 +188,9 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     auto generalLabel = m_fitnessConfigWidget->add<nanogui::Label>("Only general neurons");
     m_useGeneralNeurons = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
 
+    auto osciLabel = m_fitnessConfigWidget->add<nanogui::Label>("No oscillators");
+    m_noOscis = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
+
     m_noveltyConfigWidget = m_configurationWidget->add<nanogui::Widget>();
     m_noveltyConfigWidget->set_layout(layout);
 
@@ -286,6 +289,7 @@ void ivc::GUIWindow::update() {
     m_config->m_onlyUseEndPos = m_noveltyArchiveCheckbox->checked();
     m_config->m_noveltyWidth = m_noveltyWidthBox->value();
     m_config->m_useGeneralNeurons = m_useGeneralNeurons->checked();
+    m_config->m_forbidOscis = m_noOscis->checked();
 
     if(!m_config->m_useNoveltySearch){
         std::string fitnessFunc = "Fitness function: ";

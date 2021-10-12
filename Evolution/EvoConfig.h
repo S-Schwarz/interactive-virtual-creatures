@@ -23,6 +23,7 @@ namespace ivc{
         bool m_forceDiversity = false;
         bool m_lockMorph = false;
         bool m_useGeneralNeurons = false;
+        bool m_forbidOscis = false;
 
         bool m_useNoveltySearch = false;
         int m_noveltyInterval = 100;

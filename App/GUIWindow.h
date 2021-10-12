@@ -42,6 +42,7 @@ namespace ivc{
             nanogui::CheckBox* m_ForceDiversityCheckbox = nullptr;
             nanogui::CheckBox* m_lockMorphCheckbox = nullptr;
             nanogui::CheckBox* m_useGeneralNeurons = nullptr;
+            nanogui::CheckBox* m_noOscis = nullptr;
 
             nanogui::Widget* m_noveltyConfigWidget = nullptr;
             nanogui::CheckBox* m_noveltyCheckbox = nullptr;

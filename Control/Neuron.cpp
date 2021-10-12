@@ -172,6 +172,9 @@ ivc::Neuron::Neuron(std::shared_ptr<std::mt19937> gen, std::shared_ptr<EvoConfig
     }else{
         std::uniform_int_distribution<> dis(0, COUNT-1);
         m_type = static_cast<NEURON_TYPE>(dis(*gen));
+        while(config->m_forbidOscis && (m_type == SINE_OSCI || m_type == SAW_OSCI) ){
+            m_type = static_cast<NEURON_TYPE>(dis(*gen));
+        }
     }
 
 
@@ -256,7 +259,6 @@ void ivc::Neuron::saw(){
     float val = m_inputWeights[0] * m_inputGates[0]->getValue();
     float result = -(2*m_amplitude/M_PI) * std::atan(1 / std::tan((M_PI * (val + m_phase)) / m_period )) + m_vertical;
     result = std::clamp(result, -1.0f, 1.0f);
-    m_osci_offset += m_osci_stepSize;
     m_output->setValue(result);
 }
 
