@@ -78,6 +78,7 @@ namespace ivc {
 
             bool m_inBuildMode = false;
 
+            void saveEvoData(std::vector<std::shared_ptr<EvoData>>, std::string);
             void saveTo(BaseNode*, std::string);
             std::shared_ptr<BaseNode> loadFrom(std::string);
 

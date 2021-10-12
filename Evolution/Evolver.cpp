@@ -557,6 +557,9 @@ void ivc::Evolver::calcDistanceTravelled() {
         if (distanceTravelled > m_currentLargestDistance) {
             m_currentLargestDistance = distanceTravelled;
         }
+        if(distanceTravelled < m_currentWorstDistance)
+            m_currentWorstDistance = distanceTravelled;
+        m_currentAverageDistance += distanceTravelled;
 
         // is this creature better than the current best creatures?
         if (m_currentBestVector.size() < m_config->m_numberDisplayedCreatures) {
@@ -577,6 +580,7 @@ void ivc::Evolver::calcDistanceTravelled() {
         }
 
     }
+    m_currentAverageDistance /= m_currentViableCreaturesVec.size();
 }
 
 void ivc::Evolver::clean() {

@@ -208,14 +208,15 @@ int ivc::App::update() {
 
     if(m_evoConfig->m_shouldEnd){
         m_evolutionThread->join();
-        m_evolver->clean();
 
         if(m_evoConfig->m_shouldSave) {
             auto fileName = m_evoConfig->m_fileName;
             if (!fileName.empty()) {
+                saveEvoData(m_evolver->getEvoDataVec(), fileName);
                 saveTo(m_liveEnvironment->getBestNode().get(), fileName);
             }
         }
+        m_evolver->clean();
         m_liveEnvironment->clean();
 
         m_evoConfig->m_shouldSave = false;
@@ -555,16 +556,43 @@ void ivc::App::addToScale(glm::vec3 vec) {
 
 void ivc::App::saveTo(ivc::BaseNode* node, std::string fileName) {
     auto bestDNA = DNA(node);
-    std::ofstream outfile(fileName);
+    std::ofstream outfile(fileName + ".dna");
     boost::archive::text_oarchive archive(outfile);
     archive << bestDNA;
 }
 
 std::shared_ptr<ivc::BaseNode> ivc::App::loadFrom(std::string fileName) {
     DNA loadedDNA;
-    std::ifstream infile(fileName);
+    std::ifstream infile(fileName + ".dna");
     boost::archive::text_iarchive archive(infile);
     archive >> loadedDNA;
 
     return loadedDNA.toRootNode();
+}
+
+void ivc::App::saveEvoData(std::vector<std::shared_ptr<EvoData>> dataVec, std::string fileName) {
+
+    std::ofstream myfile;
+    myfile.open (fileName + ".csv");
+    myfile << "gen;bDis;wDis;aDis;bFit;wFit;aFit;bNov;wNov;aNov;bCom;wCom;aCom;bNeu;wNeu;aNeu;bBra;wBra;aBra;bJoi;wJoi;aJoi;bCon;wCon;aCon;cCom;cNeu;cBra;cJoi;cCon\n";
+
+    for(const auto& data : dataVec){
+
+        myfile << data->getGeneration() << ";";
+        myfile << data->m_largestDistanceTravelled << ";" << data->m_worstDistanceTravelled << ";" << data->m_averageDistanceTravelled << ";";
+        myfile << data->m_bestFitnessScore << ";" << data->m_worstFitnessScore << ";" << data->m_averageFitnessScore << ";";
+        myfile << data->m_bestNoveltyScore << ";" << data->m_worstNoveltyScore << ";" << data->m_averageNoveltyScore << ";";
+
+        myfile << data->m_highestComplexity << ";" << data->m_lowestComplexity << ";" << data->m_averageComplexity << ";";
+        myfile << data->m_mostActiveNeurons << ";" << data->m_leastActiveNeurons << ";" << data->m_averageActiveNeurons << ";";
+        myfile << data->m_mostActiveBrainNeurons << ";" << data->m_leastActiveBrainNeurons << ";" << data->m_averageActiveBrainNeurons << ";";
+        myfile << data->m_mostActiveJointSensors << ";" << data->m_leastActiveJointSensors << ";" << data->m_averageActiveJointSensors << ";";
+        myfile << data->m_mostActiveContactSensors << ";" << data->m_leastActiveContactSensors << ";" << data->m_averageActiveContactSensors << ";";
+
+        myfile << data->m_complexityOfCurrentBest << ";" << data->m_neuronsOfCurrentBest << ";" << data->m_brainOfCurrentBest << ";" << data->m_jointsOfCurrentBest << ";" << data->m_contactsOfCurrentBest << "\n";
+
+    }
+
+    myfile.close();
+
 }
