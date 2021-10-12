@@ -124,10 +124,10 @@ void ivc::Evolver::startContinuousEvolution() {
             printf("Size: %lu\n", m_testSceneVec.size());
             m_testSceneVec = {};
             printf("Largest distance: %f\n", m_currentLargestDistance);
-            //printf("NEURONS OVERALL: %u\n", m_currentBestVector[0].first->getNeuronActivity()[0] + m_currentBestVector[0].first->getNeuronActivity()[1]);
-            //printf("NEURONS BRAIN: %u\n", m_currentBestVector[0].first->getNeuronActivity()[1]);
-            //printf("JOINT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[2]);
-            //printf("CONTACT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[3]);
+            printf("NEURONS OVERALL: %u\n", m_currentBestVector[0].first->getNeuronActivity()[0]);
+            printf("NEURONS BRAIN: %u\n", m_currentBestVector[0].first->getNeuronActivity()[1]);
+            printf("JOINT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[2]);
+            printf("CONTACT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[3]);
             chooseParents();
             createNewGenerationFromParents();
             createEvoData();
@@ -522,6 +522,13 @@ void ivc::Evolver::graft(std::shared_ptr<BaseNode> base, std::shared_ptr<BaseNod
 
         nodeInBase->setSideAsOccupied(attachSide);
         nodeInBase->addChild(nodeInPartner);
+
+        //choose new outputs recursively
+        std::map<unsigned long,unsigned long> newOutputIDs;
+        nodeInPartner->chooseNewNeuronIDs(&newOutputIDs);
+
+        //rewire inputs recursively
+        nodeInPartner->rewireInputs(&newOutputIDs);
     }else{
         //replace
         auto toReplace = nodeInBase->getRandomChild(gen);
@@ -529,6 +536,13 @@ void ivc::Evolver::graft(std::shared_ptr<BaseNode> base, std::shared_ptr<BaseNod
 
         auto parentNode = toReplace->getParentNode();
         parentNode->replaceChild(toReplace, nodeInPartner);
+
+        //choose new outputs recursively
+        std::map<unsigned long,unsigned long> newOutputIDs;
+        nodeInPartner->chooseNewNeuronIDs(&newOutputIDs);
+
+        //rewire inputs recursively
+        nodeInPartner->rewireInputs(&newOutputIDs);
     }
 
 }

@@ -96,7 +96,8 @@ ivc::NeuronVisualizer::NeuronVisualizer(GLFWwindow* w, std::shared_ptr<Shader> s
 }
 
 void ivc::NeuronVisualizer::updateVisualizer(std::shared_ptr<PhysicalCreature> c) {
-    m_gatePosMap = {};
+    m_requestMap = {};
+    m_connectionMap = {};
     m_neuronPosMap = {};
     m_sensorPosMap = {};
     m_contactPosMap = {};
@@ -138,7 +139,7 @@ void ivc::NeuronVisualizer::updateVisualizer(std::shared_ptr<PhysicalCreature> c
         position += glm::vec3(0,m_ySize,0);
         for(auto in : inVec){
             position += yOffset;
-            m_gatePosMap[in] = {position,glm::vec3(INFINITY)};
+            m_requestMap[in].push_back(position);
         }
         ++i;
     }
@@ -164,15 +165,23 @@ void ivc::NeuronVisualizer::updateVisualizer(std::shared_ptr<PhysicalCreature> c
         auto inVec = effector->getInputs();
         auto yOffset = glm::vec3(0,(-m_ySize*2)/(inVec.size()+1),0);
         position += glm::vec3(0,m_ySize,0);
+
+        auto type = effector->getType();
+        int index = 0;
         for(auto in : inVec){
             position += yOffset;
-            m_gatePosMap[in] = {position,glm::vec3(INFINITY)};
+            // only add requests for active ins
+            if(index == ((type+1)%3)){
+                m_requestMap[in].push_back(position);
+            }
+            index++;
         }
+
         ++i;
     }
 
     //create connections
-    for(auto const& [id,value] : m_gatePosMap) {
+    for(auto const& [id,value] : m_requestMap) {
         bool found = false;
 
         for (auto const&[neuron, pos]: m_neuronPosMap) {
@@ -180,7 +189,10 @@ void ivc::NeuronVisualizer::updateVisualizer(std::shared_ptr<PhysicalCreature> c
                 break;
             if (neuron->getOutputID() == id) {
                 auto position = pos + glm::vec3(m_xSize,0,0);
-                m_gatePosMap[id] = {value.first, position};
+                std::vector<std::pair<glm::vec3, glm::vec3>> connVec;
+                for(auto p : m_requestMap[id])
+                    connVec.emplace_back(p, position);
+                m_connectionMap[id] = connVec;
                 found = true;
             }
         }
@@ -190,7 +202,10 @@ void ivc::NeuronVisualizer::updateVisualizer(std::shared_ptr<PhysicalCreature> c
                 break;
             auto position = pos + glm::vec3(m_xSize ,0,0);
             if (sensor->getOutputID() == id) {
-                m_gatePosMap[id] = {value.first, position};
+                std::vector<std::pair<glm::vec3, glm::vec3>> connVec;
+                for(auto p : m_requestMap[id])
+                    connVec.emplace_back(p, position);
+                m_connectionMap[id] = connVec;
                 found = true;
             }
         }
@@ -204,7 +219,10 @@ void ivc::NeuronVisualizer::updateVisualizer(std::shared_ptr<PhysicalCreature> c
             for (auto contact_id: outVec) {
                 position += yOffset;
                 if (contact_id == id) {
-                    m_gatePosMap[id] = {value.first, position};
+                    std::vector<std::pair<glm::vec3, glm::vec3>> connVec;
+                    for(auto p : m_requestMap[id])
+                        connVec.emplace_back(p, position);
+                    m_connectionMap[id] = connVec;
                     found = true;
                     break;
                 }
@@ -214,7 +232,9 @@ void ivc::NeuronVisualizer::updateVisualizer(std::shared_ptr<PhysicalCreature> c
 
     }
 
+    //draw();
 
+    //printf("TEST\n");
 }
 
 void ivc::NeuronVisualizer::draw() {
@@ -229,89 +249,92 @@ void ivc::NeuronVisualizer::draw() {
 
     unsigned int nnCounter = 0;
 
-    for(auto const& [gate,pos] : m_gatePosMap){
+    for(auto const& [gate,connVec] : m_connectionMap) {
         glm::mat4 model = glm::mat4(1.0f);
         m_shader->setMat4("model", model);
 
-        float lineVertices[] = {
-                pos.first.x, pos.first.y, pos.first.z,
-                pos.second.x, pos.second.y, pos.second.z
-        };
+        for (auto pos : connVec) {
 
-        PxVec3 extraPos1 = PxVec3(-m_xSize*1.2f, pos.second.y - 1.8f*m_ySize, 0);
-        PxVec3 extraPos2 = PxVec3(m_xSize*1.2f, pos.second.y - 1.8f*m_ySize, 0);
 
-        float bypassVertices[] = {
-                pos.first.x, pos.first.y, pos.first.z,
-                extraPos2.x, extraPos2.y, extraPos2.z,
-                extraPos2.x, extraPos2.y, extraPos2.z,
-                extraPos1.x, extraPos1.y, extraPos1.z,
-                extraPos1.x, extraPos1.y, extraPos1.z,
-                pos.second.x, pos.second.y, pos.second.z
-        };
+            float lineVertices[] = {
+                    pos.first.x, pos.first.y, pos.first.z,
+                    pos.second.x, pos.second.y, pos.second.z
+            };
 
-        PxVec3 nnPos1 = PxVec3(pos.second.x + 0.2f * m_xSize, pos.second.y,0);
-        PxVec3 nnPos2 = PxVec3(pos.second.x + 0.2f * m_xSize, pos.second.y + 1.2f*m_ySize,0);
-        PxVec3 nnPos3 = PxVec3(pos.first.x - 0.2f * m_xSize - nnCounter*0.025f, pos.second.y + 1.2f*m_ySize,0);
-        PxVec3 nnPos4 = PxVec3(pos.first.x - 0.2f * m_xSize - nnCounter*0.025f, pos.first.y,0);
+            PxVec3 extraPos1 = PxVec3(-m_xSize * 1.2f, pos.second.y - 1.8f * m_ySize, 0);
+            PxVec3 extraPos2 = PxVec3(m_xSize * 1.2f, pos.second.y - 1.8f * m_ySize, 0);
 
-        float nnVertices[] = {
-                pos.second.x, pos.second.y, pos.second.z,
-                nnPos1.x, nnPos1.y, nnPos1.z,
+            float bypassVertices[] = {
+                    pos.first.x, pos.first.y, pos.first.z,
+                    extraPos2.x, extraPos2.y, extraPos2.z,
+                    extraPos2.x, extraPos2.y, extraPos2.z,
+                    extraPos1.x, extraPos1.y, extraPos1.z,
+                    extraPos1.x, extraPos1.y, extraPos1.z,
+                    pos.second.x, pos.second.y, pos.second.z
+            };
 
-                nnPos1.x, nnPos1.y, nnPos1.z,
-                nnPos2.x, nnPos2.y, nnPos2.z,
+            PxVec3 nnPos1 = PxVec3(pos.second.x + 0.2f * m_xSize, pos.second.y, 0);
+            PxVec3 nnPos2 = PxVec3(pos.second.x + 0.2f * m_xSize, pos.second.y + 1.2f * m_ySize, 0);
+            PxVec3 nnPos3 = PxVec3(pos.first.x - 0.2f * m_xSize - nnCounter * 0.025f, pos.second.y + 1.2f * m_ySize, 0);
+            PxVec3 nnPos4 = PxVec3(pos.first.x - 0.2f * m_xSize - nnCounter * 0.025f, pos.first.y, 0);
 
-                nnPos2.x, nnPos2.y, nnPos2.z,
-                nnPos3.x, nnPos3.y, nnPos3.z,
+            float nnVertices[] = {
+                    pos.second.x, pos.second.y, pos.second.z,
+                    nnPos1.x, nnPos1.y, nnPos1.z,
 
-                nnPos3.x, nnPos3.y, nnPos3.z,
-                nnPos4.x, nnPos4.y, nnPos4.z,
+                    nnPos1.x, nnPos1.y, nnPos1.z,
+                    nnPos2.x, nnPos2.y, nnPos2.z,
 
-                nnPos4.x, nnPos4.y, nnPos4.z,
-                pos.first.x, pos.first.y, pos.first.z
-        };
+                    nnPos2.x, nnPos2.y, nnPos2.z,
+                    nnPos3.x, nnPos3.y, nnPos3.z,
 
-        bool bypassNeuron = false;
-        bool nnConn = false;
-        if(pos.second.x == -1+(1.f/3.f)+m_xSize && pos.first.x == 1-(1.f/3.f)-m_xSize){
-            bypassNeuron = true;
-        }else if(pos.second.x == m_xSize && pos.first.x == -m_xSize){
-            nnConn = true;
-            nnCounter++;
+                    nnPos3.x, nnPos3.y, nnPos3.z,
+                    nnPos4.x, nnPos4.y, nnPos4.z,
+
+                    nnPos4.x, nnPos4.y, nnPos4.z,
+                    pos.first.x, pos.first.y, pos.first.z
+            };
+
+            bool bypassNeuron = false;
+            bool nnConn = false;
+            if (pos.second.x == -1 + (1.f / 3.f) + m_xSize && pos.first.x == 1 - (1.f / 3.f) - m_xSize) {
+                bypassNeuron = true;
+            } else if (pos.second.x == m_xSize && pos.first.x == -m_xSize) {
+                nnConn = true;
+                nnCounter++;
+            }
+
+            //modify line look by value
+            auto val = m_gatePtrMap[gate]->getValue();
+            if (val >= 0)
+                m_shader->setVec4("drawColor", glm::vec4(0, 1.0f, 0, std::max(val, 0.2f)));
+            else
+                m_shader->setVec4("drawColor", glm::vec4(1.0f, 0, 0, std::max(abs(val), 0.2f)));
+
+            glLineWidth(3);
+
+            glBindVertexArray(m_lineVAO);
+            glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+
+            if (bypassNeuron) {
+                glBufferData(GL_ARRAY_BUFFER, sizeof(bypassVertices), bypassVertices, GL_STATIC_DRAW);
+            } else if (nnConn) {
+                glBufferData(GL_ARRAY_BUFFER, sizeof(nnVertices), nnVertices, GL_STATIC_DRAW);
+            } else {
+                glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
+            }
+
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+            glEnableVertexAttribArray(0);
+
+            if (bypassNeuron) {
+                glDrawArrays(GL_LINES, 0, 6);
+            } else if (nnConn) {
+                glDrawArrays(GL_LINES, 0, 10);
+            } else {
+                glDrawArrays(GL_LINES, 0, 2);
+            }
         }
-
-        //modify line look by value
-        auto val = m_gatePtrMap[gate]->getValue();
-        if(val >= 0)
-            m_shader->setVec4("drawColor", glm::vec4(0,1.0f,0,std::max(val,0.2f)));
-        else
-            m_shader->setVec4("drawColor", glm::vec4(1.0f,0,0,std::max(abs(val),0.2f)));
-
-        glLineWidth(3);
-
-        glBindVertexArray(m_lineVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-
-        if(bypassNeuron){
-            glBufferData(GL_ARRAY_BUFFER, sizeof(bypassVertices), bypassVertices, GL_STATIC_DRAW);
-        }else if(nnConn){
-            glBufferData(GL_ARRAY_BUFFER, sizeof(nnVertices), nnVertices, GL_STATIC_DRAW);
-        }else{
-            glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
-        }
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        if(bypassNeuron){
-            glDrawArrays(GL_LINES, 0, 6);
-        }else if(nnConn){
-            glDrawArrays(GL_LINES, 0, 10);
-        }else{
-            glDrawArrays(GL_LINES, 0, 2);
-        }
-
     }
 
     glLineWidth(1);

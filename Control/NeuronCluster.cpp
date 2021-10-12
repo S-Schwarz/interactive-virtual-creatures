@@ -238,3 +238,8 @@ void ivc::NeuronCluster::setPossibleInputsDirectly(std::vector<unsigned long> ve
 std::vector<unsigned long> ivc::NeuronCluster::getPossibleInputs() {
     return m_possibleInputGates;
 }
+
+void ivc::NeuronCluster::updateEffectorType(int t) {
+    if(m_effector)
+        m_effector->setType(t);
+}

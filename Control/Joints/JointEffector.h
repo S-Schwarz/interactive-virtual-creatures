@@ -34,6 +34,7 @@ namespace ivc{
         float m_weight_2 = 1.0f;
         std::vector<PxVec3> m_lastValues;
         unsigned int m_lastValuesIndex = 0;
+        int jointType = -1;
 
         void addToHistory(PxVec3);
         PxVec3 getAverageValue();
@@ -41,7 +42,7 @@ namespace ivc{
         friend class boost::serialization::access;
         template<class Archive>
         void serialize(Archive &a, const unsigned version){
-            a & m_id_input_0 & m_id_input_1 & m_id_input_2 & m_weight_0 & m_weight_1 & m_weight_2;
+            a & m_id_input_0 & m_id_input_1 & m_id_input_2 & m_weight_0 & m_weight_1 & m_weight_2 & jointType;
         }
     public:
         void step();
@@ -54,6 +55,8 @@ namespace ivc{
 
         std::vector<unsigned long> getInputs();
         void setInputs(std::vector<unsigned long>);
+        void setType(int);
+        int getType();
     };
 }
 

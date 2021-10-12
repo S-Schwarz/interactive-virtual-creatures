@@ -131,9 +131,16 @@ void ivc::JointEffector::setInputs(std::vector<unsigned long> newInputs) {
     m_id_input_0 = newInputs[0];
     m_id_input_1 = newInputs[1];
     m_id_input_2 = newInputs[2];
-
 }
 
 std::vector<unsigned long> ivc::JointEffector::getInputs() {
     return {m_id_input_0, m_id_input_1, m_id_input_2};
+}
+
+void ivc::JointEffector::setType(int t) {
+    jointType = t;
+}
+
+int ivc::JointEffector::getType() {
+    return jointType;
 }

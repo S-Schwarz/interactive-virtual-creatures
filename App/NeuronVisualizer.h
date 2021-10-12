@@ -34,7 +34,9 @@ namespace ivc{
 
         std::shared_ptr<PhysicalCreature> m_creature = nullptr;
 
-        std::map<unsigned long, std::pair<glm::vec3, glm::vec3>> m_gatePosMap;
+        //std::map<unsigned long, std::pair<glm::vec3, glm::vec3>> m_gatePosMap;
+        std::map<unsigned long, std::vector<glm::vec3>> m_requestMap;
+        std::map<unsigned long, std::vector<std::pair<glm::vec3, glm::vec3>>> m_connectionMap;
         std::map<unsigned long, std::shared_ptr<Gate>> m_gatePtrMap;
         std::map<std::shared_ptr<Neuron>, glm::vec3> m_neuronPosMap;
         std::map<std::shared_ptr<JointSensor>, glm::vec3> m_sensorPosMap;

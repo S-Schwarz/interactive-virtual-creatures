@@ -378,10 +378,17 @@ void ivc::PhysicalCreature::checkNeuronsForActivity() {
 
     for(auto effector : m_effectorVector){
         auto inVec = effector->getInputs();
-        for(auto id : inVec){
-            activeIDs.insert(id);
-            toCheck.push_back(id);
+        auto type = effector->getType();
+        auto id = -1;
+        if(type == 0){
+            id = 1;
+        }else if(type == 1){
+            id = 2;
+        }else if(type == 2){
+            id = 0;
         }
+        activeIDs.insert(inVec[id]);
+        toCheck.push_back(inVec[id]);
     }
 
     while(!toCheck.empty()){

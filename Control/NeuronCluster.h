@@ -51,6 +51,7 @@ namespace ivc {
         void setGenerator(std::shared_ptr<std::mt19937>);
         void chooseNewNeuronIDs(std::map<unsigned long,unsigned long>*,std::shared_ptr<IDHandler>);
         void rewireInputs(std::map<unsigned long,unsigned long>*);
+        void updateEffectorType(int);
     };
 
 }

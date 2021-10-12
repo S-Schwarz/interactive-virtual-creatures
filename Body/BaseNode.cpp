@@ -649,6 +649,7 @@ void ivc::BaseNode::setJointType(ivc::JOINT_TYPE type) {
             chooseNewJointType();
         }
     }
+    m_localNeurons->updateEffectorType(m_jointType);
 }
 
 void ivc::BaseNode::chooseNewJointType() {
@@ -754,14 +755,6 @@ void ivc::BaseNode::replaceChild(std::shared_ptr<BaseNode> toReplace, std::share
     m_childNodeVector.push_back(replacement);
 
     replacement->setParent(this);
-
-    //choose new outputs recursively
-    std::map<unsigned long,unsigned long> newOutputIDs;
-    replacement->chooseNewNeuronIDs(&newOutputIDs);
-
-    //rewire inputs recursively
-    replacement->rewireInputs(&newOutputIDs);
-
 }
 
 std::vector<unsigned int> ivc::BaseNode::getNeuronActivity() {
@@ -785,10 +778,17 @@ std::vector<unsigned int> ivc::BaseNode::getNeuronActivity() {
 
         for(auto effector : effectorVec){
             auto inVec = effector->getInputs();
-            for(auto id : inVec){
-                activeIDs.insert(id);
-                toCheck.push_back(id);
+            auto type = effector->getType();
+            auto id = -1;
+            if(type == 0){
+                id = 1;
+            }else if(type == 1){
+                id = 2;
+            }else if(type == 2){
+                id = 0;
             }
+            activeIDs.insert(inVec[id]);
+            toCheck.push_back(inVec[id]);
         }
 
         while(!toCheck.empty()){
@@ -981,4 +981,5 @@ ivc::NODE_SIDE ivc::BaseNode::getRandomFreeSide(std::shared_ptr<std::mt19937> ge
 
 void ivc::BaseNode::setJointTypeDirectly(JOINT_TYPE type) {
     m_jointType = type;
+    m_localNeurons->updateEffectorType(m_jointType);
 }
