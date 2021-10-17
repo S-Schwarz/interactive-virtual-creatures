@@ -55,7 +55,7 @@ namespace ivc{
             void checkNeuronsForActivity();
         public:
             ~PhysicalCreature();
-            PhysicalCreature(std::shared_ptr<BaseNode>, PxVec3, std::shared_ptr<PhysicsBase>);
+            PhysicalCreature(std::shared_ptr<BaseNode>, PxVec3, std::shared_ptr<PhysicsBase>, std::shared_ptr<EvoConfig>);
             std::vector<PxArticulationLink*> getBodies();
             void updateContactStates();
             void performBrainStep();

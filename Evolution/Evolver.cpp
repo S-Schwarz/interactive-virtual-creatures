@@ -7,15 +7,66 @@
 #include <memory>
 #include "../Body/BaseNode.h"
 
-void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std::map<std::shared_ptr<ivc::BaseNode>, std::vector<PxVec3>>* posMapPtr, int stepsPG, int interval){
+bool contains(PxVec3 creaturePos, glm::vec3 targetPos, glm::vec3 targetSize){
+    if(!(creaturePos.z < targetPos.z + (targetSize.z/2) && creaturePos.z > targetPos.z - (targetSize.z/2)))
+        return false;
+    if(!(creaturePos.x < targetPos.x + (targetSize.x/2) && creaturePos.x > targetPos.x - (targetSize.x/2)))
+        return false;
+    if(!(creaturePos.y < targetPos.y + (targetSize.y/2) && creaturePos.y > targetPos.y - (targetSize.y/2)))
+        return false;
+    return true;
+}
+
+std::pair<glm::vec3, glm::vec3> reachedTarget(PxVec3 currentPos, std::vector<std::pair<glm::vec3, glm::vec3>> targetVec, std::vector<std::pair<glm::vec3, glm::vec3>> reachedTargetsVec){
+    for(auto pair : targetVec){
+        if(std::find(reachedTargetsVec.begin(), reachedTargetsVec.end(), pair) != reachedTargetsVec.end()){
+            continue;
+        }
+        if(contains(currentPos, pair.first, pair.second)){
+            return pair;
+        }
+    }
+    return {glm::vec3(INFINITY, INFINITY, INFINITY), glm::vec3(INFINITY,INFINITY,INFINITY)};
+}
+
+// adapted from https://stackoverflow.com/questions/5254838/calculating-distance-between-a-point-and-a-rectangular-box-nearest-point
+float calcDistance(PxVec3 cPos, glm::vec3 tPos, glm::vec3 tSize){
+    float dX = std::max((tPos.x - tSize.x/2) - cPos.x, std::max(0.f, cPos.x - (tPos.x + tSize.x/2)));
+    float dZ = std::max((tPos.z - tSize.z/2) - cPos.z, std::max(0.f, cPos.z - (tPos.z + tSize.z/2)));
+    return std::sqrt(dX*dX + dZ*dZ);
+}
+
+float distanceToClosestTarget(PxVec3 cPos, std::vector<std::pair<glm::vec3, glm::vec3>> targetVec){
+    float minDist = INFINITY;
+    for(const auto [pos, size] : targetVec){
+        auto dist = calcDistance(cPos, pos, size);
+        if(dist < minDist)
+            minDist = dist;
+    }
+    return minDist;
+}
+
+void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std::map<std::shared_ptr<ivc::BaseNode>, std::pair<std::vector<PxVec3>, int>>* posMapPtr, std::shared_ptr<ivc::EvoConfig> config){
+
+    auto stepsPG = config->m_stepsPerGeneration;
+    auto interval = config->m_noveltyInterval;
+    auto useTarget = config->useTargetForEvo();
+    auto targetVec = config->m_foodVec;
+    auto useRewards = config->useRewardsForEvo();
+
+    auto nullTarget = std::pair<glm::vec3, glm::vec3>(glm::vec3(INFINITY, INFINITY, INFINITY), glm::vec3(INFINITY,INFINITY,INFINITY));
 
     for(auto scene : sceneVec){
+
+        unsigned int stepsToTarget = 0;
+        bool hasReachedTarget = false;
+        std::vector<std::pair<glm::vec3, glm::vec3>> reachedTargetsVec;
         //simulate and score
         //settle in to stable position
         int stableSteps = 0;
         bool resting = false;
         for(int i = 0; i < FALL_DOWN_STEPS; ++i){
-            if(stableSteps == 5){
+            if(stableSteps == 20){
                 resting = true;
                 break;
             }
@@ -34,14 +85,13 @@ void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std
             continue;
 
         auto currentTransform = scene->getCreature()->getRootLink()->getGlobalPose();
-        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0));
+        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0), currentTransform.q);
         scene->getCreature()->getArticulation()->teleportRootLink(newTrans, true);
 
         auto startPos = scene->getCreaturePos();
 
         if(startPos.y < 0)
             continue;
-
 
         int stepCount = 0;
 
@@ -53,14 +103,33 @@ void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std
 
         //create novelty vec
         std::vector<PxVec3> posRecordVec;
-
+        posRecordVec.push_back(startPos);
         //start moving
         for(int i = 0; i < stepsPG; ++i){
             scene->simulate(true);
 
             ++stepCount;
+            ++stepsToTarget;
 
-            auto currentPos = scene->getCreaturePos();
+            PxVec3 currentPos = scene->getCreaturePos();
+
+            if( i % interval == 0){
+                posRecordVec.push_back(currentPos);
+            }
+
+            if(useTarget){
+                auto reached = reachedTarget(currentPos, targetVec, reachedTargetsVec);
+                if(reached != nullTarget){
+                    hasReachedTarget = true;
+                    break;
+                }
+            }else if(useRewards){
+                auto reached = reachedTarget(currentPos, targetVec, reachedTargetsVec);
+                if(reached != nullTarget) {
+                    reachedTargetsVec.push_back(reached);
+                }
+            }
+
             if(currentPos.y > maxHeight)
                 maxHeight = currentPos.y;
 
@@ -70,10 +139,6 @@ void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std
 
                 stepCount = 0;
                 deltaPos = currentPos;
-            }
-
-            if( i % interval == 0){
-                posRecordVec.push_back(currentPos);
             }
 
         }
@@ -88,7 +153,21 @@ void testCreatures(std::vector<std::shared_ptr<ivc::PhysicsScene>> sceneVec, std
         }
 
         //write result
-        (*posMapPtr)[scene->getRootNode()] = posRecordVec;
+        if(useTarget){
+            //printf("SPG: %i STT: %u TARGET FITNESS: %i\n", stepsPG, stepsToTarget, stepsPG - stepsToTarget);
+            if(hasReachedTarget){
+                (*posMapPtr)[scene->getRootNode()] = {posRecordVec, stepsPG - stepsToTarget};
+            }
+            else{
+                auto cPos = posRecordVec.back();
+                float distance = distanceToClosestTarget(cPos, targetVec);
+                (*posMapPtr)[scene->getRootNode()] = {posRecordVec, - (int)distance};
+            }
+
+        }else{
+            (*posMapPtr)[scene->getRootNode()] = {posRecordVec, reachedTargetsVec.size()};
+        }
+
     }
 
 }
@@ -109,7 +188,6 @@ void ivc::Evolver::startContinuousEvolution() {
 
     while(!m_config->m_shouldEnd){
         testCurrentGeneration();
-        m_testPosMap = {};
         calcDistanceTravelled();
         calcStats();
 
@@ -119,15 +197,16 @@ void ivc::Evolver::startContinuousEvolution() {
         }else{
             calcFitness();
             calcNovelty();
+            m_testPosMap.clear();
             printf("---------------------------\n");
             printf("GENERATION #%i:\n", m_numberGenerations);
             printf("Size: %lu\n", m_testSceneVec.size());
             m_testSceneVec = {};
             printf("Largest distance: %f\n", m_currentLargestDistance);
-            printf("NEURONS OVERALL: %u\n", m_currentBestVector[0].first->getNeuronActivity()[0]);
-            printf("NEURONS BRAIN: %u\n", m_currentBestVector[0].first->getNeuronActivity()[1]);
-            printf("JOINT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[2]);
-            printf("CONTACT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[3]);
+            //printf("NEURONS OVERALL: %u\n", m_currentBestVector[0].first->getNeuronActivity()[0]);
+            //printf("NEURONS BRAIN: %u\n", m_currentBestVector[0].first->getNeuronActivity()[1]);
+            //printf("JOINT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[2]);
+            //printf("CONTACT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[3]);
             chooseParents();
             createNewGenerationFromParents();
             createEvoData();
@@ -140,6 +219,13 @@ void ivc::Evolver::startContinuousEvolution() {
                 m_noveltyArchive = {};
 
             m_numberGenerations += 1;
+        }
+
+        if(m_numberGenerations-1 == 103){
+            m_config->m_shouldSave = true;
+            m_config->m_shouldEnd = true;
+            m_config->numberOfRuns += 1;
+            m_config->m_fileName = "run" + std::to_string(m_config->numberOfRuns);
         }
     }
 
@@ -226,7 +312,7 @@ std::vector<std::shared_ptr<ivc::EvoData>> ivc::Evolver::getEvoDataVec() {
 
 void ivc::Evolver::testCurrentGeneration() {
 
-    void (*testFuncPtr)(std::vector<std::shared_ptr<PhysicsScene>>,std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>>*, int, int) = testCreatures;
+    void (*testFuncPtr)(std::vector<std::shared_ptr<PhysicsScene>>,std::map<std::shared_ptr<BaseNode>, std::pair<std::vector<PxVec3>, int>>*, std::shared_ptr<ivc::EvoConfig>) = testCreatures;
 
     //fitness test all creatures
     //divide scenes among threads
@@ -251,7 +337,7 @@ void ivc::Evolver::testCurrentGeneration() {
 
     allThreads.reserve(allScenes.size());
     for(const auto& sceneVec : allScenes){
-        allThreads.push_back(std::make_unique<std::thread>(testFuncPtr, sceneVec, &m_testPosMap, m_config->m_stepsPerGeneration, noveltyInterval));
+        allThreads.push_back(std::make_unique<std::thread>(testFuncPtr, sceneVec, &m_testPosMap, m_config));
     }
 
     for (auto&& thread : allThreads) {
@@ -261,9 +347,9 @@ void ivc::Evolver::testCurrentGeneration() {
     allThreads.clear();
 
     //choose viable creatures
-    for(const auto &[node, vec] : m_testPosMap){
-        if(!vec.empty()) {
-            m_currentViableCreaturesVec.emplace_back(node,vec);
+    for(const auto &[node, pair] : m_testPosMap){
+        if(!pair.first.empty()) {
+            m_currentViableCreaturesVec.emplace_back(node,pair.first);
         }
     }
 
@@ -290,6 +376,12 @@ void ivc::Evolver::calcFitness() {
 
             auto swervingX = sideMP * abs(beforePos.x - afterPos.x);
             fitness += (beforePos.z - afterPos.z) - swervingX;
+        }
+
+        if(m_config->useRewardsForEvo()){
+            fitness += m_config->m_rewardBonus * (float)m_testPosMap[baseNode].second;
+        }else if(m_config->useTargetForEvo()){
+            fitness = (float)m_testPosMap[baseNode].second;
         }
 
         if(fitness > m_currentBestFitnessScore){
@@ -375,8 +467,16 @@ void ivc::Evolver::calcNovelty() {
 
         m_currentNoveltyMap[baseNode] = averageDistance;
 
-        if(averageDistance > MIN_NOVELTY_VAL){
+        if(averageDistance > std::max(MIN_NOVELTY_VAL * m_noveltyMinFactor, 0.05f)){
             m_noveltyArchive.push_back(noveltyVec);
+            m_evalsSinceLastAddition = 0;
+        }else{
+            m_evalsSinceLastAddition += 1;
+        }
+
+        if(m_evalsSinceLastAddition >= 1000){
+            m_noveltyMinFactor -= 0.05f;
+            m_evalsSinceLastAddition = 0;
         }
 
     }
@@ -401,53 +501,116 @@ void ivc::Evolver::chooseParents() {
     }
     m_currentAverageNoveltyScore = noveltySum / m_currentNoveltyMap.size();
 
-    // normalize scores
-    std::vector<std::pair<std::shared_ptr<BaseNode>, float>> normalizedScores;
-    if(m_config->m_useNoveltySearch){
-        for(const auto &[node, score] : m_currentNoveltyMap){
-            if(m_currentBestNoveltyScore == m_currentWorstNoveltyScore){
-                normalizedScores.emplace_back(node,1.0f);
-            }else{
-                normalizedScores.emplace_back(node, Mutator::normalize(score, m_currentWorstNoveltyScore, m_currentBestNoveltyScore));
+    if(!m_config->m_userSelection){
+
+        // normalize scores
+        std::vector<std::pair<std::shared_ptr<BaseNode>, float>> normalizedScores;
+        if(m_config->m_useNoveltySearch){
+            for(const auto &[node, score] : m_currentNoveltyMap){
+                if(m_currentBestNoveltyScore == m_currentWorstNoveltyScore){
+                    normalizedScores.emplace_back(node,1.0f);
+                }else{
+                    normalizedScores.emplace_back(node, Mutator::normalize(score, m_currentWorstNoveltyScore, m_currentBestNoveltyScore));
+                }
+            }
+        }else{
+            for(const auto &[node, score] : m_currentFitnessMap){
+                if(m_currentBestFitnessScore == m_currentWorstFitnessScore){
+                    normalizedScores.emplace_back(node,1.0f);
+                }else{
+                    normalizedScores.emplace_back(node, Mutator::normalize(score, m_currentWorstFitnessScore, m_currentBestFitnessScore));
+                }
             }
         }
+
+        //sort by score
+        std::sort(normalizedScores.begin(), normalizedScores.end(), [](auto &left, auto &right) {
+            return left.second > right.second;
+        });
+
+        //cap number of parents
+        auto maxParents = floor(m_config->m_creaturesPerGeneration * 0.2);
+        if(normalizedScores.size() > maxParents){
+            normalizedScores.resize(maxParents);
+        }
+
+        //choose amount of children per root
+        std::vector<std::pair<std::shared_ptr<BaseNode>,unsigned int>> amountVec;
+        float total = 0;
+        for(const auto&[node, score] : normalizedScores){
+            total += score;
+        }
+        float partSize = m_config->m_creaturesPerGeneration / total;
+
+        for(const auto&[node, score] : normalizedScores){
+            auto amountChildren = std::max(1.0f, floor(score * partSize));
+            amountVec.emplace_back(node, amountChildren);
+        }
+
+        m_nextParentVec = amountVec;
+
     }else{
-        for(const auto &[node, score] : m_currentFitnessMap){
-            if(m_currentBestFitnessScore == m_currentWorstFitnessScore){
-                normalizedScores.emplace_back(node,1.0f);
-            }else{
-                normalizedScores.emplace_back(node, Mutator::normalize(score, m_currentWorstFitnessScore, m_currentBestFitnessScore));
+
+        if(!m_currentBestVector.empty())
+            throw std::logic_error("AUA");
+
+        auto fitAmount = std::floor(m_config->m_numberDisplayedCreatures/2.f);
+        auto novelAmount = std::ceil(m_config->m_numberDisplayedCreatures/2.f);
+
+        std::vector<std::pair<std::shared_ptr<BaseNode>, std::pair<float, std::vector<PxVec3>>>> fitVec;
+        std::vector<std::pair<std::shared_ptr<BaseNode>, std::pair<float, std::vector<PxVec3>>>> novelVec;
+
+        for(auto [node, path] : m_currentViableCreaturesVec){
+            if(fitVec.size() < fitAmount) {
+                fitVec.push_back({node, {m_currentFitnessMap[node], path}});
+                continue;
+            } else{
+                int toReplaceIndex = -1;
+                float worstScore = INFINITY;
+                for (int i = 0; i < fitVec.size(); ++i) {
+                    float oldScore = m_currentFitnessMap[fitVec[i].first];
+                    if (m_currentFitnessMap[node] > oldScore && worstScore > oldScore) {
+                        toReplaceIndex = i;
+                        worstScore = oldScore;
+                    }
+                }
+                if (toReplaceIndex > -1) {
+                    fitVec[toReplaceIndex] = {node, {m_currentFitnessMap[node], path}};
+                    continue;
+                }
+            }
+
+            if(novelVec.size() < novelAmount) {
+                novelVec.push_back({node, {m_currentNoveltyMap[node], path}});
+                continue;
+            } else{
+                int toReplaceIndex = -1;
+                float worstScore = INFINITY;
+                for (int i = 0; i < novelVec.size(); ++i) {
+                    float oldScore = m_currentNoveltyMap[novelVec[i].first];
+                    if (m_currentNoveltyMap[node] > oldScore && worstScore > oldScore) {
+                        toReplaceIndex = i;
+                        worstScore = oldScore;
+                    }
+                }
+                if (toReplaceIndex > -1) {
+                    novelVec[toReplaceIndex] = {node, {m_currentNoveltyMap[node], path}};
+                    continue;
+                }
             }
         }
+
+        m_currentBestVector.insert(m_currentBestVector.end(), fitVec.begin(), fitVec.end());
+        m_currentBestVector.insert(m_currentBestVector.end(), novelVec.begin(), novelVec.end());
+
+        while(m_selectedNode == nullptr){
+            // wait
+        }
+
+        m_nextParentVec = {{m_selectedNode, m_config->m_creaturesPerGeneration}};
+        m_selectedNode = nullptr;
+
     }
-
-
-
-    //sort by score
-    std::sort(normalizedScores.begin(), normalizedScores.end(), [](auto &left, auto &right) {
-        return left.second > right.second;
-    });
-
-    //cap number of parents
-    auto maxParents = floor(m_config->m_creaturesPerGeneration * 0.2);
-    if(normalizedScores.size() > maxParents){
-        normalizedScores.resize(maxParents);
-    }
-
-    //choose amount of children per root
-    std::vector<std::pair<std::shared_ptr<BaseNode>,unsigned int>> amountVec;
-    float total = 0;
-    for(const auto&[node, score] : normalizedScores){
-        total += score;
-    }
-    float partSize = m_config->m_creaturesPerGeneration / total;
-
-    for(const auto&[node, score] : normalizedScores){
-        auto amountChildren = std::max(1.0f, floor(score * partSize));
-        amountVec.emplace_back(node, amountChildren);
-    }
-
-    m_nextParentVec = amountVec;
 
 }
 
@@ -495,10 +658,6 @@ void ivc::Evolver::createEvoData() {
 
     m_dataVec.push_back(newData);
 
-}
-
-void ivc::Evolver::clearBestVec() {
-    m_clearBestVec = true;
 }
 
 void ivc::Evolver::graft(std::shared_ptr<BaseNode> base, std::shared_ptr<BaseNode> partner, std::shared_ptr<std::mt19937> gen) {
@@ -557,9 +716,11 @@ void ivc::Evolver::calcDistanceTravelled() {
     m_currentWorstDistance = INFINITY;
     m_currentAverageDistance = 0;
 
-    if(m_clearBestVec){
+    bool shouldRefresh = false;
+    if(m_config->m_clearBestVec || m_config->m_userSelection){
         m_currentBestVector = {};
-        m_clearBestVec = false;
+        m_config->m_clearBestVec = false;
+        shouldRefresh = true;
     }
 
     for(auto const& [baseNode, posVec] : m_currentViableCreaturesVec) {
@@ -576,25 +737,40 @@ void ivc::Evolver::calcDistanceTravelled() {
         m_currentAverageDistance += distanceTravelled;
 
         // is this creature better than the current best creatures?
-        if (m_currentBestVector.size() < m_config->m_numberDisplayedCreatures) {
-            m_currentBestVector.push_back({baseNode, {distanceTravelled, posVec}});
-        } else {
-            int toReplaceIndex = -1;
-            float worstDistance = INFINITY;
-            for (int i = 0; i < m_currentBestVector.size(); ++i) {
-                float oldDistance = m_currentBestVector[i].second.first;
-                if (distanceTravelled > oldDistance && worstDistance > oldDistance) {
-                    toReplaceIndex = i;
-                    worstDistance = oldDistance;
+        if(!m_config->m_userSelection){
+            if(m_currentBestVector.size() > m_config->m_numberDisplayedCreatures){
+                m_currentBestVector.resize(m_config->m_numberDisplayedCreatures);
+            } else if(m_currentBestVector.size() < m_config->m_numberDisplayedCreatures) {
+                m_currentBestVector.push_back({baseNode, {distanceTravelled, posVec}});
+            } else {
+                int toReplaceIndex = -1;
+                float worstDistance = INFINITY;
+                auto modifiedDistance = distanceTravelled;
+                for (int i = 0; i < m_currentBestVector.size(); ++i) {
+                    float oldDistance = m_currentBestVector[i].second.first;
+
+                    //if we use targets or rewards
+                    if(m_config->useRewardsForEvo()){
+                        modifiedDistance += m_config->m_rewardBonus * (float)m_testPosMap[baseNode].second;
+                    }else if(m_config->useTargetForEvo()){
+                        modifiedDistance = (float)m_testPosMap[baseNode].second;
+                    }
+
+                    if (modifiedDistance > oldDistance && worstDistance > oldDistance) {
+                        toReplaceIndex = i;
+                        worstDistance = oldDistance;
+                    }
                 }
-            }
-            if (toReplaceIndex > -1) {
-                m_currentBestVector[toReplaceIndex] = {baseNode, {distanceTravelled, posVec}};
+                if (toReplaceIndex > -1) {
+                    m_currentBestVector[toReplaceIndex] = {baseNode, {modifiedDistance, posVec}};
+                }
             }
         }
 
     }
     m_currentAverageDistance /= m_currentViableCreaturesVec.size();
+    if(shouldRefresh)
+        m_config->m_refreshLiveEnvironment = true;
 }
 
 void ivc::Evolver::clean() {
@@ -610,6 +786,9 @@ void ivc::Evolver::clean() {
     m_currentFitnessMap = {};
     m_currentNoveltyMap = {};
     m_nextParentVec = {};
+
+    m_evalsSinceLastAddition = 0;
+    m_noveltyMinFactor = 1.0f;
 }
 
 void ivc::Evolver::loadStartNode(std::shared_ptr<BaseNode> node) {
@@ -714,4 +893,8 @@ void ivc::Evolver::calcStats() {
     m_currentAverageActiveJointSensors /= (float)m_currentViableCreaturesVec.size();
     m_currentAverageActiveContactSensors /= (float)m_currentViableCreaturesVec.size();
 
+}
+
+void ivc::Evolver::setUserSelection(std::shared_ptr<BaseNode> node) {
+    m_selectedNode = node;
 }

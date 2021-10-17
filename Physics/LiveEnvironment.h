@@ -10,9 +10,8 @@
 namespace ivc{
     class LiveEnvironment {
         private:
-            std::vector<std::shared_ptr<PhysicsScene>> m_sceneVec;
+            std::vector<std::pair<std::shared_ptr<PhysicsScene>, std::vector<PxVec3>>> m_sceneVec;
             std::shared_ptr<BaseNode> m_currentBest = nullptr;
-            std::vector<PxVec3> m_currentBestPath;
             std::shared_ptr<PhysicsScene> m_bestScene = nullptr;
             std::shared_ptr<PhysicsBase> m_base = nullptr;
             std::shared_ptr<EvoConfig> m_config = nullptr;
@@ -31,6 +30,8 @@ namespace ivc{
 
             std::shared_ptr<PhysicalCreature> getBestCreature();
             std::shared_ptr<BaseNode> getBestNode();
+            std::vector<std::pair<std::shared_ptr<PhysicsScene>, std::vector<PxVec3>>> getSceneVec();
+
     };
 }
 

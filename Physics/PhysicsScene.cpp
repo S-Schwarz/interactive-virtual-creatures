@@ -18,7 +18,7 @@ int ivc::PhysicsScene::init(std::shared_ptr<PhysicsBase> base, std::shared_ptr<B
 
     auto rootNodeHeight = m_rootNode->getHalfExtents().y;
 
-    m_creature = std::make_shared<PhysicalCreature>(rootNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base);
+    m_creature = std::make_shared<PhysicalCreature>(rootNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base, m_config);
     sceneDesc.simulationEventCallback = m_creature->getReporter().get();
 
     m_scene = m_base->getPhysics()->createScene(sceneDesc);
@@ -27,7 +27,7 @@ int ivc::PhysicsScene::init(std::shared_ptr<PhysicsBase> base, std::shared_ptr<B
     m_scene->addArticulation(*m_creature->getArticulation());
     m_creature->initCache();
 
-    for(auto pair : config->m_objVec){
+    for(auto pair : config->getObjVec()){
         PxVec3 halfExtents(pair.second.x/2,pair.second.y/2,pair.second.z/2);
         auto boxShape = m_base->getPhysics()->createShape(PxBoxGeometry(halfExtents), *m_base->getMaterial());
         PxTransform transform(PxVec3(pair.first.x, pair.first.y, pair.first.z));
@@ -124,7 +124,7 @@ void ivc::PhysicsScene::insertNewCreature(std::shared_ptr<BaseNode> newNode) {
 
     auto rootNodeHeight = m_rootNode->getHalfExtents().y;
 
-    m_creature = std::make_shared<PhysicalCreature>(newNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base);
+    m_creature = std::make_shared<PhysicalCreature>(newNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base, m_config);
     sceneDesc.simulationEventCallback = m_creature->getReporter().get();
 
     m_scene = m_base->getPhysics()->createScene(sceneDesc);
@@ -133,7 +133,7 @@ void ivc::PhysicsScene::insertNewCreature(std::shared_ptr<BaseNode> newNode) {
     m_scene->addArticulation(*m_creature->getArticulation());
     m_creature->initCache();
 
-    for(auto pair : m_config->m_objVec){
+    for(auto pair : m_config->getObjVec()){
         PxVec3 halfExtents(pair.second.x/2,pair.second.y/2,pair.second.z/2);
         auto boxShape = m_base->getPhysics()->createShape(PxBoxGeometry(halfExtents), *m_base->getMaterial());
         PxTransform transform(PxVec3(pair.first.x, pair.first.y, pair.first.z));
@@ -217,7 +217,7 @@ void ivc::PhysicsScene::rebuild() {
 
     auto rootNodeHeight = m_rootNode->getHalfExtents().y;
 
-    m_creature = std::make_shared<PhysicalCreature>(m_rootNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base);
+    m_creature = std::make_shared<PhysicalCreature>(m_rootNode,PxVec3(0,rootNodeHeight * ROOT_STARTING_HEIGHT_FACTOR,0), m_base, m_config);
     sceneDesc.simulationEventCallback = m_creature->getReporter().get();
 
     m_scene = m_base->getPhysics()->createScene(sceneDesc);
@@ -226,7 +226,7 @@ void ivc::PhysicsScene::rebuild() {
     m_scene->addArticulation(*m_creature->getArticulation());
     m_creature->initCache();
 
-    for(auto pair : m_config->m_objVec){
+    for(auto pair : m_config->getObjVec()){
         PxVec3 halfExtents(pair.second.x/2,pair.second.y/2,pair.second.z/2);
         auto boxShape = m_base->getPhysics()->createShape(PxBoxGeometry(halfExtents), *m_base->getMaterial());
         PxTransform transform(PxVec3(pair.first.x, pair.first.y, pair.first.z));

@@ -15,7 +15,16 @@ ivc::NeuronCluster::NeuronCluster(std::shared_ptr<std::mt19937> gen, bool isBrai
     auto numberNeurons = mean;
 
     for(int i = 0; i < numberNeurons; ++i){
-        auto newNeuron = std::make_shared<Neuron>(m_generator, config);
+        auto newNeuron = std::make_shared<Neuron>(m_generator, config, false);
+        auto newID = idHandler->getNewID();
+        newNeuron->setID(newID);
+        m_outputGates.push_back(newID);
+        m_neuronVector.push_back(newNeuron);
+    }
+
+    if(config->m_useVision && isBrain){
+        //add eye
+        auto newNeuron = std::make_shared<Neuron>(m_generator, config, true);
         auto newID = idHandler->getNewID();
         newNeuron->setID(newID);
         m_outputGates.push_back(newID);
@@ -88,23 +97,26 @@ void ivc::NeuronCluster::mutateNeurons(std::shared_ptr<EvoConfig> config) {
 void ivc::NeuronCluster::mutateNewNeurons(std::shared_ptr<ivc::IDHandler> idHandler, std::shared_ptr<EvoConfig> config) {
     std::uniform_real_distribution<> dis(0, 1);
 
-    //add remove neuron
+    //remove neuron
     if(!m_neuronVector.empty() && dis(*m_generator) <= config->m_mutChance){
         std::uniform_int_distribution<> remDis(0, m_neuronVector.size()-1);
 
         auto index = remDis(*m_generator);
         auto neuron = m_neuronVector[index];
-        auto outputID = neuron->getOutputID();
 
-        m_neuronVector.erase(m_neuronVector.begin() + index);
-        // TODO: delete neuron ptr
-        m_outputGates.erase(std::remove(m_outputGates.begin(), m_outputGates.end(), outputID), m_outputGates.end());
+        // always keep vision
+        if(neuron->getType() != EYE){
+            auto outputID = neuron->getOutputID();
+
+            m_neuronVector.erase(m_neuronVector.begin() + index);
+            m_outputGates.erase(std::remove(m_outputGates.begin(), m_outputGates.end(), outputID), m_outputGates.end());
+        }
 
     }
 
     //add new neuron
     if(dis(*m_generator) <= config->m_mutChance){
-        auto newNeuron = std::make_shared<Neuron>(m_generator,config);
+        auto newNeuron = std::make_shared<Neuron>(m_generator,config, false);
         auto newID = idHandler->getNewID();
         newNeuron->setID(newID);
         m_outputGates.push_back(newID);
@@ -242,4 +254,14 @@ std::vector<unsigned long> ivc::NeuronCluster::getPossibleInputs() {
 void ivc::NeuronCluster::updateEffectorType(int t) {
     if(m_effector)
         m_effector->setType(t);
+}
+
+float ivc::NeuronCluster::getViewDistance() {
+
+    for(const auto& neuron : m_neuronVector){
+        if(neuron->getType() == EYE)
+            return neuron->getViewDistance();
+    }
+
+    return 0;
 }

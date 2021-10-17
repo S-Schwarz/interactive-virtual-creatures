@@ -110,8 +110,10 @@ class BaseNode : public std::enable_shared_from_this<BaseNode> {
             std::string getParentSideAsString();
             PxVec3 getAnchorPosition(std::shared_ptr<std::mt19937> gen);
             std::vector<NODE_SIDE> getFreeSides();
+            float getViewDistance();
             bool shouldBeReflected();
             bool isRoot();
+            std::shared_ptr<BaseNode> getRootNode();
 
             void mutateBodyAndNeurons(bool, std::shared_ptr<EvoConfig>);
             void mutateNewBodyAndNewNeurons(bool, std::shared_ptr<EvoConfig>);

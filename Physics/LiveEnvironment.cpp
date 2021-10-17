@@ -13,18 +13,17 @@ int ivc::LiveEnvironment::init(std::shared_ptr<PhysicsBase> base, std::vector<st
     for(const auto& [node, pair] : nodeVec){
         auto liveScene = std::make_shared<PhysicsScene>();
         liveScene->init(m_base, node, m_config);
-        m_sceneVec.push_back(liveScene);
+        m_sceneVec.emplace_back(liveScene, pair.second);
         if(pair.first > bestDistance){
             m_currentBest = node;
-            m_currentBestPath = pair.second;
             m_bestScene = liveScene;
             bestDistance = pair.first;
         }
     }
 
     std::vector<std::pair<std::shared_ptr<PhysicsScene>,int>> stableVec;
-    for(auto scene : m_sceneVec){
-        stableVec.push_back({scene,0});
+    for(auto [scene,path] : m_sceneVec){
+        stableVec.emplace_back(scene,0);
     }
 
     //settle in to stable position
@@ -43,9 +42,9 @@ int ivc::LiveEnvironment::init(std::shared_ptr<PhysicsBase> base, std::vector<st
         }
     }
 
-    for(auto scene : m_sceneVec){
+    for(auto [scene,path] : m_sceneVec){
         auto currentTransform = scene->getCreature()->getRootLink()->getGlobalPose();
-        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0));
+        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0), currentTransform.q);
         scene->getCreature()->getArticulation()->teleportRootLink(newTrans, true);
     }
 
@@ -54,7 +53,7 @@ int ivc::LiveEnvironment::init(std::shared_ptr<PhysicsBase> base, std::vector<st
 
 int ivc::LiveEnvironment::simulate() {
 
-    for(auto scene : m_sceneVec){
+    for(auto [scene,path] : m_sceneVec){
         scene->simulate(true);
     }
 
@@ -65,10 +64,7 @@ std::vector<std::pair<std::vector<PxArticulationLink*>, std::vector<PxVec3>>> iv
 
     std::vector<std::pair<std::vector<PxArticulationLink*>, std::vector<PxVec3>>> returnVec;
 
-    for(auto scene : m_sceneVec){
-        std::vector<PxVec3> path = {};
-        if(scene == m_bestScene)
-            path = m_currentBestPath;
+    for(auto [scene,path] : m_sceneVec){
         returnVec.emplace_back(scene->getBodyParts(),path);
     }
 
@@ -85,15 +81,15 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
     float bestDistance = -INFINITY;
     if(m_sceneVec.size() >= nodeVec.size()){
         for(int i = 0; i < m_sceneVec.size(); ++i){
-            if(i >= nodeVec.size()){
-                m_sceneVec[i]->destroy();
-            }else{
-                m_sceneVec[i]->insertNewCreature(nodeVec[i].first);
-            }
-            if(nodeVec[i].second.first > bestDistance){
-                m_currentBest = nodeVec[i].first;
-                m_currentBestPath = nodeVec[i].second.second;
-                bestDistance = nodeVec[i].second.first;
+            if(i < nodeVec.size()){
+                m_sceneVec[i].first->insertNewCreature(nodeVec[i].first);
+                m_sceneVec[i].second = nodeVec[i].second.second;
+
+                if(nodeVec[i].second.first > bestDistance){
+                    m_currentBest = nodeVec[i].first;
+                    m_bestScene = m_sceneVec[i].first;
+                    bestDistance = nodeVec[i].second.first;
+                }
             }
         }
         m_sceneVec.resize(nodeVec.size());
@@ -102,21 +98,20 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
             auto liveScene = std::make_shared<PhysicsScene>();
             if(i >= m_sceneVec.size()){
                 liveScene->init(m_base, nodeVec[i].first, m_config);
-                m_sceneVec.push_back(liveScene);
+                m_sceneVec.emplace_back(liveScene,nodeVec[i].second.second);
             }else{
-                m_sceneVec[i]->insertNewCreature(nodeVec[i].first);
+                m_sceneVec[i].first->insertNewCreature(nodeVec[i].first);
             }
             if(nodeVec[i].second.first > bestDistance){
                 m_currentBest = nodeVec[i].first;
-                m_currentBestPath = nodeVec[i].second.second;
-                m_bestScene = liveScene;
+                m_bestScene = m_sceneVec[i].first;
                 bestDistance = nodeVec[i].second.first;
             }
         }
     }
 
     std::vector<std::pair<std::shared_ptr<PhysicsScene>,int>> stableVec;
-    for(auto scene : m_sceneVec){
+    for(auto [scene,path] : m_sceneVec){
         stableVec.push_back({scene,0});
     }
 
@@ -136,9 +131,9 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
         }
     }
 
-    for(auto scene : m_sceneVec){
+    for(auto [scene,path] : m_sceneVec){
         auto currentTransform = scene->getCreature()->getRootLink()->getGlobalPose();
-        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0));
+        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0), currentTransform.q);
         scene->getCreature()->getArticulation()->teleportRootLink(newTrans, true);
     }
 
@@ -149,14 +144,13 @@ void ivc::LiveEnvironment::insertNewCreatures(std::vector<std::pair<std::shared_
 void ivc::LiveEnvironment::resetCreaturePosition() {
 
     std::vector<std::pair<std::shared_ptr<PhysicsScene>,int>> stableVec;
-    for(auto scene : m_sceneVec){
+    for(auto [scene,path] : m_sceneVec){
         scene->resetCreaturePosition();
         stableVec.push_back({scene,0});
     }
 
     //settle in to stable position
     for(int f = 0; f < FALL_DOWN_STEPS; ++f){
-        printf("F: %i\n", f);
         for(int i = 0; i < stableVec.size(); ++i){
             if(stableVec[i].second == 5)
                 continue;
@@ -169,13 +163,11 @@ void ivc::LiveEnvironment::resetCreaturePosition() {
                 stableVec[i] = {stableVec[i].first,0};
             }
         }
-        if(f == FALL_DOWN_STEPS-1)
-            printf("TEST\n");
     }
 
-    for(auto scene : m_sceneVec){
+    for(auto [scene,path] : m_sceneVec){
         auto currentTransform = scene->getCreature()->getRootLink()->getGlobalPose();
-        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0));
+        PxTransform newTrans(PxVec3(0,currentTransform.p.y,0), currentTransform.q);
         scene->getCreature()->getArticulation()->teleportRootLink(newTrans, true);
     }
 
@@ -194,10 +186,13 @@ std::vector<PxRigidStatic *> ivc::LiveEnvironment::getObjVec() {
 void ivc::LiveEnvironment::clean() {
     m_sceneVec = {};
     m_currentBest = nullptr;
-    m_currentBestPath = {};
     m_bestScene = nullptr;
 }
 
 std::shared_ptr<ivc::BaseNode> ivc::LiveEnvironment::getBestNode() {
     return m_currentBest;
+}
+
+std::vector<std::pair<std::shared_ptr<ivc::PhysicsScene>, std::vector<PxVec3>>> ivc::LiveEnvironment::getSceneVec() {
+    return m_sceneVec;
 }

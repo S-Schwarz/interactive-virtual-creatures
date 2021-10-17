@@ -52,6 +52,7 @@ namespace ivc {
         void chooseNewNeuronIDs(std::map<unsigned long,unsigned long>*,std::shared_ptr<IDHandler>);
         void rewireInputs(std::map<unsigned long,unsigned long>*);
         void updateEffectorType(int);
+        float getViewDistance();
     };
 
 }

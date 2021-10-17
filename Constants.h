@@ -20,7 +20,8 @@ const float MUTATE_REFLECTION_FLAG_CHANCE = 0.1f;
 //evolution
 const int AMOUNT_STEPS_DELTA = 100;
 const float MAX_ALLOWED_HEIGHT = 10;
-const float MIN_NOVELTY_VAL = 2;
+const float MIN_NOVELTY_VAL = 1;
+const int MAX_NUM_PART = 20;
 
 //simulation
 const float SIMULATION_STEP_SIZE = 0.01f;

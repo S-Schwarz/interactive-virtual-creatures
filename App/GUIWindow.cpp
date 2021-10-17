@@ -191,6 +191,12 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     auto osciLabel = m_fitnessConfigWidget->add<nanogui::Label>("No oscillators");
     m_noOscis = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
 
+    auto targetLabel = m_fitnessConfigWidget->add<nanogui::Label>("Use targets");
+    m_useTargetBox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
+
+    auto rewardLabel = m_fitnessConfigWidget->add<nanogui::Label>("Use rewards");
+    m_useRewardsBox = m_fitnessConfigWidget->add<nanogui::CheckBox>("");
+
     m_noveltyConfigWidget = m_configurationWidget->add<nanogui::Widget>();
     m_noveltyConfigWidget->set_layout(layout);
 
@@ -213,7 +219,7 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     auto noveltyWidthLabel = m_noveltyConfigWidget->add<nanogui::Label>("search width");
     m_noveltyWidthBox = m_noveltyConfigWidget->add<nanogui::IntBox<unsigned int>>();
     m_noveltyWidthBox->set_min_max_values(1, 1000);
-    m_noveltyWidthBox->set_value(30);
+    m_noveltyWidthBox->set_value(20);
 
     m_guiScreen->set_visible(true);
     resize();
@@ -290,6 +296,13 @@ void ivc::GUIWindow::update() {
     m_config->m_noveltyWidth = m_noveltyWidthBox->value();
     m_config->m_useGeneralNeurons = m_useGeneralNeurons->checked();
     m_config->m_forbidOscis = m_noOscis->checked();
+    m_config->m_useTarget = m_useTargetBox->checked();
+    m_config->m_useRewards = m_useTargetBox->checked();
+
+    if(m_config->m_useTarget && m_config->m_useRewards){
+        m_config->m_useRewards = false;
+        m_useRewardsBox->set_checked(false);
+    }
 
     if(!m_config->m_useNoveltySearch){
         std::string fitnessFunc = "Fitness function: ";
@@ -306,7 +319,7 @@ void ivc::GUIWindow::update() {
         m_fitnessFunctionLabel->set_caption("using novelty search");
     }
 
-
+    m_config->m_clearBestVec = true;
 }
 
 void ivc::GUIWindow::resize() {

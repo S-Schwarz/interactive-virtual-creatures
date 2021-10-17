@@ -42,25 +42,68 @@ void ivc::App::processInput()
         m_camera.ProcessKeyboard(RIGHT, m_deltaTime);
 
 
-    if (glfwGetKey(m_liveWindow, GLFW_KEY_R) == GLFW_PRESS)
+    if (glfwGetKey(m_liveWindow, GLFW_KEY_R) == GLFW_PRESS){
         m_liveEnvironment->resetCreaturePosition();
+        m_evoConfig->m_foodVec = {};
+        m_evoConfig->m_clearBestVec = true;
+    }
+
+    static int oldMoveSelectorLeftState = GLFW_RELEASE;
+    int newMoveSelectorLeftState = glfwGetKey(m_liveWindow, GLFW_KEY_LEFT);
+    if(oldMoveSelectorLeftState == GLFW_RELEASE && newMoveSelectorLeftState == GLFW_PRESS){
+        --m_selector;
+        if(m_selector < 0){
+            m_selector = m_offsetVec.size()-1;
+        }
+    }
+    oldMoveSelectorLeftState = newMoveSelectorLeftState;
+
+    static int oldMoveSelectorRightState = GLFW_RELEASE;
+    int newMoveSelectorRightState = glfwGetKey(m_liveWindow, GLFW_KEY_RIGHT);
+    if(newMoveSelectorRightState == GLFW_RELEASE && oldMoveSelectorRightState == GLFW_PRESS){
+        ++m_selector;
+        if(m_selector >= m_offsetVec.size()){
+            m_selector = 0;
+        }
+    }
+    oldMoveSelectorRightState = newMoveSelectorRightState;
+
+
+    static int oldSelectorModeState = GLFW_RELEASE;
+    int newSelectorModeState = glfwGetKey(m_liveWindow, GLFW_KEY_H);
+    if(newSelectorModeState == GLFW_RELEASE && oldSelectorModeState == GLFW_PRESS){
+        m_inSelectorMode = !m_inSelectorMode;
+        if(m_inSelectorMode)
+            m_inBuildMode = false;
+    }
+    oldSelectorModeState = newSelectorModeState;
 
     static int oldBuildModeState = GLFW_RELEASE;
     int newBuildModeState = glfwGetKey(m_liveWindow, GLFW_KEY_B);
     if(newBuildModeState == GLFW_RELEASE && oldBuildModeState == GLFW_PRESS){
         m_inBuildMode = !m_inBuildMode;
+        if(m_inBuildMode)
+            m_inSelectorMode = false;
     }
     oldBuildModeState = newBuildModeState;
 
-    if(m_inBuildMode){
-        static int oldPlaceState = GLFW_RELEASE;
-        int newPlaceState = glfwGetKey(m_liveWindow, GLFW_KEY_SPACE);
-        if(newPlaceState == GLFW_RELEASE && oldPlaceState == GLFW_PRESS){
-            m_evoConfig->m_objVec.emplace_back(m_newObjectPos, m_newObjectScale);
-            m_evolver->clearBestVec();
+    static int oldPlaceState = GLFW_RELEASE;
+    int newPlaceState = glfwGetKey(m_liveWindow, GLFW_KEY_SPACE);
+    if(newPlaceState == GLFW_RELEASE && oldPlaceState == GLFW_PRESS){
+        if(m_inBuildMode){
+            if(glfwGetKey(m_liveWindow, GLFW_KEY_LEFT_CONTROL)){
+                m_evoConfig->m_foodVec.emplace_back(m_newObjectPos, m_newObjectScale);
+                m_evoConfig->m_clearBestVec = true;
+            }else{
+                m_evoConfig->m_objVec.emplace_back(m_newObjectPos, m_newObjectScale);
+                m_evoConfig->m_clearBestVec = true;
+            }
+        }else if(m_inSelectorMode){
+            m_evolver->setUserSelection(m_offsetVec[m_selector].first->getRootNode());
         }
-        oldPlaceState = newPlaceState;
+
     }
+    oldPlaceState = newPlaceState;
 
     static int oldPauseState = GLFW_RELEASE;
     int newPauseState = glfwGetKey(m_liveWindow, GLFW_KEY_P);
@@ -111,11 +154,11 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     auto appPtr = (ivc::App*)glfwGetWindowUserPointer(window);
 
     if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
-        appPtr->addToScale(glm::vec3(0,0,yoffset));
+        appPtr->addToScale(glm::vec3(0,0,yoffset * 0.25f));
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-        appPtr->addToScale(glm::vec3(yoffset,0,0));
+        appPtr->addToScale(glm::vec3(yoffset * 0.25f,0,0));
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-        appPtr->addToScale(glm::vec3(0,yoffset,0));
+        appPtr->addToScale(glm::vec3(0,yoffset * 0.25f,0));
 
 }
 
@@ -222,6 +265,7 @@ int ivc::App::update() {
         m_evoConfig->m_shouldSave = false;
         m_evoConfig->m_running = false;
         m_evoConfig->m_shouldEnd = false;
+        m_evoConfig->m_shouldStart = true;
     }
 
     float currentTime = glfwGetTime();
@@ -252,9 +296,10 @@ int ivc::App::update() {
     // insert new creature ------------
     if(liveEnvInitialized){
         auto currentGenNum = m_evolver->getNumberGenerations();
-        if(currentGenNum != m_lastGenNum && currentGenNum % 4 == 0){
+        if(m_evoConfig->m_refreshLiveEnvironment || m_liveEnvironment->getBestNode() == nullptr || (currentGenNum != m_lastGenNum && currentGenNum % 4 == 0)){
             auto newCreatureVector = m_evolver->getCurrentBestVector();
             if(!newCreatureVector.empty()){
+                m_evoConfig->m_refreshLiveEnvironment = false;
                 printf("INSERTING %i NEW CREATURES INTO LIVE SCENE %p\n", newCreatureVector.size(), newCreatureVector[0].first.get());
                 m_liveEnvironment->insertNewCreatures(newCreatureVector);
                 m_neuronVisualizer->updateVisualizer(m_liveEnvironment->getBestCreature());
@@ -423,43 +468,89 @@ void ivc::App::drawLiveWindow() {
     glClearColor(COLOR_CLEAR.r, COLOR_CLEAR.g, COLOR_CLEAR.b, COLOR_CLEAR.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //-------------------------
-
-    if(m_evoConfig->m_useNoveltySearch){
-        // draw novelty search box
-        auto archive = m_evolver->getNoveltyArchive();
-        auto width = (float)m_evoConfig->m_noveltyWidth;
-
-        for(auto vec : archive){
-            auto pos = vec.back();
-            drawShape(BOX, glm::vec3(pos.x,pos.y,pos.z),glm::quat(),glm::vec3(0.2,0.2,0.2), COLOR_RED, false);
-        }
-
-        drawShape(BOX, glm::vec3(-width / 2, 0, -250), glm::quat(), glm::vec3(0.1, 0.1, 500.0), COLOR_RED, false);
-        drawShape(BOX, glm::vec3(width / 2, 0, -250), glm::quat(), glm::vec3(0.1, 0.1, 500.0), COLOR_RED, false);
-
-        drawShape(BOX, glm::vec3(0, 0, 0), glm::quat(), glm::vec3(width, 0.1, 0.1), COLOR_RED, false);
-
-    }else {
-        drawShape(BOX, glm::vec3(0, 0, -240), glm::quat(), glm::vec3(0.1, 0.1, 500.0), COLOR_RED, false);
-        drawShape(BOX, glm::vec3(0, 0, 0), glm::quat(), glm::vec3(20.0, 0.1, 0.1), COLOR_RED, false);
-    }
-
     // draw new object ----------------------
 
     if(m_inBuildMode)
         drawShape(BOX, m_newObjectPos,glm::quat(),m_newObjectScale, COLOR_RED, true);
 
-    for( auto pair : m_evoConfig->m_objVec){
-        drawShape(TEXTURED_BOX, pair.first, glm::quat(), pair.second, COLOR_RED, false);
+    // draw all scenes
+    // calc offsets
+    int index = 0;
+    int sign = 1;
+    auto liveSceneVec = m_liveEnvironment->getSceneVec();
+    m_offsetVec.clear();
+    bool flipped = false;
+    for(const auto& [scene,path] : liveSceneVec){
+        float offset = sign * index * m_evoConfig->m_creatureOffset;
+        m_offsetVec.push_back({scene, {path, offset}});
+        index += sign;
+        if(!flipped && index > std::floor(liveSceneVec.size()/2)){
+            sign = -1;
+            index =  std::ceil(liveSceneVec.size()/2);
+            if(liveSceneVec.size()%2==0){
+                --index;
+            }
+            flipped = true;
+        }
     }
+/*
+    if(m_selector >= m_offsetVec.size()){
+        m_selector = m_offsetVec.size()-1;
+    }else if(m_selector < 0){
+        m_selector = 0;
+    }
+*/
+    // draw
+    int selectionIndex = 0;
+    for(const auto& [scene, pair] : m_offsetVec){
+        auto offset = pair.second;
 
-    // PHYSX OBJECTS ----------
-    for(auto bodyPair : m_liveEnvironment->getBodyParts()){
-        for(auto body : bodyPair.first){
+        // draw selection box
+        if(m_inSelectorMode && selectionIndex == m_selector){
+            drawShape(BOX, glm::vec3(offset, 2.5f, 0), glm::quat(), glm::vec3(5.0, 5.0, 5.0), COLOR_CLEAR, true);
+        }
+
+        if(m_evoConfig->m_useNoveltySearch){
+            // draw novelty search box
+            auto archive = m_evolver->getNoveltyArchive();
+            auto width = (float)m_evoConfig->m_noveltyWidth;
+
+            for(auto vec : archive){
+                auto pos = vec.back();
+                drawShape(BOX, glm::vec3(pos.x + offset,pos.y,pos.z),glm::quat(),glm::vec3(0.2,0.2,0.2), COLOR_RED, false);
+            }
+
+            drawShape(BOX, glm::vec3(-width / 2 + offset, 0, -250), glm::quat(), glm::vec3(0.1, 0.1, 500.0), COLOR_RED, false);
+            drawShape(BOX, glm::vec3(width / 2 + offset, 0, -250), glm::quat(), glm::vec3(0.1, 0.1, 500.0), COLOR_RED, false);
+
+            drawShape(BOX, glm::vec3(offset, 0, 0), glm::quat(), glm::vec3(width, 0.1, 0.1), COLOR_RED, false);
+
+        }else {
+            drawShape(BOX, glm::vec3(offset, 0, -240), glm::quat(), glm::vec3(0.1, 0.1, 500.0), COLOR_RED, false);
+            drawShape(BOX, glm::vec3(offset, 0, 0), glm::quat(), glm::vec3(20.0, 0.1, 0.1), COLOR_RED, false);
+        }
+
+        for( auto pair : m_evoConfig->getObjVec()){
+            auto pos = glm::vec3(pair.first.x + offset, pair.first.y, pair.first.z);
+            drawShape(TEXTURED_BOX, pos, glm::quat(), pair.second, COLOR_RED, false);
+        }
+        for( auto pair : m_evoConfig->m_foodVec){
+            auto pos = glm::vec3(pair.first.x + offset, pair.first.y, pair.first.z);
+            drawShape(BOX, pos, glm::quat(), pair.second, COLOR_CLEAR, false);
+        }
+
+        // draw vision
+        auto pose = scene->getCreature()->getRootLink()->getGlobalPose();
+        auto forwardVec = pose.q.rotate(physx::PxVec3(0, 0, -1));
+        auto position = pose.p;
+        auto length = scene->getRootNode()->getViewDistance();
+        auto glmForward = glm::vec3(forwardVec.x, forwardVec.y, forwardVec.z);
+        drawShape(BOX, glm::vec3(position.x + offset, position.y, position.z) + glmForward*(length/2), glm::quat(pose.q.w, pose.q.x, pose.q.y, pose.q.z), glm::vec3(0.1, 0.1, length), COLOR_CLEAR, false);
+
+        for(auto body : scene->getBodyParts()){
             auto transform = body->getGlobalPose();
 
-            glm::vec3 posVec = glm::vec3(transform.p.x, transform.p.y, transform.p.z);
+            glm::vec3 posVec = glm::vec3(transform.p.x + offset, transform.p.y, transform.p.z);
 
             glm::quat rotQuat = glm::quat(transform.q.w, transform.q.x, transform.q.y, transform.q.z);
 
@@ -480,12 +571,12 @@ void ivc::App::drawLiveWindow() {
             }
             delete[] shapes;
 
-            if(!bodyPair.second.empty())
-                drawPath(bodyPair.second);
+            drawPath(pair.first, offset);
 
-            m_liveShader->setBool("transparent", bodyPair.second.empty());
+            //m_liveShader->setBool("transparent", bodyPair.second.empty());
             drawShape(TEXTURED_BOX, posVec, rotQuat, scaleVec, COLOR_RED, false);
         }
+        ++selectionIndex;
     }
 
     // PLANE ------------------
@@ -531,10 +622,10 @@ void ivc::App::initNeuronWindow() {
 
 }
 
-void ivc::App::drawPath(std::vector<PxVec3> posVec) {
+void ivc::App::drawPath(std::vector<PxVec3> posVec, float offset) {
 
     for(const auto& pos : posVec){
-        drawShape(BOX, glm::vec3(pos.x,pos.y,pos.z),glm::quat(),glm::vec3(0.2,0.2,0.2), COLOR_YELLOW, false);
+        drawShape(BOX, glm::vec3(pos.x + offset,pos.y,pos.z),glm::quat(),glm::vec3(0.2,0.2,0.2), COLOR_YELLOW, false);
     }
 
 }
@@ -544,12 +635,12 @@ void ivc::App::addToScale(glm::vec3 vec) {
     if(m_inBuildMode){
         m_newObjectScale += vec;
 
-        if(m_newObjectScale.x < 1)
-            m_newObjectScale = glm::vec3(1, m_newObjectScale.y, m_newObjectScale.z);
-        if(m_newObjectScale.y < 1)
-            m_newObjectScale = glm::vec3(m_newObjectScale.x, 1, m_newObjectScale.z);
-        if(m_newObjectScale.z < 1)
-            m_newObjectScale = glm::vec3(m_newObjectScale.x, m_newObjectScale.y, 1);
+        if(m_newObjectScale.x < 0.25f)
+            m_newObjectScale = glm::vec3(0.25f, m_newObjectScale.y, m_newObjectScale.z);
+        if(m_newObjectScale.y < 0.25f)
+            m_newObjectScale = glm::vec3(m_newObjectScale.x, 0.25f, m_newObjectScale.z);
+        if(m_newObjectScale.z < 0.25f)
+            m_newObjectScale = glm::vec3(m_newObjectScale.x, m_newObjectScale.y, 0.25f);
     }
 
 }

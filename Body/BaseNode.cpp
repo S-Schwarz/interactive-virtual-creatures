@@ -287,10 +287,11 @@ void ivc::BaseNode::mutateNewBodyAndNewNeurons(bool onlyNeurons, std::shared_ptr
         }
 
         //add child node
-        if(dis(*m_generator) <= config->m_mutChance && !m_freeSides.empty()){
+        auto size = getRootNode()->getNumberOfParts();
+        if(size < MAX_NUM_PART && dis(*m_generator) <= config->m_mutChance && !m_freeSides.empty()){
             auto newChild = std::make_shared<BaseNode>();
-            newChild->init(false, m_generator, this, config);
             m_childNodeVector.emplace_back(newChild);
+            newChild->init(false, m_generator, this, config);
         }
 
         //reflect child node one time
@@ -558,8 +559,8 @@ void ivc::BaseNode::init(bool root, std::shared_ptr<std::mt19937> gen, BaseNode*
         for(int i = 0; i < MAX_CHILDREN; ++i){
             if(dis(*m_generator) < CHILD_CHANCE && !m_freeSides.empty()){
                 auto newChild = std::make_shared<BaseNode>();
-                newChild->init(false, m_generator, this, config);
                 m_childNodeVector.emplace_back(newChild);
+                newChild->init(false, m_generator, this, config);
             }
         }
     }else{
@@ -981,5 +982,17 @@ ivc::NODE_SIDE ivc::BaseNode::getRandomFreeSide(std::shared_ptr<std::mt19937> ge
 
 void ivc::BaseNode::setJointTypeDirectly(JOINT_TYPE type) {
     m_jointType = type;
-    m_localNeurons->updateEffectorType(m_jointType);
+    if(!m_isRoot)
+        m_localNeurons->updateEffectorType(m_jointType);
+}
+
+float ivc::BaseNode::getViewDistance(){
+    return m_brain->getViewDistance();
+}
+
+std::shared_ptr<ivc::BaseNode> ivc::BaseNode::getRootNode() {
+    if(isRoot())
+        return shared_from_this();
+
+    return m_parentNode->getRootNode();
 }

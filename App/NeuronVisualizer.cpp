@@ -401,6 +401,9 @@ void ivc::NeuronVisualizer::drawText(std::shared_ptr<Neuron> neuron, glm::mat4 m
     char toDraw = ' ';
 
     switch(neuron->getType()){
+        case EYE:
+            toDraw = 'E';
+            break;
         case CONSTANT:
             toDraw = 'C';
             break;

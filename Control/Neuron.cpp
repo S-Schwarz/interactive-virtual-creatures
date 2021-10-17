@@ -11,6 +11,9 @@ void ivc::Neuron::swap() {
 void ivc::Neuron::step() {
     switch (m_type) {
         //no input
+        case EYE:
+            eye();
+            break;
         case CONSTANT:
             m_output->setValue(m_constant);
             break;
@@ -155,11 +158,17 @@ void ivc::Neuron::mutate(std::shared_ptr<std::mt19937> gen, bool forceMutation, 
     if(forceMutation || dis(*gen) <= config->m_mutChance)
         m_genParam = Mutator::mutateFloat(gen, m_genParam, 3.f / 2.f, -3.f / 2.f);
 
+    //mutate viewDistance
+    if(forceMutation || dis(*gen) <= config->m_mutChance)
+        m_viewDistance = Mutator::mutateFloat(gen, m_viewDistance, 100.0f, 0.0f);
+
 }
 
-ivc::Neuron::Neuron(std::shared_ptr<std::mt19937> gen, std::shared_ptr<EvoConfig> config) {
+ivc::Neuron::Neuron(std::shared_ptr<std::mt19937> gen, std::shared_ptr<EvoConfig> config, bool isEye) {
 
-    if(config->m_useGeneralNeurons){
+    if(isEye){
+        m_type = EYE;
+    }else if(config->m_useGeneralNeurons){
         std::uniform_real_distribution<> dis(0, 1);
         auto val = dis(*gen);
         if(val < 0.4f){
@@ -179,6 +188,7 @@ ivc::Neuron::Neuron(std::shared_ptr<std::mt19937> gen, std::shared_ptr<EvoConfig
 
 
     switch (m_type){
+        case EYE:
         case CONSTANT:
         case SINE_OSCI:
         case SAW_OSCI:
@@ -416,5 +426,114 @@ void ivc::Neuron::setInputs(std::vector<unsigned long> newInputs) {
 
 ivc::NEURON_TYPE ivc::Neuron::getType() {
     return m_type;
+}
+
+void ivc::Neuron::eye() {
+    float t = INFINITY;
+
+    auto pose = m_rootLink->getGlobalPose();
+    auto forwardVec = pose.q.rotate(physx::PxVec3(0, 0, -1));
+    auto position = pose.p;
+
+    bool foundTarget = false;
+
+    // adapted from https://gamedev.stackexchange.com/questions/18436/most-efficient-aabb-vs-ray-collision-algorithms
+
+    float dirfracX = 1.0f / forwardVec.x;
+    float dirfracY = 1.0f / forwardVec.y;
+    float dirfracZ = 1.0f / forwardVec.z;
+
+    for(const auto& [boxMin, boxMax] : m_objVec){
+
+        float t1 = (boxMin.x - position.x)*dirfracX;
+        float t2 = (boxMax.x - position.x)*dirfracX;
+        float t3 = (boxMin.y - position.y)*dirfracY;
+        float t4 = (boxMax.y - position.y)*dirfracY;
+        float t5 = (boxMin.z - position.z)*dirfracZ;
+        float t6 = (boxMax.z - position.z)*dirfracZ;
+
+        float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
+        float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
+
+        if (tmax < 0)
+        {
+            continue;
+        }
+
+        if (tmin > tmax)
+        {
+            continue;
+        }
+
+        if(tmin < t){
+            t = tmin;
+        }
+    }
+
+    for(const auto& [boxMin, boxMax] : m_foodVec){
+
+        float t1 = (boxMin.x - position.x)*dirfracX;
+        float t2 = (boxMax.x - position.x)*dirfracX;
+        float t3 = (boxMin.y - position.y)*dirfracY;
+        float t4 = (boxMax.y - position.y)*dirfracY;
+        float t5 = (boxMin.z - position.z)*dirfracZ;
+        float t6 = (boxMax.z - position.z)*dirfracZ;
+
+        float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
+        float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
+
+        if (tmax < 0)
+        {
+            continue;
+        }
+
+        if (tmin > tmax)
+        {
+            continue;
+        }
+
+        if(tmin < t){
+            t = tmin;
+            foundTarget = true;
+        }
+    }
+
+    if(t > m_viewDistance)
+        t = INFINITY;
+
+    if(t == INFINITY){
+        m_output->setValue(0.0f);
+        return;
+    }
+
+    t = Mutator::normalize(t,0,m_viewDistance);
+
+    if(foundTarget)
+        t *= -1;
+
+    m_output->setValue(t);
+
+}
+
+void ivc::Neuron::initVision(physx::PxArticulationLink* rootLink, std::vector<std::pair<glm::vec3, glm::vec3>> objVec, std::vector<std::pair<glm::vec3, glm::vec3>> foodVec) {
+
+    m_rootLink = rootLink;
+
+    for(auto [pos, size] : objVec){
+        auto min = physx::PxVec3(pos.x - size.x/2, pos.y - size.y/2, pos.z - size.z/2);
+        auto max = physx::PxVec3(pos.x + size.x/2, pos.y + size.y/2, pos.z + size.z/2);
+        m_objVec.emplace_back(min,max);
+    }
+
+    for(auto [pos, size] : foodVec){
+        auto min = physx::PxVec3(pos.x - size.x/2, pos.y - size.y/2, pos.z - size.z/2);
+        auto max = physx::PxVec3(pos.x + size.x/2, pos.y + size.y/2, pos.z + size.z/2);
+        m_foodVec.emplace_back(min,max);
+    }
+
+}
+
+float ivc::Neuron::getViewDistance() {
+    return m_viewDistance;
 }
 

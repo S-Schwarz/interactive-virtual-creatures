@@ -4,7 +4,7 @@
 
 #include "PhysicalCreature.h"
 
-ivc::PhysicalCreature::PhysicalCreature(std::shared_ptr<BaseNode> rootNode, PxVec3 pos, std::shared_ptr<PhysicsBase> base) {
+ivc::PhysicalCreature::PhysicalCreature(std::shared_ptr<BaseNode> rootNode, PxVec3 pos, std::shared_ptr<PhysicsBase> base, std::shared_ptr<EvoConfig> config) {
 
     m_position = pos;
     m_physics = base->getPhysics();
@@ -35,6 +35,10 @@ ivc::PhysicalCreature::PhysicalCreature(std::shared_ptr<BaseNode> rootNode, PxVe
         auto newGate = std::make_shared<Gate>();
         neuron->setOutput(newGate);
         m_gateMap[neuron->getOutputID()] = newGate;
+        // init vison neuron
+        if(neuron->getType() == EYE){
+            neuron->initVision(rootLink, config->getObjVec(), config->m_foodVec);
+        }
     }
     //and for sensors
     for(auto sensor : m_sensorVector){

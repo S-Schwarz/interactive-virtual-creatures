@@ -63,15 +63,20 @@ namespace ivc{
 
             unsigned int m_numThreads = 1;
 
+            std::shared_ptr<BaseNode> m_selectedNode = nullptr;
+
             std::shared_ptr<EvoConfig> m_config = nullptr;
-            bool m_clearBestVec = false;
 
             std::vector<std::shared_ptr<EvoData>> m_dataVec;
 
             std::vector<std::shared_ptr<PhysicsScene>> m_testSceneVec;
-            std::map<std::shared_ptr<BaseNode>, std::vector<PxVec3>> m_testPosMap;
+            std::map<std::shared_ptr<BaseNode>, std::pair<std::vector<PxVec3>, int>> m_testPosMap;
+
             std::vector<std::vector<PxVec3>> m_noveltyArchive;
             std::vector<std::vector<PxVec3>> m_noveltyArchiveCopy;
+
+            int m_evalsSinceLastAddition = 0;
+            float m_noveltyMinFactor = 1.0f;
 
             std::vector<std::pair<std::shared_ptr<BaseNode>, std::vector<PxVec3>>> m_currentViableCreaturesVec;
             std::map<std::shared_ptr<BaseNode>, float> m_currentFitnessMap;
@@ -95,10 +100,10 @@ namespace ivc{
             std::vector<std::pair<std::shared_ptr<BaseNode>,std::pair<float, std::vector<PxVec3>>>> getCurrentBestVector();
             unsigned int getNumberGenerations();
             std::vector<std::shared_ptr<EvoData>> getEvoDataVec();
-            void clearBestVec();
             std::vector<std::vector<PxVec3>> getNoveltyArchive();
             void loadStartNode(std::shared_ptr<BaseNode>);
 
+            void setUserSelection(std::shared_ptr<BaseNode>);
 
     };
 }

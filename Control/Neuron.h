@@ -21,6 +21,8 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/vector.hpp>
+#include <foundation/PxVec3.h>
+#include <PxArticulationLink.h>
 
 namespace ivc{
     enum NEURON_TYPE{
@@ -46,7 +48,9 @@ namespace ivc{
         IF_THEN_ELSE,
         COUNT,
         SIGMOID,
-        TANH
+        TANH,
+        // vision neuron
+        EYE
     };
 
     class Neuron {
@@ -73,7 +77,7 @@ namespace ivc{
                 float m_vertical = 0.0f;
 
                 //osci neuron
-                float m_osci_stepSize = 1.0f;
+                float m_osci_stepSize = 0.01f;
                 float m_osci_offset = 0.0f;
 
                 //delay memory
@@ -85,6 +89,13 @@ namespace ivc{
             // general neurons
                 float m_genParam = 1.0f;
 
+            // vision
+                physx::PxArticulationLink* m_rootLink = nullptr;
+                std::vector<std::pair<physx::PxVec3, physx::PxVec3>> m_objVec;
+                std::vector<std::pair<physx::PxVec3, physx::PxVec3>> m_foodVec;
+                float m_viewDistance = 20.0f;
+
+
             friend class boost::serialization::access;
             template<class Archive>
             void serialize(Archive &a, const unsigned version){
@@ -93,7 +104,7 @@ namespace ivc{
             }
         public:
             Neuron()=default;
-            Neuron(std::shared_ptr<std::mt19937>, std::shared_ptr<EvoConfig>);
+            Neuron(std::shared_ptr<std::mt19937>, std::shared_ptr<EvoConfig>, bool);
             void setOutput(std::shared_ptr<Gate>);
             void swap();
             void step();
@@ -111,6 +122,8 @@ namespace ivc{
             void setInputs(std::vector<unsigned long>);
 
             NEURON_TYPE getType();
+            void initVision(physx::PxArticulationLink*, std::vector<std::pair<glm::vec3, glm::vec3>>, std::vector<std::pair<glm::vec3, glm::vec3>>);
+            float getViewDistance();
 
             //no inputs
             void sine_osci();
@@ -133,6 +146,7 @@ namespace ivc{
             void if_then_else();
             void sigmoid();
             void tanh();
+            void eye();
     };
 
 }

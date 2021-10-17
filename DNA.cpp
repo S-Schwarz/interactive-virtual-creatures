@@ -132,7 +132,6 @@ std::shared_ptr<ivc::BaseNode> ivc::NodeDNA::toNode() {
     newNode->setDimension(PxVec3(dimX, dimY, dimZ));
     newNode->setParentAnchor(PxVec3(anchorX, anchorY, anchorZ));
     newNode->setParentSide((NODE_SIDE)pSide);
-    newNode->setJointTypeDirectly((JOINT_TYPE)joint);
     newNode->setJointLimits(jointLimLow, jointLimHigh);
     newNode->emptyFreeSideVector();
     for(auto side : free){
@@ -167,6 +166,7 @@ std::shared_ptr<ivc::BaseNode> ivc::NodeDNA::toNode() {
         neuronCluster->setJointNeurons(std::make_shared<JointSensor>(jointSensor), std::make_shared<JointEffector>(effector));
     }
     newNode->setLocalNeurons(neuronCluster);
+    newNode->setJointTypeDirectly((JOINT_TYPE)joint);
 
     return newNode;
 }

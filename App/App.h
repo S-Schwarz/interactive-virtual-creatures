@@ -77,6 +77,10 @@ namespace ivc {
             glm::vec3 m_newObjectScale = glm::vec3(1,1,1);
 
             bool m_inBuildMode = false;
+            bool m_inSelectorMode = false;
+            int m_selector = 0;
+
+            std::vector<std::pair<std::shared_ptr<PhysicsScene>, std::pair<std::vector<PxVec3>, float>>> m_offsetVec;
 
             void saveEvoData(std::vector<std::shared_ptr<EvoData>>, std::string);
             void saveTo(BaseNode*, std::string);
@@ -89,7 +93,7 @@ namespace ivc {
             void initGUIWindow();
             void initNeuronWindow();
             void drawLiveWindow();
-            void drawPath(std::vector<PxVec3>);
+            void drawPath(std::vector<PxVec3>, float);
         public:
             bool shouldClose();
 
