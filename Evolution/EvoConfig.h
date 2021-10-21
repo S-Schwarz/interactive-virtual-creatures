@@ -44,8 +44,6 @@ namespace ivc{
 
         bool m_useVision = true;
 
-        int numberOfRuns = 0;
-
         bool m_useTarget = false;
         bool m_useRewards = false;
         float m_rewardBonus = 100.0f;

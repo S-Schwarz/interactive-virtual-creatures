@@ -178,7 +178,7 @@ int ivc::Evolver::init(std::shared_ptr<ivc::PhysicsBase> base, std::shared_ptr<E
     m_config = config;
 
     //find number of available threads
-    m_numThreads = std::thread::hardware_concurrency();
+    m_numThreads = std::thread::hardware_concurrency() - 1;
     printf("AVAILABLE THREADS: %i\n", m_numThreads);
 
     return 0;
@@ -203,10 +203,6 @@ void ivc::Evolver::startContinuousEvolution() {
             printf("Size: %lu\n", m_testSceneVec.size());
             m_testSceneVec = {};
             printf("Largest distance: %f\n", m_currentLargestDistance);
-            //printf("NEURONS OVERALL: %u\n", m_currentBestVector[0].first->getNeuronActivity()[0]);
-            //printf("NEURONS BRAIN: %u\n", m_currentBestVector[0].first->getNeuronActivity()[1]);
-            //printf("JOINT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[2]);
-            //printf("CONTACT SENSORS: %u\n", m_currentBestVector[0].first->getNeuronActivity()[3]);
             chooseParents();
             createNewGenerationFromParents();
             createEvoData();
@@ -219,13 +215,6 @@ void ivc::Evolver::startContinuousEvolution() {
                 m_noveltyArchive = {};
 
             m_numberGenerations += 1;
-        }
-
-        if(m_numberGenerations-1 == 103){
-            m_config->m_shouldSave = true;
-            m_config->m_shouldEnd = true;
-            m_config->numberOfRuns += 1;
-            m_config->m_fileName = "run" + std::to_string(m_config->numberOfRuns);
         }
     }
 
@@ -551,9 +540,6 @@ void ivc::Evolver::chooseParents() {
 
     }else{
 
-        if(!m_currentBestVector.empty())
-            throw std::logic_error("AUA");
-
         auto fitAmount = std::floor(m_config->m_numberDisplayedCreatures/2.f);
         auto novelAmount = std::ceil(m_config->m_numberDisplayedCreatures/2.f);
 
@@ -807,8 +793,6 @@ void ivc::Evolver::loadStartNode(std::shared_ptr<BaseNode> node) {
         newScene->init(m_base,newRoot, m_config);
         m_testSceneVec.push_back(newScene);
     }
-
-
 }
 
 void ivc::Evolver::calcStats() {

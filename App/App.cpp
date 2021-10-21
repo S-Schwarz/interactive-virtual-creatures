@@ -265,7 +265,6 @@ int ivc::App::update() {
         m_evoConfig->m_shouldSave = false;
         m_evoConfig->m_running = false;
         m_evoConfig->m_shouldEnd = false;
-        m_evoConfig->m_shouldStart = true;
     }
 
     float currentTime = glfwGetTime();
