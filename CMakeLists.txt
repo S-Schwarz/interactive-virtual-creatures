@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.19)
 project(interactive_virtual_creatures)
 
 find_package(Freetype REQUIRED)
+set(Boost_USE_STATIC_LIBS   ON)
 FIND_PACKAGE( Boost COMPONENTS serialization REQUIRED )
 
 add_compile_definitions(NDEBUG)
@@ -10,9 +11,9 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
+set(NANOGUI_BUILD_SHARED  OFF CACHE BOOL " " FORCE)
 set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
 set(NANOGUI_BUILD_PYTHON  OFF CACHE BOOL " " FORCE)
-set(NANOGUI_INSTALL       OFF CACHE BOOL " " FORCE)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-lglfw3 -Wl,--no-as-needed -ldl -lGL -lX11 -pthread -lXrandr -lXi")
@@ -34,6 +35,11 @@ add_executable(interactive_virtual_creatures
         Control/Joints/JointSensor.h Control/Joints/JointSensor.cpp Control/Joints/JointEffector.h Control/Joints/JointEffector.cpp Control/IDHandler.h Control/IDHandler.cpp
         Mutator.h Physics/PhysicsBase.cpp Physics/PhysicsBase.h Physics/PhysicsScene.cpp Physics/PhysicsScene.h Physics/LiveEnvironment.cpp Physics/LiveEnvironment.h
         Evolution/Evolver.cpp Evolution/Evolver.h Res/stb_image.h Control/ContactSensor.cpp Control/ContactSensor.h Physics/ContactReporter.h Evolution/EvoData.cpp Evolution/EvoData.h App/NeuronVisualizer.cpp App/NeuronVisualizer.h App/GUIWindow.cpp App/GUIWindow.h Evolution/EvoConfig.cpp Evolution/EvoConfig.h DNA.cpp DNA.h)
+
+add_custom_command(TARGET interactive_virtual_creatures
+                    POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:interactive_virtual_creatures> interactive_virtual_creatures_final/exec/
+        )
 
 TARGET_LINK_LIBRARIES(interactive_virtual_creatures ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} ${CMAKE_CURRENT_SOURCE_DIR}/Res/nanogui/libnanogui.so ${NANOGUI_EXTRA_LIBS} glfw3.a PhysXExtensions_static_64.a PhysX_static_64.a PhysXPvdSDK_static_64.a PhysXCommon_static_64.a PhysXFoundation_static_64.a  )
 

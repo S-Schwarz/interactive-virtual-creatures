@@ -755,8 +755,11 @@ void ivc::Evolver::calcDistanceTravelled() {
 
     }
     m_currentAverageDistance /= m_currentViableCreaturesVec.size();
-    if(shouldRefresh)
+    if(shouldRefresh){
         m_config->m_refreshLiveEnvironment = true;
+        m_currentBestVector = {};
+    }
+
 }
 
 void ivc::Evolver::clean() {

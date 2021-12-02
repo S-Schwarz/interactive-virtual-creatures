@@ -44,7 +44,6 @@ void ivc::App::processInput()
 
     if (glfwGetKey(m_liveWindow, GLFW_KEY_R) == GLFW_PRESS){
         m_liveEnvironment->resetCreaturePosition();
-        m_evoConfig->m_foodVec = {};
         m_evoConfig->m_clearBestVec = true;
     }
 

@@ -169,11 +169,11 @@ ivc::GUIWindow::GUIWindow(int width, int height) {
     m_displayNumBox->set_min_max_values(1,100);
 
     auto s = m_evoConstantsWidget->add<nanogui::Label>("Creature offset");
-    auto f = m_evoConstantsWidget->add<nanogui::IntBox<unsigned int>>();
-    f->set_value(30);
+    m_creatureOffsetBox = m_evoConstantsWidget->add<nanogui::IntBox<unsigned int>>();
+    m_creatureOffsetBox->set_value(30);
 
     auto se = m_evoConstantsWidget->add<nanogui::Label>("Use user selection");
-    auto x = m_evoConstantsWidget->add<nanogui::CheckBox>("");
+    m_userSelectionBox = m_evoConstantsWidget->add<nanogui::CheckBox>("");
 
     m_fitnessConfigWidget = m_configurationWidget->add<nanogui::Widget>();
     m_fitnessConfigWidget->set_layout(layout);
@@ -305,6 +305,8 @@ void ivc::GUIWindow::update() {
     m_config->m_forbidOscis = m_noOscis->checked();
     m_config->m_useTarget = m_useTargetBox->checked();
     m_config->m_useRewards = m_useTargetBox->checked();
+    m_config->m_userSelection = m_userSelectionBox->checked();
+    m_config->m_creatureOffset = m_creatureOffsetBox->value();
 
     if(m_config->m_useTarget && m_config->m_useRewards){
         m_config->m_useRewards = false;
@@ -388,6 +390,7 @@ void ivc::GUIWindow::handleKeyInput(int key, int action) {
     updateIntBox(m_neighborsBox,key,action,1);
     updateIntBox(m_noveltyIntevallBox,key,action,10);
     updateIntBox(m_noveltyWidthBox,key,action,1);
+    updateIntBox(m_creatureOffsetBox,key,action,1);
 
     if(m_fileNameBox->focused()){
         if(key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS){

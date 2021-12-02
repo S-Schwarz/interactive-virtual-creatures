@@ -45,6 +45,8 @@ namespace ivc{
             nanogui::CheckBox* m_noOscis = nullptr;
             nanogui::CheckBox* m_useTargetBox = nullptr;
             nanogui::CheckBox* m_useRewardsBox = nullptr;
+            nanogui::CheckBox* m_userSelectionBox = nullptr;
+            nanogui::IntBox<unsigned int>* m_creatureOffsetBox = nullptr;
 
             nanogui::Widget* m_noveltyConfigWidget = nullptr;
             nanogui::CheckBox* m_noveltyCheckbox = nullptr;
