@@ -4,3 +4,6 @@
 [submodule "Res/glfw"]
 	path = Res/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "Res/nanogui"]
+	path = Res/nanogui
+	url = https://github.com/mitsuba-renderer/nanogui.git

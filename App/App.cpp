@@ -3,7 +3,7 @@
 //
 
 #include "App.h"
-#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION
 #include "../Res/stb_image.h"
 
 void backgroundEvolution(std::shared_ptr<ivc::Evolver> evo){
