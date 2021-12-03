@@ -28,7 +28,6 @@ namespace ivc{
         bool m_useNoveltySearch = false;
         int m_noveltyInterval = 100;
         int m_noveltyNearestNeighbors = 10;
-        bool m_onlyUseEndPos = true;
         int m_noveltyWidth = 30;
 
         bool m_shouldStart = false;
