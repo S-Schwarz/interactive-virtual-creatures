@@ -519,9 +519,50 @@ void ivc::Evolver::chooseParents() {
 
         //cap number of parents
         auto maxParents = floor(m_config->m_creaturesPerGeneration * 0.2);
+        std::vector<std::pair<std::shared_ptr<BaseNode>, float>> additionalParents;
+
+        if(m_config->m_forceDiversity && normalizedScores.size() > maxParents){
+            // search for creatures with unrepresented amount of parts
+            for(int i = maxParents; i < normalizedScores.size(); ++i){
+                int size = normalizedScores[i].first->getNumberOfParts();
+                bool represented = false;
+                //already represented?
+                for(int k = 0; k < maxParents; ++k){
+                    if(size == normalizedScores[k].first->getNumberOfParts()){
+                        represented = true;
+                        break;
+                    }
+                }
+                if(!represented){
+                    for(auto additional : additionalParents){
+                        if(size == additional.first->getNumberOfParts()){
+                            represented = true;
+                            break;
+                        }
+                    }
+                }
+                //add if not
+                if(!represented){
+                    additionalParents.push_back(normalizedScores[i]);
+                }
+            }
+        }
+
         if(normalizedScores.size() > maxParents){
             normalizedScores.resize(maxParents);
         }
+
+        if(!additionalParents.empty()){
+            //cap additional parents
+            if(additionalParents.size() > maxParents){
+                additionalParents.resize(maxParents);
+            }
+            //replaces worst performers with diverse parents
+            normalizedScores.resize(maxParents - additionalParents.size());
+            normalizedScores.insert(normalizedScores.end(), additionalParents.begin(), additionalParents.end());
+        }
+
+        additionalParents.clear();
 
         //choose amount of children per root
         std::vector<std::pair<std::shared_ptr<BaseNode>,unsigned int>> amountVec;
